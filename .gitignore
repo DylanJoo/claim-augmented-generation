@@ -1,0 +1,6 @@
+# ignore all the pycache files
+**/__pycache__/
+*/__pycache__/
+
+*.out
+*.swp
