@@ -67,6 +67,6 @@ Typical usage pattern:
 
 ## Outputs
 
-- Intermediate artifacts: script-configured absolute paths such as `/exp/jhueiju/temp4.pkl` and `/exp/jhueiju/temp5.pkl`
+- Intermediate artifacts: stage checkpoints saved as `temp*.pkl` files at script-configured external paths
 - Final submissions: `submissions/*.jsonl`
 - Optional leaderboard upload helper: `upload_leaderboard.sh`
