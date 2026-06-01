@@ -4,7 +4,7 @@ This repository contains scripts for building a **claim-based retrieval pipeline
 
 ## Pipeline overview
 
-The pipeline is implemented in `/tmp/workspace/DylanJoo/claim-based-rag/src/pipeline.py` (and variant scripts `/tmp/workspace/DylanJoo/claim-based-rag/src/pipeline_ss.py`, `/tmp/workspace/DylanJoo/claim-based-rag/src/pipeline_cheat.py`).
+The pipeline is implemented in `src/pipeline.py` (and variant scripts `src/pipeline_ss.py`, `src/pipeline_cheat.py`).
 
 Main stages:
 
@@ -35,7 +35,7 @@ Main stages:
 
 ### Decontextualize corpus
 
-Legacy preprocessing scripts exist in `/tmp/workspace/DylanJoo/claim-based-rag/legacy/`:
+Legacy preprocessing scripts exist in `legacy/`:
 
 - `legacy/neuclir_corpus.py`
 - `legacy/ragtime_corpus.py`
@@ -45,7 +45,7 @@ These scripts produce statement-level JSONL data used for indexing/retrieval.
 
 ### Build Lucene index
 
-SLURM examples are under `/tmp/workspace/DylanJoo/claim-based-rag/slurm/`:
+SLURM examples are under `slurm/`:
 
 - `slurm/decontext_neuclir.sh`
 - `slurm/decontext_ragtime.sh`
@@ -67,6 +67,6 @@ Typical usage pattern:
 
 ## Outputs
 
-- Intermediate artifacts: `/exp/.../temp*.pkl` (as configured in pipeline scripts)
-- Final submissions: `/tmp/workspace/DylanJoo/claim-based-rag/submissions/*.jsonl`
-- Optional leaderboard upload helper: `/tmp/workspace/DylanJoo/claim-based-rag/upload_leaderboard.sh`
+- Intermediate artifacts: script-configured absolute paths such as `/exp/jhueiju/temp4.pkl` and `/exp/jhueiju/temp5.pkl`
+- Final submissions: `submissions/*.jsonl`
+- Optional leaderboard upload helper: `upload_leaderboard.sh`
