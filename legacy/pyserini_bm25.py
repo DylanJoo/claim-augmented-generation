@@ -5,7 +5,6 @@ import json
 from tqdm import tqdm 
 from crux.tools import batch_iterator
 from pyserini.search.lucene import LuceneSearcher
-import pdb
 from collections import defaultdict
 
 def run(

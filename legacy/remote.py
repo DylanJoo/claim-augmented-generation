@@ -31,9 +31,9 @@ def run(
 
     for i, input in tqdm(enumerate(inputs), desc='Retrieving', total=len(inputs)):
 
-        id = input.topic['request_id']
+        id = input.topic['qid']
         qtexts = input.subquestions
-        qtexts = [input.topic['problem_statement'] + sq for sq in qtexts]
+        qtexts = [input.topic['query'] + sq for sq in qtexts]
         qids = [str(i) for i in range(len(qtexts))]
 
         batch_hits = dict(zip(qids, [search_neuclir(query=query, limit=k) for query in qtexts]))

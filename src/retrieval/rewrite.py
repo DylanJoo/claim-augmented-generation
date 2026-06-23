@@ -1,6 +1,5 @@
-import json
 from llm.vllm import LLM
-from typing import List, Dict
+from typing import List
 from utils import Result
 
 SYSTEM_MESSAGE = """\
@@ -10,7 +9,7 @@ Specifically, your focus is to break down this request into standalone, atomic s
 
 USER_MESSAGE = """\
 The report request is as follows:
-- User Background: 
+- User Background:
 {user_background}
 - Problem statement:
 {problem_statement}
@@ -18,10 +17,9 @@ The report request is as follows:
 Generate a list of diverse {n_questions} sub-questions that can be independently explored, retrieved and answered. Each sub-question should be specific, clear and focused on a particular aspect without overlapping with other sub-questions in the list. The sub-questions must have comprehensive context. The sub-questions are designed to guide further research and exploration of the topic. Enclose each sub-question with <q> and </q> tags."""
 
 
-def run(topics, n_questions=10) -> List[str]:
+def run(topics, n_questions=10) -> List[Result]:
 
-    # vllm
-    llm = LLM(model_name_or_path="Qwen/Qwen3-8B", 
+    llm = LLM(model_name_or_path="Qwen/Qwen3-8B",
               dtype="half",
               temperature=0.7,
               top_p=0.8,
@@ -30,32 +28,17 @@ def run(topics, n_questions=10) -> List[str]:
               logprobs=None,
     )
 
-    # Prepare the input to the model
     messages = [[
             {"role": "system", "content": SYSTEM_MESSAGE},
             {"role": "user", "content": USER_MESSAGE.format(
-                user_background=topic["background"],
-                problem_statement=topic["problem_statement"],
+                user_background=topic["meta"]["background"],
+                problem_statement=topic["query"],
                 n_questions=n_questions
             )}
     ] for topic in topics]
 
-    # Generate outputs TODO: make this consistent to llm module
     llm_outputs = llm.generate(prompts=messages, is_message=True)
 
-    # messages = [llm.tokenizer.apply_chat_template([
-    #     {"role": "system", "content": SYSTEM_MESSAGE},
-    #     {"role": "user", "content": USER_MESSAGE.format(
-    #         user_background=topic["background"],
-    #         problem_statement=topic["problem_statement"],
-    #         n_questions=n_questions
-    #     )}],
-    #     tokenize=False,
-    #     add_generation_prompt=True,
-    # ) for topic in topics]
-    # llm_outputs = llm.generate(prompts=messages, is_message=True)
-
-    # Post-process the outputs to extract sub-questions
     outputs = []
     for topic, llm_output in zip(topics, llm_outputs):
         generated_text = llm_output.strip()
