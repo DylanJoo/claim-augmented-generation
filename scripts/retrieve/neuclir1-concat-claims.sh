@@ -15,9 +15,9 @@ conda activate inference
 cd $HOME/claim-augmented-generation
 
 python pipeline/run_bm25.py \
-    --topics $HOME/scratch/neuclir1/topics/neuclir24-test-request.jsonl \
+    --topics data/neuclir2024.topics.test.jsonl \
     --index  $HOME/scratch/neuclir1/concat-claims.bm25s \
-    --output $HOME/scratch/neuclir1/runs/bm25-concat-claims.txt \
+    --output runs/run.concat-claims.bm25.txt \
     --k 1000 \
     --stopwords en \
     --stemmer snowball \

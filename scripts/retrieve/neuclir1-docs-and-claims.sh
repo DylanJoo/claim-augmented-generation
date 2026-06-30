@@ -14,13 +14,8 @@ conda activate inference
 
 cd $HOME/claim-augmented-generation
 
-# Docids carry a '#<i>' suffix (claim-level + doc-augmented index).
-# Strip the suffix before passing results to document-level evaluation.
-python pipeline/run_bm25.py \
-    --topics $HOME/scratch/neuclir1/topics/neuclir24-test-request.jsonl \
-    --index  $HOME/scratch/neuclir1/docs-and-claims.bm25s \
-    --output $HOME/scratch/neuclir1/runs/bm25-docs-and-claims.txt \
-    --k 1000 \
-    --stopwords en \
-    --stemmer snowball \
-    --tag bm25-doc-claim
+python pipeline/run_bm25_pyserini.py \
+    --topics data/neuclir2024.topics.test.jsonl \
+    --index  $HOME/scratch/neuclir1/docs-and-claims.lucene \
+    --output runs/runs.doc-claims.bm25.txt \
+    --k 1000 --k1 1.2 --b 0.75 --tag bm25-doc-claim
