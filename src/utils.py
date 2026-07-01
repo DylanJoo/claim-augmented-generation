@@ -26,6 +26,8 @@ class Hit(dict):
     @property
     def rank(self) -> int: return self["rank"]
     @property
+    def content_dict(self) -> str: return self["content_dict"]
+    @property
     def content(self) -> str: return self["content_dict"]["text"]
     @property
     def title(self) -> str: return self["content_dict"]["title"]

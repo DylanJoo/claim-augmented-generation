@@ -1,0 +1,24 @@
+exp:
+  exp_name: test
+  output_path: outputs/{exp_name}/results.pkl
+  submission_path: outputs/{exp_name}/submission.jsonl
+  team_id: hltcoe
+  task: English
+
+data:
+  input_pkl: /path/to/results_step1.pkl  # List[Result] with topics + subquestions
+
+retrieval:
+  index: /path/to/bm25-index
+  k: 1000
+
+clustering:
+  encode_type: instruct-allsep  # controls add_all / add_condition / concat_adjacent flags
+  n_centroids: 10
+  n_neighbors: 20
+  sim_threshold: 0.9
+
+generation:
+  use_litellm: true
+  max_char_limit: 2000
+  limit: 5

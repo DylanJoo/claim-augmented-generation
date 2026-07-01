@@ -1,0 +1,35 @@
+exp:
+  exp_name: neuclir-claim-test
+  mode: claim
+  output_path: outputs/{exp_name}/results.pkl
+  submission_path: outputs/{exp_name}/submission.jsonl
+  team_id: hltcoe
+  task: English
+
+data:
+  topics_jsonl: /path/to/neuclir24-test-request.jsonl
+
+retrieval:
+  index: /path/to/claims.bm25s
+  k: 1000
+  n_subquestions: 10
+
+filtering:
+  corpus_path: /path/to/corpus.jsonl
+  rel_threshold: 0.9
+  top_k: 50
+
+clustering:
+  encode_type: instruct-allsep
+  n_centroids: 10
+  n_neighbors: 20
+  sim_threshold: 0.9
+
+generation:
+  use_litellm: true
+  max_char_limit: 2000
+  limit: 5
+
+reranking:
+  max_char_limit: 8000
+  max_sent_limit: 30

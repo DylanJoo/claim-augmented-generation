@@ -166,3 +166,37 @@ Intermediate checkpoints are saved as pickle files at paths hard-coded in the sc
 - Intermediate checkpoints: `temp*.pkl` at script-configured external paths
 - Final submissions: `submissions/decontext-{version}.{encode_type}.*.jsonl`
 - Leaderboard upload: `analysis/upload_leaderboard.sh`
+
+## Data statistics
+
+============================================================
+File: fas.processed-claims.jsonl.gz
+============================================================
+  Documents : 2,232,016    Total claims : 25,552,266
+    Claims per doc                min=     1  mean=   11.4  max=   227
+    Doc length (words)            min=     0  mean=  388.9  max=  8071
+    Claim length (words)          min=     1  mean=   18.9  max=  3997
+
+============================================================
+File: rus.processed-claims.jsonl.gz
+============================================================
+  Documents : 4,627,543    Total claims : 49,297,503
+    Claims per doc                min=     0  mean=   10.7  max=   273
+    Doc length (words)            min=     0  mean=  295.4  max= 14677
+    Claim length (words)          min=     1  mean=   16.5  max=  3999
+
+============================================================
+File: zho.processed-claims.jsonl.gz
+============================================================
+  Documents : 3,179,209    Total claims : 38,972,424
+    Claims per doc                min=     0  mean=   12.3  max=   320
+    Doc length (words)            min=     0  mean=  395.9  max= 14426
+    Claim length (words)          min=     1  mean=   18.1  max=  3998
+
+============================================================
+AGGREGATE (all files)
+============================================================
+  Documents : 10,038,768    Total claims : 113,822,193
+    Claims per doc                min=     0  mean=   11.3  max=   320
+    Doc length (words)            min=     0  mean=  348.0  max= 14677
+    Claim length (words)          min=     1  mean=   17.6  max=  3999
