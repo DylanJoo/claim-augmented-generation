@@ -17,7 +17,7 @@ cd $HOME/claim-augmented-generation
 python pipeline/run_bm25.py \
     --topics data/neuclir2024.topics.test.jsonl \
     --index  $HOME/scratch/neuclir1/documents.bm25s \
-    --output runs/run.documents.bm25.txt \
+    --output runs/run.neuclir1.documents.bm25.txt \
     --k 1000 \
     --stopwords en \
     --stemmer snowball \

@@ -47,8 +47,12 @@ Four modes control how collection entries are turned into indexed units.
 | `neuclir1-concat-claims.sh` | Concat-claims | `neuclir1/concat-claims.bm25s` |
 | `neuclir1-claims.sh` | Claims | `neuclir1/claims.bm25s` |
 | `neuclir1-docs-and-claims.sh` | Doc-augmented | `neuclir1/docs-and-claims.bm25s` |
+| `ragtime1-documents.sh` | Documents | `ragtime1/documents.bm25s` |
+| `ragtime1-concat-claims.sh` | Concat-claims | `ragtime1/concat-claims.bm25s` |
+| `ragtime1-claims.sh` | Claims | `ragtime1/claims.bm25s` |
+| `ragtime1-docs-and-claims.sh` | Doc-augmented | `ragtime1/docs-and-claims.bm25s` |
 
-All scripts read from `neuclir1/collection.jsonl.gz`.
+All scripts read from `*.processed-claims.jsonl.gz` in their respective `neuclir1/` or `ragtime1/` scratch directory.
 
 ## Usage
 

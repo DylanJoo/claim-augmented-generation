@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH --job-name=retrieve-cc
+#SBATCH --job-name=retrieve-d
 #SBATCH --cpus-per-task=16
 #SBATCH --partition cpu
 #SBATCH --mem=64G
@@ -15,10 +15,10 @@ conda activate inference
 cd $HOME/claim-augmented-generation
 
 python pipeline/run_bm25.py \
-    --topics data/neuclir2024.topics.test.jsonl \
-    --index  $HOME/scratch/neuclir1/concat-claims.bm25s \
-    --output runs/run.neuclir1.concat-claims.bm25.txt \
+    --topics data/ragtime2025.topics.test.jsonl \
+    --index  $HOME/scratch/ragtime1/documents.bm25s \
+    --output runs/run.ragtime1.documents.bm25.txt \
     --k 1000 \
     --stopwords en \
     --stemmer snowball \
-    --tag bm25-concat-claim
+    --tag bm25-doc

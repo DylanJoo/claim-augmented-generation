@@ -17,9 +17,9 @@ cd $HOME/claim-augmented-generation
 for k in 1000 1500 2000;do
 for FUSION in sum rrf max first; do
     python pipeline/run_bm25.py \
-        --topics data/neuclir2024.topics.test.jsonl \
-        --index  $HOME/scratch/neuclir1/claims.bm25s \
-        --output runs/run.neuclir1.claims-k$k.bm25.${FUSION}.txt \
+        --topics data/ragtime2025.topics.test.jsonl \
+        --index  $HOME/scratch/ragtime1/claims.bm25s \
+        --output runs/run.ragtime1.claims-k$k.bm25.${FUSION}.txt \
         --k $k \
         --stopwords en \
         --stemmer snowball \
