@@ -1,5 +1,8 @@
+import glob
+import gzip
 import json
 import pickle
+from collections import defaultdict
 from typing import List, Dict, Any
 from dataclasses import dataclass, field
 
@@ -69,6 +72,54 @@ def load_topics(path: str) -> List[Dict]:
             if line:
                 topics.append(json.loads(line))
     return topics
+
+
+def _resolve_files(patterns: List[str]) -> List[str]:
+    files = []
+    for pattern in patterns:
+        expanded = glob.glob(pattern, recursive=True)
+        files.extend(expanded if expanded else [pattern])
+    return sorted(set(files))
+
+
+def _open_file(fpath: str):
+    if fpath.endswith(".gz"):
+        return gzip.open(fpath, "rt", encoding="utf-8")
+    return open(fpath, encoding="utf-8")
+
+
+def load_run(path: str, k: int = None) -> Dict[str, List]:
+    """Parse a TREC run file -> {qid: [(docid, score), ...]} sorted by score desc, truncated to k."""
+    run: Dict[str, list] = defaultdict(list)
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            parts = line.split()
+            if len(parts) < 6:
+                continue
+            qid, docid, score = parts[0], parts[2], float(parts[4])
+            run[qid].append((docid, score))
+    return {
+        qid: sorted(hits, key=lambda x: x[1], reverse=True)[:k]
+        for qid, hits in run.items()
+    }
+
+
+def load_corpus(patterns: List[str]) -> Dict[str, Dict]:
+    """Load a JSONL/JSONL.gz doc corpus -> {docid: {title, text, statements}}."""
+    corpus = {}
+    for fpath in _resolve_files(patterns):
+        with _open_file(fpath) as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                doc = json.loads(line)
+                corpus[doc["id"]] = {
+                    "title": (doc.get("title") or "").strip(),
+                    "text": (doc.get("text") or "").strip(),
+                    "statements": doc.get("statements") or [],
+                }
+    return corpus
 
 
 def save(data, filename):

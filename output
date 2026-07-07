@@ -1,0 +1,81 @@
+
+=== global vocab stats (3463933 terms, 10038768 docs) ===
+rarest (highest idf) terms:
+  piaojin                   df=         1 idf=15.716
+  upcii                     df=         1 idf=15.716
+  forobel                   df=         1 idf=15.716
+  ssvs8dwc2p                df=         1 idf=15.716
+  hіlіўsya                  df=         1 idf=15.716
+  136e27129205e73cf1a13ed94e50c6aa df=         1 idf=15.716
+  obldoc                    df=         1 idf=15.716
+  bigbadbird                df=         1 idf=15.716
+  nef35t                    df=         1 idf=15.716
+  eksid                     df=         1 idf=15.716
+  mollamatefi               df=         1 idf=15.716
+  22х8х15                   df=         1 idf=15.716
+  fru2012                   df=         1 idf=15.716
+  svinoisj                  df=         1 idf=15.716
+  detaltorg                 df=         1 idf=15.716
+  shasteel                  df=         1 idf=15.716
+  mythen                    df=         1 idf=15.716
+  minesderimen              df=         1 idf=15.716
+  vagengeim                 df=         1 idf=15.716
+  sermsirimongkol           df=         1 idf=15.716
+most common (lowest idf) terms:
+  from                      df=   5972103 idf=0.519
+  said                      df=   5690680 idf=0.568
+  has                       df=   5291820 idf=0.640
+  have                      df=   4955989 idf=0.706
+  also                      df=   4798210 idf=0.738
+  year                      df=   4655991 idf=0.768
+  which                     df=   4654400 idf=0.769
+  he                        df=   4499992 idf=0.802
+  accord                    df=   4352935 idf=0.836
+  time                      df=   4213822 idf=0.868
+  report                    df=   4191611 idf=0.873
+  about                     df=   4003849 idf=0.919
+  more                      df=   3862463 idf=0.955
+  peopl                     df=   3816975 idf=0.967
+  were                      df=   3570856 idf=1.034
+  can                       df=   3549873 idf=1.040
+  been                      df=   3534294 idf=1.044
+  after                     df=   3508079 idf=1.051
+  one                       df=   3382951 idf=1.088
+  all                       df=   3351973 idf=1.097
+
+=== topic 300 (34 unique terms, 14 OOV) ===
+term                             df       idf
+cases                             1    15.716
+information                     103    11.482
+causal                         5301     7.546
+unless                        53399     5.236
+comparison                    66874     5.011
+factor                       303755     3.498
+japan                        322713     3.437
+am                           565074     2.877
+covid                        575384     2.859
+period                       964802     2.342
+19                          1156184     2.161
+would                       1230287     2.099
+even                        1560727     1.861
+need                        1814025     1.711
+other                       3092467     1.177
+more                        3862463     0.955
+report                      4191611     0.873
+which                       4654400     0.769
+also                        4798210     0.738
+from                        5972103     0.519
+suicide                         OOV          
+rates                           OOV          
+during                          OOV          
+pandemic                        OOV          
+include                         OOV          
+identified                      OOV          
+factors                         OOV          
+clearly                         OOV          
+associated                      OOV          
+looking                         OOV          
+generally                       OOV          
+however                         OOV          
+used                            OOV          
+basis                           OOV          

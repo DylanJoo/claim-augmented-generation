@@ -13,7 +13,7 @@ initconda
 conda activate inference
 
 cd ${HOME}/claim-augmented-generation/
-for run in runs/run.*.txt; do
+for run in runs/run.neuclir1*.txt; do
     python -m src.evaluator.rac_eval \
         --run $run \
         --qrel $HOME/trec2026/data/neuclir/neuclir24-test-request.qrel \

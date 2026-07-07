@@ -35,7 +35,7 @@ def _build_queries(topic, subquestions):
 def _fuse(temp, hits, strategy="sum"):
     """Return (evidences, fused_hits) at parent-doc level.
 
-    Doc-level index: hits already have parent docids — sort by score, no aggregation.
+    Doc-level index: hits already have parent docids — sort by score, no aggregation. N fusion
     Claim-level index: fuse scores via strategy and concatenate claim texts per doc.
     """
     is_claim_level = any("#" in h.docid for h in hits)
@@ -83,7 +83,7 @@ def run(
     k=100,
     stopwords="en",
     stemmer=None,
-    fusion="sum",
+    fusion="sum", # only claim-level needs fusion
 ):
     outputs = copy.deepcopy(inputs)
     retriever, docids, _stemmer = _load_index(index, stemmer)

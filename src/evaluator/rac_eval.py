@@ -56,7 +56,7 @@ def coverage_measures(ratings, ratings_oracle, filter_by_oracle=False, tau=3):
 def rac_eval(run, qrel, div_qrel, judge, tau=3, filter_by_oracle=False):
     outputs = defaultdict(list)
 
-    for metric in ir_measures.iter_calc([alpha_nDCG@10, alpha_nDCG@20, StRecall@10, StRecall@20], div_qrel, run):
+    for metric in ir_measures.iter_calc([StRecall@1, alpha_nDCG@10, alpha_nDCG@20, StRecall@10, StRecall@20], div_qrel, run):
         outputs[str(metric.measure)].append(metric.value)
 
     return outputs
