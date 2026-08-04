@@ -7,7 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'src'))
 
 from .utils import batch_iterator
-from .prompts import system_prompt, user_prompt_en_no_title
+from .prompts import system_prompt, user_prompt_en
 from tqdm import tqdm
 
 def postprocess(text):
@@ -23,7 +23,7 @@ def main(args):
     corpus = {lang: {} for lang in args.langs}
 
     for lang in corpus:
-        # get documents 
+        # get documents
         file_name = f"{lang}.mt.jsonl" if args.use_translation else f"{lang}.jsonl"
         input_file = f"{args.corpus_dir}/{file_name}"
         with open(input_file, 'r') as f:
@@ -77,8 +77,8 @@ def main(args):
                 # outputs
                 if args.offload:
                     batch_messages = [[
-                        {"role": "system", "content": system_prompt}, 
-                        {"role": "user", "content": prompt}] 
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": prompt}]
                         for prompt in user_prompts
                     ]
 
