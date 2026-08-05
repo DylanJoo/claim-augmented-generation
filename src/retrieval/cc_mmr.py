@@ -111,6 +111,7 @@ def _mmr_select(hits, claims_by_doc, k, lambda_mult, stopwords, stemmer, k1, b):
     max_sim_to_selected = np.zeros(n, dtype=np.float32)
 
     for _ in range(n_select):
+        # MaxSim as penalty
         mmr_scores = lambda_mult * relevance - (1 - lambda_mult) * max_sim_to_selected
         mmr_scores[selected] = -np.inf
         pick = int(np.argmax(mmr_scores))
