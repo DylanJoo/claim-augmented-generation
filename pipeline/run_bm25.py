@@ -67,7 +67,7 @@ def main():
     topics = load_topics(args.topics)
     logger.info("Loaded %d topic(s) from %s", len(topics), args.topics)
 
-    inputs = [Result(topic=t, subquestions=[]) for t in topics]
+    inputs = [Result(topic=t, subquestions=t.get("subquestions", [])) for t in topics]
     results = search.run(
         inputs,
         index=args.index,

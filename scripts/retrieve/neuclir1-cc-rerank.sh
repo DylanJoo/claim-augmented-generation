@@ -19,23 +19,23 @@ cd $HOME/claim-augmented-generation
 
 # MMR with claim-claim scores (mode=subtract)
 # Use sum of max claim-claim sim as redundancy penalty
-for LAMBDA in 0.7 0.8 0.9 1.0; do
-    python pipeline/run_cc_rerank.py \
-        --topics data/neuclir2024.topics.test.jsonl \
-        --run-file runs/run.neuclir1.documents.bm25.txt \
-        --corpus "$HOME/scratch/neuclir1/*.processed-claims.jsonl.gz" \
-        --output runs/run.neuclir1.cc-rerank-mmr-doc.lambda-${LAMBDA}.txt \
-        --k 1000 \
-        --lambda-mult ${LAMBDA} \
-        --mode 'subtract' \
-        --stopwords en \
-        --stemmer snowball \
-        --tag cc-rerank-mmr-doc-l${LAMBDA}
-done
+# for LAMBDA in 0.7 0.8 0.9 1.0; do
+#     python pipeline/run_cc_rerank.py \
+#         --topics data/neuclir2024.topics.test.jsonl \
+#         --run-file runs/run.neuclir1.documents.bm25.txt \
+#         --corpus "$HOME/scratch/neuclir1/*.processed-claims.jsonl.gz" \
+#         --output runs/run.neuclir1.cc-rerank-mmr-doc.lambda-${LAMBDA}.txt \
+#         --k 1000 \
+#         --lambda-mult ${LAMBDA} \
+#         --mode 'subtract' \
+#         --stopwords en \
+#         --stemmer snowball \
+#         --tag cc-rerank-mmr-doc-l${LAMBDA}
+# done
 
 # Claim-echo boost rerank (mode=add)
 # Reweight the document relevance upward when claims echo already-selected docs.
-for LAMBDA in 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7; do
+for LAMBDA in 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9; do
     python pipeline/run_cc_rerank.py \
         --topics data/neuclir2024.topics.test.jsonl \
         --run-file runs/run.neuclir1.documents.bm25.txt \

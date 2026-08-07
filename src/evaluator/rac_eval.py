@@ -64,7 +64,7 @@ def print_markdown_row(columns, run_name, values):
     print("| " + " | ".join([run_name] + values) + " |")
 
 
-def rac_eval(run, qrel, div_qrel, judge, tau=3, filter_by_oracle=False):
+def rac_eval(run, qrel, div_qrel, tau=3, filter_by_oracle=False):
     outputs = defaultdict(list)
 
     for metric in ir_measures.iter_calc([StRecall@1, alpha_nDCG@10, alpha_nDCG@20, StRecall@10, StRecall@20], div_qrel, run):
@@ -77,8 +77,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--run", type=str, required=True)
     parser.add_argument("--qrel", type=str, required=True)
-    parser.add_argument("--judge", type=str, required=True,
-                        help="jsonl: {'id': str, 'docid': str, 'rating': List[int]}")
     parser.add_argument("--filter_by_oracle", action="store_true", default=False)
     parser.add_argument("--tau", type=int, default=3)
     args = parser.parse_args()
@@ -86,7 +84,6 @@ if __name__ == "__main__":
     run = load_run_or_qrel(args.run, topk=1000)
     qrel = load_run_or_qrel(args.qrel, threshold=1)
     div_qrel = load_diversity_qrel(args.qrel)
-    ratings = load_ratings(args.judge)
 
     missing_qids = [qid for qid in qrel if qid not in run]
     if missing_qids:
@@ -98,7 +95,6 @@ if __name__ == "__main__":
         run=run,
         qrel=qrel,
         div_qrel=div_qrel,
-        judge=ratings,
         tau=args.tau,
         filter_by_oracle=args.filter_by_oracle,
     )

@@ -26,24 +26,35 @@ def _load_index(index_dir, stemmer_name=None):
 
 
 def _build_queries(topic, subquestions):
+    """Original query plus each sub-question fired as its own independent
+    retrieval pass. Sub-questions are written by rewrite.py to already carry
+    "comprehensive context" on their own, so gluing the (generic) main query
+    text onto them would just dilute their specific vocabulary with the same
+    broad terms every other sub-question -- and the main-query -- already
+    contributes."""
     main_query = topic["query"]
     if not subquestions:
         return [main_query]
-    return [main_query + sq for sq in subquestions]
+    return [main_query] + list(subquestions)
 
 
 def _fuse(temp, hits, strategy="sum"):
-    """Return (evidences, fused_hits) at parent-doc level.
+    """Return fused_hits at parent-doc level.
 
-    Doc-level index: hits already have parent docids — sort by score, no aggregation. N fusion
-    Claim-level index: fuse scores via strategy and concatenate claim texts per doc.
+    `temp` already carries every (score, rank) a parent doc earned across
+    *all* fired queries (plain query + each sub-question) and, for a
+    claim-level index, across all of that doc's claims too -- both axes
+    land in the same list, so this always has to fuse, even for a doc-level
+    index with a single query where every parent has exactly one entry.
+
+    Claim-level index: fuse scores via strategy and concatenate claim texts
+    per doc. Doc-level index: fuse scores via strategy; text is identical
+    across duplicate hits of the same doc (one per query it matched), so it
+    is taken once rather than concatenated.
     """
     is_claim_level = any("#" in h.docid for h in hits)
 
-    if not is_claim_level:
-        return hits
-
-    # Compute fused score per parent doc. 
+    # Compute fused score per parent doc.
     # Under the same docid, reconstruct the scores.
     fusion = {}
     for docid, items in temp.items():
@@ -57,23 +68,26 @@ def _fuse(temp, hits, strategy="sum"):
             fusion[docid] = sum(score for score, _ in items)
     fusion = dict(sorted(fusion.items(), key=lambda x: x[1], reverse=True))
 
-    # Group claim hits by parent doc and concatenate texts
-    # TODO: maybe i would like to include the original doc text in the combined_text
-    doc_claims = defaultdict(list)
+    # Group hits by parent doc, deduped by full docid so a doc/claim matched
+    # by multiple queries doesn't get its text concatenated with itself.
+    doc_hits = defaultdict(dict)
     for h in hits:
-        doc_claims[h.docid.split("#")[0]].append(h)
+        doc_hits[h.docid.split("#")[0]][h.docid] = h
 
     fused_hits = []
     for rank, (parent, fused_score) in enumerate(fusion.items(), start=1):
-        if parent not in doc_claims:
+        if parent not in doc_hits:
             continue
-        claims = doc_claims[parent]
-        combined_text = " ".join(h.content_dict["text"] for h in claims if h.content_dict.get("text"))
+        entries = list(doc_hits[parent].values())
+        if is_claim_level:
+            combined_text = " ".join(h.content_dict["text"] for h in entries if h.content_dict.get("text"))
+        else:
+            combined_text = entries[0].content_dict.get("text")
         fused_hits.append(Hit(
             docid=parent,
             score=fused_score,
             rank=rank,
-            content_dict={"text": combined_text, "title": claims[0].content_dict.get("title")}
+            content_dict={"text": combined_text, "title": entries[0].content_dict.get("title")}
         ))
 
     return fused_hits
@@ -85,7 +99,7 @@ def run(
     k=100,
     stopwords="en",
     stemmer=None,
-    fusion="sum", # only claim-level needs fusion
+    fusion="sum", # combines scores across queries (main + sub-questions) and, for claim-level indices, across claims too
 ):
     outputs = copy.deepcopy(inputs)
     retriever, docids, _stemmer = _load_index(index, stemmer)

@@ -12,12 +12,17 @@ source ${HOME}/.bashrc
 initconda
 conda activate inference
 
+priority_runs="runs/run.neuclir1.documents.bm25.txt runs/run.neuclir1.doc-claims.bm25.txt runs/run.neuclir1.concat-claims.bm25.txt"
+
 cd ${HOME}/claim-augmented-generation/
 echo "| Run | StRecall@1 | StRecall@10 | StRecall@20 | alpha_nDCG@10 | alpha_nDCG@20 |"
 echo "|---|---|---|---|---|---|"
-for run in runs/run.neuclir1*.txt; do
+for run in $priority_runs runs/run.neuclir1*.txt; do
+    case " $seen " in
+        *" $run "*) continue ;;
+    esac
+    seen="$seen $run"
     python -m src.evaluator.rac_eval \
         --run $run \
-        --qrel $HOME/trec2026/data/neuclir/neuclir24-test-request.qrel \
-        --judge $HOME/trec2026/data/neuclir/neuclir24.ratings.human.jsonl
+        --qrel $HOME/trec2026/data/neuclir/neuclir24-test-request.qrel
 done
