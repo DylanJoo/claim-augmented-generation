@@ -18,8 +18,9 @@ python pipeline/run_dc_gap.py \
     --topics data/neuclir2024.topics.test.jsonl \
     --run-file runs/run.neuclir1.documents.bm25.txt \
     --corpus  "$HOME/scratch/neuclir1/*.processed-claims.jsonl.gz" \
-    --output runs/run.neuclir1.dc-gap-doc.txt \
+    --output runs/run.neuclir1.dc-gap-qd-as-q.txt \
     --k 1000 \
     --stopwords en \
     --stemmer snowball \
-    --tag dc-gap-doc
+    --tag dc-gap-qd-as-q \
+    --include-query

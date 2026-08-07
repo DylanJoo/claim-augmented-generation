@@ -1,5 +1,3 @@
-# Results
-
 | Run | StRecall@1 | StRecall@10 | StRecall@20 | alpha_nDCG@10 | alpha_nDCG@20 |
 |---|---|---|---|---|---|
 | run.neuclir1.cc-mmr-doc.lambda-0.7.txt | 0.2421 | 0.6599 | 0.7575 | 0.5091 | 0.5430 |
@@ -7,6 +5,7 @@
 | run.neuclir1.cc-mmr-doc.lambda-0.9.txt | 0.2421 | 0.6650 | 0.7690 | 0.5267 | 0.5632 |
 | run.neuclir1.cc-mmr-doc.lambda-1.0.txt | 0.2421 | 0.6650 | 0.7655 | 0.5306 | 0.5648 |
 | run.neuclir1.concat-claims.bm25.txt | 0.2317 | 0.6460 | 0.7326 | 0.5189 | 0.5515 |
+| run.neuclir1.dc-gap-doc.txt | 0.2421 | 0.5975 | 0.6797 | 0.4819 | 0.4993 |
 | run.neuclir1.doc-claims.bm25.txt | 0.1106 | 0.5768 | 0.7022 | 0.3462 | 0.3988 |
 | run.neuclir1.documents.bm25.txt | 0.2421 | 0.6650 | 0.7655 | 0.5306 | 0.5648 |
 | run.neuclir1.hybrid-claim-concat.alpha-0.0.txt | 0.2421 | 0.6650 | 0.7655 | 0.5306 | 0.5648 |
@@ -17,6 +16,5 @@
 | run.neuclir1.hybrid-claim-concat.alpha-0.5.txt | 0.2493 | 0.6257 | 0.7388 | 0.5197 | 0.5566 |
 | run.neuclir1.mmr-doc.lambda-0.7.txt | 0.2421 | 0.6366 | 0.7385 | 0.4835 | 0.5197 |
 | run.neuclir1.mmr-doc.lambda-0.8.txt | 0.2421 | 0.6361 | 0.7464 | 0.5016 | 0.5436 |
-| run.neuclir1.mmr-doc.lambda-0.95.txt | 0.2421 | 0.6650 | 0.7690 | 0.5267 | 0.5634 |
 | run.neuclir1.mmr-doc.lambda-0.9.txt | 0.2421 | 0.6601 | 0.7690 | 0.5229 | 0.5620 |
 | run.neuclir1.mmr-doc.lambda-1.0.txt | 0.2421 | 0.6650 | 0.7655 | 0.5306 | 0.5648 |

@@ -1,18 +1,22 @@
 """
-dc-gap retrieval demo -- base relevance is read from a pre-computed doc-level
-TREC run file, followed by a greedy re-ranking that selects, at each step,
-the pooled document whose claims show the largest max-min "gap" against the
-currently selected set, where each selected document's full text is used as
-a query against the candidates' claims. See src/retrieval/dc_gap.py.
+dc-gap retrieval demo, global claim-index variant -- base relevance is read
+from a pre-computed doc-level TREC run file, followed by a greedy
+re-ranking that selects, at each step, the pooled document whose claims
+show the largest max-min "gap" against the currently selected set, exactly
+as in run_dc_gap.py. The difference: score(D_i, c) is looked up from a
+single pre-built claim-level BM25 index covering the whole corpus, instead
+of a fresh per-topic index over just the pooled docs' claims. See
+src/retrieval/dc_gap_global.py.
 
 Usage:
-    python pipeline/run_dc_gap.py \
+    python pipeline/run_dc_gap_global.py \
         --topics <topics.jsonl> \
         --run-file <path/to/doc-level-run.txt> \
         --corpus <path/to/collection.jsonl.gz> [<more files/globs>...] \
+        --claim-index <path/to/claims.bm25s> \
         --output <results.txt> \
         [--k 1000] \
-        [--stopwords en] [--stemmer snowball] [--tag dc-gap] [--include-query]
+        [--stopwords en] [--stemmer snowball] [--tag dc-gap-global]
 """
 
 import argparse
@@ -22,7 +26,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
 
-from retrieval import dc_gap
+from retrieval import dc_gap_global
 from utils import Result, load_topics
 
 logging.basicConfig(
@@ -45,13 +49,15 @@ def write_trec(results, output_path, tag):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Doc-claim gap re-ranking over a doc-level run file")
+    parser = argparse.ArgumentParser(description="Doc-claim gap re-ranking over a doc-level run file, using a global claim index")
     parser.add_argument("--topics", required=True,
                         help="JSONL file with topics; each line must have 'qid' and 'query'")
     parser.add_argument("--run-file", required=True,
                         help="Pre-computed doc-level TREC run file used as the base relevance score")
     parser.add_argument("--corpus", required=True, nargs="+",
                         help="JSONL or JSONL.gz document corpus file(s) with 'text' and 'statements' fields; globs accepted")
+    parser.add_argument("--claim-index", required=True,
+                        help="Path to a prebuilt claim-level bm25s index (see indexing.py --claim-level)")
     parser.add_argument("--output", required=True,
                         help="Output file path (TREC run format)")
     parser.add_argument("--k", type=int, default=1000,
@@ -59,35 +65,24 @@ def main():
     parser.add_argument("--stopwords", default="en",
                         help="Stopword list passed to bm25s.tokenize (default: en)")
     parser.add_argument("--stemmer", default=None,
-                        help="Stemmer to use, e.g. 'snowball' (default: none)")
-    parser.add_argument("--local-k1", type=float, default=1.2,
-                        help="k1 for the local doc-claim BM25 similarity index (default: 1.2)")
-    parser.add_argument("--local-b", type=float, default=0.0,
-                        help="b for the local doc-claim BM25 similarity index (default: 0.0, "
-                             "no length normalization -- claims are short, single-statement text, "
-                             "and query-length insensitivity is handled separately by per-row "
-                             "normalization of the doc-claim score matrix)")
-    parser.add_argument("--tag", default="dc-gap",
-                        help="Run tag written in the TREC output (default: dc-gap)")
-    parser.add_argument("--include-query", action="store_true",
-                        help="Prefix each selected document's full text with the topic query "
-                             "before using it as the doc-claim BM25 query (default: off)")
+                        help="Stemmer to use, e.g. 'snowball' (default: none). Must match how "
+                             "--claim-index was built, or query tokens will miss its vocabulary.")
+    parser.add_argument("--tag", default="dc-gap-global",
+                        help="Run tag written in the TREC output (default: dc-gap-global)")
     args = parser.parse_args()
 
     topics = load_topics(args.topics)
     logger.info("Loaded %d topic(s) from %s", len(topics), args.topics)
 
     inputs = [Result(topic=t, subquestions=[]) for t in topics]
-    results = dc_gap.run(
+    results = dc_gap_global.run(
         inputs,
         run_file=args.run_file,
         corpus=args.corpus,
+        claim_index=args.claim_index,
         k=args.k,
         stopwords=args.stopwords,
         stemmer_name=args.stemmer,
-        local_k1=args.local_k1,
-        local_b=args.local_b,
-        include_query=args.include_query,
     )
 
     write_trec(results, args.output, args.tag)

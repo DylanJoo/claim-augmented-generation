@@ -1,7 +1,7 @@
 """
 dc-gap (Doc-Claim Gap) re-ranking on top of a doc-level run file.
 
-Unlike mmr.py (whole-document similarity) and cc_mmr.py (claim-claim MaxSim),
+Unlike mmr.py (whole-document similarity) and cc_rerank.py (claim-claim MaxSim),
 this is not a relevance/diversity trade-off and has no lambda knob. Instead,
 each already-selected document's full text is used as a query against every
 individual claim of every remaining candidate document:
@@ -42,14 +42,25 @@ and novelty are each computed with one operator end-to-end rather than
 aggregated in the opposite order partway through.
 
 The first pick has no selected set to compare against, so it falls back to
-pure base relevance (same as rank 1 of the input run). The second pick has
-exactly one selected document, so running_bridge and running_novelty are
-identical and the gap is trivially zero; that round instead uses
-running_bridge directly (plain resemblance to the one selected document).
+pure base relevance (same as rank 1 of the input run). Every later pick,
+including the second, uses the real gap: running_bridge and running_novelty
+are each an extremum over a candidate's own claims (max vs min), which is
+independent of how many documents have been selected -- with only one
+selected document, running_bridge and running_novelty already come from
+different claims of the same candidate and are not equal in general, so
+there is no "trivial zero" case to special-case around.
 
 The base relevance signal is read directly from a pre-computed doc-level
 TREC run file; per-doc claims and full text for the doc-claim scoring come
 from the document corpus's "statements" and "text" fields, keyed by docid.
+
+When `include_query=True`, each selected document's full text is prefixed
+with the topic's search query before being used as the doc(query)-to-claim
+BM25 query (score(D_i, c) = BM25(query + text(D_i), c)). This lets the
+selected document's bridge/novelty scores also reflect direct relevance to
+the original search query, not just resemblance to the rest of the
+document's own text, which can raise scores for claims that echo query
+terms the document text alone doesn't emphasize.
 """
 import copy
 import logging
@@ -80,11 +91,23 @@ def _doc_to_claim_scores(pool_docids, claims_by_doc, fulltext_by_doc, stopwords,
 
         score(D_i, c) = BM25(text(D_i), c)
 
-    Returns the raw (n_docs x n_claims) score matrix, unaggregated, plus
+    Returns the (n_docs x n_claims) score matrix, unaggregated, plus
     doc_of_claim mapping each claim column to its owning candidate doc.
     Aggregation to doc level is intentionally left to the caller (see module
     docstring for why doing it here, before selection, would conflate the
     bridge and novelty terms of the gap).
+
+    Each row is min-max normalized to [0, 1] via _normalize before being
+    stored. Row i is one BM25 query (D_i's full text) scored against every
+    pooled claim, and raw BM25 magnitude scales with query length/term
+    count -- without this, a doc with a longer full text would produce
+    systematically larger scores across the board regardless of actual
+    match quality, which would then unfairly dominate the max_i/min_i
+    aggregation across rows in _gap_select. An empty-text query (see the
+    zero-token branch below) is left as all zeros rather than normalized,
+    since _normalize's fallback for a constant array is all-ones, and an
+    empty query has no signal -- it must not read as "maximally similar to
+    every claim".
 
     A single Tokenizer is shared between the claim index and the doc
     queries so that query token IDs resolve against the same vocabulary the
@@ -116,7 +139,7 @@ def _doc_to_claim_scores(pool_docids, claims_by_doc, fulltext_by_doc, stopwords,
         if len(query_ids[i]) == 0:
             print(f"[dc_gap] empty token list for doc {i} (docid={pool_docids[i]!r}); leaving score row as zeros")
             continue
-        doc_claim_scores[i] = index.get_scores(query_ids[i])
+        doc_claim_scores[i] = _normalize(index.get_scores(query_ids[i]))
 
     return doc_claim_scores, doc_of_claim
 
@@ -136,19 +159,26 @@ def _claims_to_doc_extrema(claim_values, claim_idx_by_doc):
     return doc_max, doc_min
 
 
-def _print_bridge_matrix(pool_docids, bridge_matrix, topn=10):
-    """Print the top-N x top-N doc-doc bridge submatrix (hits are already
-    rank-ordered by base relevance, so the first `topn` are the top-N).
-    bridge[i, j] = max_{c in claims(D_j)} score(D_i, c); asymmetric: row =
-    query doc, column = candidate doc."""
+def _print_score_matrices(pool_docids, bridge_matrix, novelty_matrix, topn=5):
+    """Print the top-N x top-N doc-doc bridge, novelty, and gap submatrices
+    (hits are already rank-ordered by base relevance, so the first `topn`
+    are the top-N). bridge[i, j] = max_{c in claims(D_j)} score(D_i, c),
+    novelty[i, j] = min_{c in claims(D_j)} score(D_i, c); both asymmetric:
+    row = query doc, column = candidate doc. gap[i, j] = bridge[i, j] -
+    novelty[i, j] is printed for reference but is NOT the quantity that
+    drives picks past round 2 -- selection uses running_bridge - running_
+    novelty, aggregated with max_i/min_i over the growing selected set, not
+    this single-row cell-wise difference (see _gap_select)."""
     n = min(topn, len(pool_docids))
     ids = [str(d)[:12] for d in pool_docids[:n]]
     header = " " * 14 + "".join(f"{c:>8}" for c in ids)
-    print(f"[dc_gap] top-{n} x top-{n} doc(query)-claim(candidate) bridge matrix:")
-    print(header)
-    for i in range(n):
-        row = "".join(f"{bridge_matrix[i, j]:>8.3f}" for j in range(n))
-        print(f"{ids[i]:<14}{row}")
+    gap_matrix = bridge_matrix - novelty_matrix
+    for name, matrix in (("bridge", bridge_matrix), ("novelty", novelty_matrix), ("gap", gap_matrix)):
+        print(f"[dc_gap] top-{n} x top-{n} doc(query)-claim(candidate) {name} matrix:")
+        print(header)
+        for i in range(n):
+            row = "".join(f"{matrix[i, j]:>8.3f}" for j in range(n))
+            print(f"{ids[i]:<14}{row}")
 
 
 def _gap_select(hits, claims_by_doc, fulltext_by_doc, k, stopwords, stemmer, k1, b):
@@ -173,7 +203,7 @@ def _gap_select(hits, claims_by_doc, fulltext_by_doc, k, stopwords, stemmer, k1,
     novelty_matrix = np.zeros((n, n), dtype=np.float32)
     for i in range(n):
         bridge_matrix[i], novelty_matrix[i] = _claims_to_doc_extrema(doc_claim_scores[i], claim_idx_by_doc)
-    _print_bridge_matrix(pool_docids, bridge_matrix, topn=10)
+    _print_score_matrices(pool_docids, bridge_matrix, novelty_matrix, topn=5)
 
     n_select = min(k, n)
     selected = []
@@ -189,12 +219,7 @@ def _gap_select(hits, claims_by_doc, fulltext_by_doc, k, stopwords, stemmer, k1,
     running_novelty = np.minimum(running_novelty, novelty_matrix[first])
 
     for _ in range(1, n_select):
-        if len(selected) == 1:
-            # only one selected doc so far -> bridge == novelty, gap is
-            # trivially zero; use the plain bridge score instead
-            scores = running_bridge.copy()
-        else:
-            scores = running_bridge - running_novelty
+        scores = running_bridge - running_novelty
         scores[selected] = -np.inf
         pick = int(np.argmax(scores))
         picked_scores.append(float(scores[pick]))
@@ -202,16 +227,21 @@ def _gap_select(hits, claims_by_doc, fulltext_by_doc, k, stopwords, stemmer, k1,
         running_bridge = np.maximum(running_bridge, bridge_matrix[pick])
         running_novelty = np.minimum(running_novelty, novelty_matrix[pick])
 
-    # unlike cc_mmr's penalty-based score (monotonic by construction since
-    # its running max-sim-to-selected only grows), this is a reward-based
-    # score and isn't guaranteed non-increasing across ranks -- clamp it so
-    # downstream TREC eval tools, which sort by score rather than the rank
-    # column, don't reorder hits relative to the greedy pick order
-    written_scores = []
-    ceiling = np.inf
-    for s in picked_scores:
-        ceiling = min(ceiling, s)
-        written_scores.append(ceiling)
+    # picked_scores answers a different question at each rank (base
+    # relevance at rank 1, bridge-minus-novelty gap from rank 2 on) --
+    # there's no shared underlying quantity
+    # to rescale into a single "true" magnitude. Instead of discarding that
+    # step-to-step information (as a rank-based placeholder would), anchor
+    # rank 1 at 0 and walk the remaining ranks downward by their own
+    # picked_scores value: score[i] = score[i-1] - picked_scores[i]. bridge
+    # and gap values are both >= 0 by construction (see module docstring),
+    # so the sequence stays non-increasing, and the drop between two
+    # consecutive ranks is exactly that rank's selection-time score --
+    # letting the written scores show how similar/different each pick was
+    # from the ones before it, without claiming a single absolute scale.
+    written_scores = [0.0]
+    for s in picked_scores[1:]:
+        written_scores.append(written_scores[-1] - s)
 
     return [
         Hit(docid=hits[idx].docid, score=written_scores[rank - 1], rank=rank, content_dict=hits[idx].content_dict)
@@ -227,7 +257,8 @@ def run(
     stopwords: str = "en",
     stemmer_name: str = None,
     local_k1: float = 1.2,
-    local_b: float = 0.5,
+    local_b: float = 0.0,
+    include_query: bool = False,
 ) -> List[Result]:
     stemmer = None
     if stemmer_name == "snowball":
@@ -256,7 +287,14 @@ def run(
             for rank, (docid, score) in enumerate(pool, start=1)
         ]
         claims_by_doc = {docid: claim_corpus.get(docid, {}).get("statements") or [] for docid, _ in pool}
-        doc_by_doc = {docid: claim_corpus.get(docid, {}).get("text") or "" for docid, _ in pool}
+        if include_query:
+            query_text = str(inp.topic.get("query") or "")
+            doc_by_doc = {
+                docid: (query_text + " " + (claim_corpus.get(docid, {}).get("text") or "")).strip()
+                for docid, _ in pool
+            }
+        else:
+            doc_by_doc = {docid: claim_corpus.get(docid, {}).get("text") or "" for docid, _ in pool}
 
         n_claims = sum(len(c) for c in claims_by_doc.values())
         logger.info("dc-gap: qid=%s pooled %d documents, %d claims", qid, len(pool), n_claims)

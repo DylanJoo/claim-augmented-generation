@@ -53,6 +53,17 @@ def coverage_measures(ratings, ratings_oracle, filter_by_oracle=False, tau=3):
 
 
 
+def print_markdown_row(columns, run_name, values):
+    """Print this run's row as a Markdown table row (no header) to stdout.
+
+    Each invocation only knows about its own run, so the caller (see
+    scripts/run_eval*.sh) is responsible for printing the Markdown header
+    once and accumulating rows across a loop of run files, e.g. by
+    redirecting the whole script's stdout to a file with `> RESULT.md`.
+    """
+    print("| " + " | ".join([run_name] + values) + " |")
+
+
 def rac_eval(run, qrel, div_qrel, judge, tau=3, filter_by_oracle=False):
     outputs = defaultdict(list)
 
@@ -92,9 +103,8 @@ if __name__ == "__main__":
         filter_by_oracle=args.filter_by_oracle,
     )
 
-    sys.stdout.write(args.run.rsplit('/', 1)[0] + " | " + args.run.rsplit('/')[-1] + " | ")
+    run_name = args.run.rsplit('/', 1)[-1]
+    keys = sorted(outputs.keys())
+    values = ["{:.4f}".format(np.mean(outputs[key])) for key in keys]
 
-    for key, values in sorted(outputs.items()):
-        sys.stdout.write(key + " | ")
-        sys.stdout.write("{:.4f}".format(np.mean(values)) + " | ")
-    sys.stdout.write("\n")
+    print_markdown_row(["Run"] + keys, run_name, values)

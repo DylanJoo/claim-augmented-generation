@@ -43,7 +43,8 @@ def _fuse(temp, hits, strategy="sum"):
     if not is_claim_level:
         return hits
 
-    # Compute fused score per parent doc
+    # Compute fused score per parent doc. 
+    # Under the same docid, reconstruct the scores.
     fusion = {}
     for docid, items in temp.items():
         if strategy == "rrf":
@@ -57,6 +58,7 @@ def _fuse(temp, hits, strategy="sum"):
     fusion = dict(sorted(fusion.items(), key=lambda x: x[1], reverse=True))
 
     # Group claim hits by parent doc and concatenate texts
+    # TODO: maybe i would like to include the original doc text in the combined_text
     doc_claims = defaultdict(list)
     for h in hits:
         doc_claims[h.docid.split("#")[0]].append(h)
@@ -88,6 +90,7 @@ def run(
     outputs = copy.deepcopy(inputs)
     retriever, docids, _stemmer = _load_index(index, stemmer)
     n_docs = len(docids)
+    n_parent_docs_per_query = []
 
     for i, inp in tqdm(enumerate(inputs), desc="Retrieving", total=len(inputs)):
         queries = _build_queries(inp.topic, inp.subquestions)
@@ -112,7 +115,18 @@ def run(
                 ))
                 temp[docid.split("#")[0]].append((score, rank))
 
+        # For pure doc-level retrieval, .hits and .evidences would give you the same stuff
+        # For claim-level retrieval, .hits is the retrieved claims while .evidence would 
+        # return the aggregated/fused doc-level retrieval results.
         outputs[i].hits = hits
         outputs[i].evidences = _fuse(temp, hits, strategy=fusion)
+
+        if any("#" in h.docid for h in hits):
+            n_claims, n_parents = len(hits), len(outputs[i].evidences)
+            n_parent_docs_per_query.append(n_parents)
+            logger.debug(
+                "[%s] claim-level: %d claim hits -> %d unique parent docs (requested k=%d)",
+                inp.topic.get("request_id", i), n_claims, n_parents, k,
+            )
 
     return outputs

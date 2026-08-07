@@ -18,8 +18,9 @@ python pipeline/run_dc_gap.py \
     --topics data/ragtime2025.topics.test.jsonl \
     --run-file runs/run.ragtime1.documents.bm25.txt \
     --corpus  "$HOME/scratch/ragtime1/*.processed-claims.jsonl.gz" \
-    --output runs/run.ragtime1.dc-gap-doc.txt \
+    --output runs/run.ragtime1.dc-gap-doc-query.txt \
     --k 1000 \
     --stopwords en \
     --stemmer snowball \
-    --tag dc-gap-doc
+    --tag dc-gap-doc-query \
+    --include-query

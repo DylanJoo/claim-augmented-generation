@@ -1,8 +1,9 @@
 """
-cc-MMR (Claim-Claim MMR) re-ranking on top of a doc-level run file.
+cc-rerank (Claim-Claim rerank) on top of a doc-level run file.
 
-Like mmr.py, but the diversity signal is computed at claim granularity
-instead of whole-document granularity. For a pair of pooled documents,
+Greedily re-ranks a pooled doc list by combining a base relevance score
+with a claim-level MaxSim signal against the docs already selected. For a
+pair of pooled documents,
 
     sim(d, d') = sum_{c in d} max_{c' in d'} sim_claim(c, c')
 
@@ -13,6 +14,19 @@ bag-of-words vector before comparing documents -- that blurs claims
 together, so two docs that each contain one near-duplicate claim (but are
 otherwise unrelated) can look dissimilar overall. Comparing claim-to-claim
 and taking the max keeps that overlap visible.
+
+`mode` controls how this signal combines with relevance at each greedy
+step:
+
+  - "subtract" (MMR): score = lambda * relevance - (1 - lambda) * max_sim
+    Treats claim overlap with already-picked docs as redundancy and
+    penalizes it, pushing the selection toward diverse claims.
+
+  - "add" (claim-echo boost): score = lambda * relevance + (1 - lambda) * max_sim
+    Treats claim overlap with already-picked docs as corroborating
+    evidence of relevance and rewards it -- closer to pseudo-relevance
+    feedback than to MMR. Note max_sim_to_selected is exactly zero on the
+    first pick (nothing is selected yet), so mode only affects rounds 2+.
 
 The base relevance signal is read directly from a pre-computed doc-level
 TREC run file; per-doc claims for the diversity signal come from the
@@ -67,7 +81,7 @@ def _claim_aggsim_matrix(pool_docids, claims_by_doc, stopwords, stemmer, k1, b):
     # fill the matrix with claim-claim scores
     for i in range(n_claims):
         if len(tokens.ids[i]) == 0:
-            print(f"[cc_mmr] empty token list for claim {i} (doc={pool_docids[doc_of_claim[i]]!r}, text={texts[i]!r}); leaving similarity row as zeros")
+            print(f"[cc_rerank] empty token list for claim {i} (doc={pool_docids[doc_of_claim[i]]!r}, text={texts[i]!r}); leaving similarity row as zeros")
             continue
         claim_sim[i] = local.get_scores(tokens.ids[i])
 
@@ -88,16 +102,19 @@ def _print_sim_matrix(pool_docids, sim, topn=10):
     n = min(topn, len(pool_docids))
     ids = [str(d)[:12] for d in pool_docids[:n]]
     header = " " * 14 + "".join(f"{c:>8}" for c in ids)
-    print(f"[cc_mmr] top-{n} x top-{n} claim-MaxSim doc-doc matrix:")
+    print(f"[cc_rerank] top-{n} x top-{n} claim-MaxSim doc-doc matrix:")
     print(header)
     for i in range(n):
         row = "".join(f"{sim[i, j]:>8.3f}" for j in range(n))
         print(f"{ids[i]:<14}{row}")
 
 
-def _mmr_select(hits, claims_by_doc, k, lambda_mult, stopwords, stemmer, k1, b):
+def _select(hits, claims_by_doc, k, lambda_mult, mode, stopwords, stemmer, k1, b):
     if len(hits) <= 1:
         return hits
+    if mode not in ("subtract", "add"):
+        raise ValueError(f"mode must be 'subtract' (MMR) or 'add' (claim-echo boost), got {mode!r}")
+    sign = -1.0 if mode == "subtract" else 1.0
 
     pool_docids = [h.docid for h in hits]
     relevance = _normalize([h.score for h in hits]) # NOTE: This is optional?
@@ -111,17 +128,22 @@ def _mmr_select(hits, claims_by_doc, k, lambda_mult, stopwords, stemmer, k1, b):
     max_sim_to_selected = np.zeros(n, dtype=np.float32)
 
     for _ in range(n_select):
-        # MaxSim as penalty
-        mmr_scores = lambda_mult * relevance - (1 - lambda_mult) * max_sim_to_selected
-        mmr_scores[selected] = -np.inf
-        pick = int(np.argmax(mmr_scores))
-        picked_scores.append(float(mmr_scores[pick]))
+        scores = lambda_mult * relevance + sign * (1 - lambda_mult) * max_sim_to_selected
+        scores[selected] = -np.inf
+        pick = int(np.argmax(scores))
+        picked_scores.append(float(scores[pick]))
         selected.append(pick)
         max_sim_to_selected = np.maximum(max_sim_to_selected, sim[pick])
 
-    # picked_scores is non-increasing by construction (max_sim_to_selected only grows,
-    # so each round's best achievable score can only shrink) -- this keeps the written
-    # score monotonic with rank, which downstream TREC eval tools sort by, not rank.
+    # In "subtract" mode picked_scores is non-increasing by construction
+    # (max_sim_to_selected only grows, so each round's best achievable score can
+    # only shrink), which keeps the written score monotonic with rank -- downstream
+    # TREC eval tools sort by score, not rank. In "add" mode this monotonicity is
+    # not guaranteed (a later pick's boost can exceed an earlier round's score), so
+    # scores are re-flattened to be strictly rank-decreasing before writing out.
+    if mode == "add" and len(picked_scores) > 1:
+        picked_scores = list(np.minimum.accumulate(picked_scores))
+
     return [
         Hit(docid=hits[idx].docid, score=picked_scores[rank - 1], rank=rank, content_dict=hits[idx].content_dict)
         for rank, idx in enumerate(selected, start=1)
@@ -134,6 +156,7 @@ def run(
     corpus: List[str],
     k: int = 1000,
     lambda_mult: float = 0.9,
+    mode: str = "subtract",
     stopwords: str = "en",
     stemmer_name: str = None,
     local_k1: float = 1.2,
@@ -144,8 +167,8 @@ def run(
         import Stemmer
         stemmer = Stemmer.Stemmer("english")
 
-    logger.info("cc-MMR: base relevance from run file %s, pool k=%d, lambda=%.2f", run_file, k, lambda_mult)
-    base_run = load_run(run_file, k=k) # this is the results based on document 
+    logger.info("cc-rerank: mode=%s, base relevance from run file %s, pool k=%d, lambda=%.2f", mode, run_file, k, lambda_mult)
+    base_run = load_run(run_file, k=k) # this is the results based on document
     claim_corpus = load_corpus(corpus)
 
     outputs = copy.deepcopy(inputs)
@@ -168,17 +191,18 @@ def run(
         claims_by_doc = {docid: claim_corpus.get(docid, {}).get("statements") or [] for docid, _ in pool}
 
         n_claims = sum(len(c) for c in claims_by_doc.values())
-        logger.info("cc-MMR: qid=%s pooled %d documents, %d claims", qid, len(pool), n_claims)
+        logger.info("cc-rerank: qid=%s pooled %d documents, %d claims", qid, len(pool), n_claims)
 
         outputs[i].hits = hits
-        outputs[i].evidences = _mmr_select(
-            hits, 
-            claims_by_doc, 
-            k, 
+        outputs[i].evidences = _select(
+            hits,
+            claims_by_doc,
+            k,
             lambda_mult,
-            stopwords=stopwords, 
-            stemmer=stemmer, 
-            k1=local_k1, 
+            mode=mode,
+            stopwords=stopwords,
+            stemmer=stemmer,
+            k1=local_k1,
             b=local_b,
         )
 

@@ -1,18 +1,20 @@
 """
-cc-MMR retrieval demo -- base relevance is read from a pre-computed doc-level
-TREC run file, followed by a greedy Maximal Marginal Relevance re-ranking
-whose diversity signal is claim-claim MaxSim rather than whole-document
-similarity. Claims per doc come from the document corpus's "statements"
-field. See src/retrieval/cc_mmr.py.
+cc-rerank retrieval demo -- base relevance is read from a pre-computed
+doc-level TREC run file, followed by a greedy re-ranking whose signal is
+claim-claim MaxSim against already-selected docs rather than whole-document
+similarity. `--mode subtract` is Maximal Marginal Relevance (penalize claim
+overlap with what's selected); `--mode add` treats claim overlap as a
+relevance-corroborating boost instead. Claims per doc come from the document
+corpus's "statements" field. See src/retrieval/cc_rerank.py.
 
 Usage:
-    python pipeline/run_cc_mmr.py \
+    python pipeline/run_cc_rerank.py \
         --topics <topics.jsonl> \
         --run-file <path/to/doc-level-run.txt> \
         --corpus <path/to/collection.jsonl.gz> [<more files/globs>...] \
         --output <results.txt> \
-        [--k 1000] [--lambda-mult 0.9] \
-        [--stopwords en] [--stemmer snowball] [--tag cc-mmr]
+        [--k 1000] [--lambda-mult 0.9] [--mode subtract|add] \
+        [--stopwords en] [--stemmer snowball] [--tag cc-rerank]
 """
 
 import argparse
@@ -22,7 +24,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
 
-from retrieval import cc_mmr
+from retrieval import cc_rerank
 from utils import Result, load_topics
 
 logging.basicConfig(
@@ -45,7 +47,7 @@ def write_trec(results, output_path, tag):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Claim-claim MaxSim MMR re-ranking over a doc-level run file")
+    parser = argparse.ArgumentParser(description="Claim-claim MaxSim re-ranking over a doc-level run file")
     parser.add_argument("--topics", required=True,
                         help="JSONL file with topics; each line must have 'qid' and 'query'")
     parser.add_argument("--run-file", required=True,
@@ -55,9 +57,12 @@ def main():
     parser.add_argument("--output", required=True,
                         help="Output file path (TREC run format)")
     parser.add_argument("--k", type=int, default=1000,
-                        help="Pool size taken from the run file and re-ranked by MMR (default: 1000)")
+                        help="Pool size taken from the run file and re-ranked (default: 1000)")
     parser.add_argument("--lambda-mult", type=float, default=0.9,
-                        help="MMR trade-off: 1.0 = pure relevance, 0.0 = pure diversity (default: 0.9)")
+                        help="Relevance/claim-signal trade-off: 1.0 = pure relevance, 0.0 = pure claim signal (default: 0.9)")
+    parser.add_argument("--mode", choices=["subtract", "add"], default="subtract",
+                        help="subtract = MMR (penalize claim overlap with selected docs); "
+                             "add = claim-echo boost (reward it) (default: subtract)")
     parser.add_argument("--stopwords", default="en",
                         help="Stopword list passed to bm25s.tokenize (default: en)")
     parser.add_argument("--stemmer", default=None,
@@ -66,20 +71,21 @@ def main():
                         help="k1 for the local claim-claim BM25 similarity index (default: 1.2)")
     parser.add_argument("--local-b", type=float, default=0.5,
                         help="b for the local claim-claim BM25 similarity index (default: 0.5)")
-    parser.add_argument("--tag", default="cc-mmr",
-                        help="Run tag written in the TREC output (default: cc-mmr)")
+    parser.add_argument("--tag", default="cc-rerank",
+                        help="Run tag written in the TREC output (default: cc-rerank)")
     args = parser.parse_args()
 
     topics = load_topics(args.topics)
     logger.info("Loaded %d topic(s) from %s", len(topics), args.topics)
 
     inputs = [Result(topic=t, subquestions=[]) for t in topics]
-    results = cc_mmr.run(
+    results = cc_rerank.run(
         inputs,
         run_file=args.run_file,
         corpus=args.corpus,
         k=args.k,
         lambda_mult=args.lambda_mult,
+        mode=args.mode,
         stopwords=args.stopwords,
         stemmer_name=args.stemmer,
         local_k1=args.local_k1,
