@@ -20,7 +20,7 @@ env/
 # Data and experiment outputs
 submissions/
 analysis/
-*.jsonl
+# *.jsonl
 *.json
 *.tsv
 *.csv
