@@ -13,7 +13,7 @@ class LLM:
         top_p=1.0,
         logprobs=None,
         max_tokens=10,
-        num_gpus=1, 
+        num_gpus=None,
         dtype='half', 
         max_model_len=32768,
         gpu_memory_utilization=0.9, 
@@ -24,7 +24,7 @@ class LLM:
             model_name_or_path,
             dtype=dtype,
             enforce_eager=True,
-            tensor_parallel_size=num_gpus,
+            tensor_parallel_size=(num_gpus or torch.cuda.device_count()),
             gpu_memory_utilization=gpu_memory_utilization,
             max_model_len=max_model_len,
             enable_prefix_caching=True,
@@ -57,11 +57,7 @@ class LLM:
                 {"role": "user", "content": prompt} 
             ] for prompt in prompts]
 
-        outputs = self.model.chat(
-            messages, 
-            self.sampling_params,
-            chat_template_kwargs={"enable_thinking": enable_thinking},
-        )
+        outputs = self.model.chat(messages, self.sampling_params)
 
         if use_prob is False:
             responses = [o.outputs[0].text for o in outputs]
