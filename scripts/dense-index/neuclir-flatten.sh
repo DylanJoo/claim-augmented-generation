@@ -23,7 +23,7 @@ LANGS=(
 LANG=${LANGS[$SLURM_ARRAY_TASK_ID]}
 
 CLAIMS_DIR=${HOME}/scratch/neuclir1/claims_flat
-FLAT_CLAIMS=${CLAIMS_DIR}/${LANG}.flatten-claims.jsonl.gz
+FLAT_CLAIMS=${CLAIMS_DIR}/${LANG}.claims.jsonl.gz
 mkdir -p $CLAIMS_DIR
 
 cd $HOME/claim-augmented-generation

@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=128G
-#SBATCH --array=5-19
+#SBATCH --array=0-19
 #SBATCH --time=2-00:00:00
 #SBATCH --account=project_465002532
 
