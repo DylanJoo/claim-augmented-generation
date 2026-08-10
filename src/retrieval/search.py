@@ -26,12 +26,6 @@ def _load_index(index_dir, stemmer_name=None):
 
 
 def _build_queries(topic, subquestions):
-    """Original query plus each sub-question fired as its own independent
-    retrieval pass. Sub-questions are written by rewrite.py to already carry
-    "comprehensive context" on their own, so gluing the (generic) main query
-    text onto them would just dilute their specific vocabulary with the same
-    broad terms every other sub-question -- and the main-query -- already
-    contributes."""
     main_query = topic["query"]
     if not subquestions:
         return [main_query]
@@ -130,7 +124,7 @@ def run(
                 temp[docid.split("#")[0]].append((score, rank))
 
         # For pure doc-level retrieval, .hits and .evidences would give you the same stuff
-        # For claim-level retrieval, .hits is the retrieved claims while .evidence would 
+        # For claim-level retrieval, .hits is the retrieved claims while .evidence would
         # return the aggregated/fused doc-level retrieval results.
         outputs[i].hits = hits
         outputs[i].evidences = _fuse(temp, hits, strategy=fusion)

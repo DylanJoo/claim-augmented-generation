@@ -8,7 +8,7 @@
 #SBATCH --mem=224G
 #SBATCH --gpus-per-node=8
 #SBATCH --time=3-00:00:00
-#SBATCH --array=0-15
+#SBATCH --array=0-3
 #SBATCH --output=logs/%x-%a.out
 #SBATCH --error=logs/%x-%a.err
 
@@ -61,12 +61,24 @@ until curl -s -o /dev/null -w "%{http_code}" \
 done
 echo "[task ${SLURM_ARRAY_TASK_ID}] server ready."
 
+# eng-docs prompts run ~2-3x longer than the translated variants (median ~4.8k
+# vs ~1.8k chars), which was pushing some requests past the client timeout
+# under high concurrency. Give that lang more time per request and less
+# contention for decode steps.
+if [[ "$lang" == "eng-docs" ]]; then
+    max_concurrency=64
+else
+    max_concurrency=128
+fi
+
 python -m data_prep.decontext.consume_offload \
     --input_file "$INPUT_DIR/nuggetized_corpus.${lang}.jsonl.gz" \
     --output_file "$OUTPUT_DIR/nuggetized_corpus.${lang}.shard${shard}-of-${NUM_SHARDS}.jsonl" \
     --endpoint "$endpoint" \
     --model "$MODEL" \
     --max_tokens 8196 \
+    --max_concurrency "${max_concurrency}" \
+    --timeout 1800 \
     --shard_index "${shard}" \
     --num_shards "${NUM_SHARDS}"
 
