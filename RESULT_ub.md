@@ -18,6 +18,8 @@
 | run.neuclir1.cc-rerank-mmr-doc.lambda-0.8.txt | 0.5893 | 0.8502 | 0.8502 | 0.8844 | 0.8676 |
 | run.neuclir1.cc-rerank-mmr-doc.lambda-0.9.txt | 0.5823 | 0.8466 | 0.8466 | 0.8796 | 0.8632 |
 | run.neuclir1.cc-rerank-mmr-doc.lambda-1.0.txt | 0.5823 | 0.8466 | 0.8466 | 0.8793 | 0.8628 |
+| run.neuclir1.claims-k100.Qwen3-Embedding-0.6B.sum.txt | 0.5566 | 0.8196 | 0.8196 | 0.8515 | 0.8345 |
+| run.neuclir1.claims-k100.modernbert-base.cover-5k.sum.txt | 0.5570 | 0.8445 | 0.8445 | 0.8639 | 0.8471 |
 | run.neuclir1.claims-k1000.Qwen3-Embedding-0.6B.first.txt | 0.5458 | 0.8082 | 0.8082 | 0.8397 | 0.8225 |
 | run.neuclir1.claims-k1000.Qwen3-Embedding-0.6B.max.txt | 0.5458 | 0.8082 | 0.8082 | 0.8397 | 0.8225 |
 | run.neuclir1.claims-k1000.Qwen3-Embedding-0.6B.rrf.txt | 0.5981 | 0.8706 | 0.8706 | 0.9016 | 0.8850 |
@@ -42,6 +44,10 @@
 | run.neuclir1.claims-k2000.modernbert-base.cover-5k.max.txt | 0.5606 | 0.8624 | 0.8631 | 0.8837 | 0.8693 |
 | run.neuclir1.claims-k2000.modernbert-base.cover-5k.rrf.txt | 0.5570 | 0.8754 | 0.8754 | 0.8881 | 0.8749 |
 | run.neuclir1.claims-k2000.modernbert-base.cover-5k.sum.txt | 0.5638 | 0.8519 | 0.8519 | 0.8713 | 0.8569 |
+| run.neuclir1.claims-k500.Qwen3-Embedding-0.6B.sum.txt | 0.6082 | 0.8855 | 0.8855 | 0.9285 | 0.9111 |
+| run.neuclir1.claims-k500.modernbert-base.cover-5k.sum.txt | 0.5361 | 0.8537 | 0.8537 | 0.8673 | 0.8548 |
+| run.neuclir1.claims-k750.Qwen3-Embedding-0.6B.sum.txt | 0.6041 | 0.9021 | 0.9021 | 0.9320 | 0.9150 |
+| run.neuclir1.claims-k750.modernbert-base.cover-5k.sum.txt | 0.5361 | 0.8495 | 0.8495 | 0.8646 | 0.8521 |
 | run.neuclir1.dc-gap-doc.txt | 0.5763 | 0.7691 | 0.7691 | 0.8146 | 0.7950 |
 | run.neuclir1.dc-gap-qd-as-q.txt | 0.5763 | 0.7780 | 0.7786 | 0.8203 | 0.8019 |
 | run.neuclir1.documents.Qwen3-Embedding-0.6B.txt | 0.5955 | 0.9059 | 0.9065 | 0.9338 | 0.9199 |
