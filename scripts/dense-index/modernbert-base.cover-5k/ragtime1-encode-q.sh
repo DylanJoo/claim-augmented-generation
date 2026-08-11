@@ -1,7 +1,7 @@
 #!/bin/bash -l
-#SBATCH --job-name=neuclir1-encode-q
-#SBATCH --output=logs/neuclir1-enc-q.out
-#SBATCH --error=logs/neuclir1-enc-q.err
+#SBATCH --job-name=ragtime1-encode-q
+#SBATCH --output=logs/ragtime1-enc-q.out
+#SBATCH --error=logs/ragtime1-enc-q.err
 #SBATCH --partition=dev-g
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
@@ -16,12 +16,12 @@ module use /appl/local/csc/modulefiles/
 module use /appl/local/training/modules/AI-20241126/
 
 MODEL_NAME_OR_PATH=DylanJHJ/modernbert-base.cover-5k
-output_dir=${HOME}/scratch/neuclir1/${MODEL_NAME_OR_PATH##*/}/queries_emb/
+output_dir=${HOME}/scratch/ragtime1/${MODEL_NAME_OR_PATH##*/}/queries_emb/
 mkdir -p $output_dir
 
 cd $HOME/claim-augmented-generation
 
-echo Encoding NeuCLIR1 queries
+echo Encoding RAGTIME1 queries
 singularity exec $SIF  \
     python -m tevatron.retriever.driver.encode \
     --output_dir=temp \
@@ -30,7 +30,7 @@ singularity exec $SIF  \
     --pooling mean --normalize --bf16 \
     --query_prefix "search_query: " \
     --per_device_eval_batch_size 64 \
-    --dataset_path data/neuclir2024.topics.test.jsonl \
+    --dataset_path data/ragtime2025.topics.test.jsonl \
     --encode_output_path $output_dir/queries_emb.pkl \
     --query_max_len 512 \
     --encode_is_query

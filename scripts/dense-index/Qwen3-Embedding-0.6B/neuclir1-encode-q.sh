@@ -1,7 +1,7 @@
 #!/bin/bash -l
-#SBATCH --job-name=encode-q
-#SBATCH --output=logs/neuclir-enc-q.out
-#SBATCH --error=logs/neuclir-enc-q.err
+#SBATCH --job-name=neuclir1-encode-q
+#SBATCH --output=logs/neuclir1-enc-q.out
+#SBATCH --error=logs/neuclir1-enc-q.err
 #SBATCH --partition=dev-g
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1

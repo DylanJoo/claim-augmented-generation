@@ -1,15 +1,15 @@
 #!/bin/bash -l
-#SBATCH --job-name=neuclir1-encode-claims
-#SBATCH --output=logs/neuclir1-enc-claims.out.%a
-#SBATCH --error=logs/neuclir1-enc-claims.err.%a
+#SBATCH --job-name=ragtime1-encode-claims
+#SBATCH --output=logs/ragtime1-enc-claims.out.%a
+#SBATCH --error=logs/ragtime1-enc-claims.err.%a
 #SBATCH --partition=small-g
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=16
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=128G
-#SBATCH --array=0-14
-#SBATCH --time=12:00:00
+#SBATCH --array=0-19
+#SBATCH --time=1-00:00:00
 #SBATCH --account=project_465002532
 
 # ENV
@@ -19,9 +19,10 @@ module use /appl/local/training/modules/AI-20241126/
 MODEL_NAME_OR_PATH=DylanJHJ/modernbert-base.cover-5k
 
 LANGS=(
-"fas"
-"rus"
-"zho"
+"arb-trans"
+"eng-docs"
+"rus-trans"
+"zho-trans"
 )
 NUM_SHARDS=5
 
@@ -29,11 +30,11 @@ LANG_IDX=$(( SLURM_ARRAY_TASK_ID / NUM_SHARDS ))
 SHARD_ID=$(( SLURM_ARRAY_TASK_ID % NUM_SHARDS ))
 LANG=${LANGS[$LANG_IDX]}
 
-CLAIMS=${HOME}/scratch/neuclir1/claims_flat/${LANG}.claims.jsonl.gz
-output_dir=${HOME}/scratch/neuclir1/${MODEL_NAME_OR_PATH##*/}/claims_emb/
+CLAIMS=${HOME}/scratch/ragtime1/claims_flat/${LANG}.claims.jsonl.gz
+output_dir=${HOME}/scratch/ragtime1/${MODEL_NAME_OR_PATH##*/}/claims_emb/
 mkdir -p $output_dir
 
-echo Encoding NeuCLIR1 claims $LANG shard $SHARD_ID
+echo Encoding ragtime1 claims $LANG shard $SHARD_ID
 singularity exec $SIF  \
     python -m tevatron.retriever.driver.encode \
     --output_dir=temp \

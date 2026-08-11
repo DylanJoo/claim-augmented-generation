@@ -1,7 +1,7 @@
 #!/bin/bash -l
-#SBATCH --job-name=encode-docs
-#SBATCH --output=logs/neuclir-enc-docs.out.%a
-#SBATCH --error=logs/neuclir-enc-docs.err.%a
+#SBATCH --job-name=neuclir1-encode-docs
+#SBATCH --output=logs/neuclir1-enc-docs.out.%a
+#SBATCH --error=logs/neuclir1-enc-docs.err.%a
 #SBATCH --partition=small-g
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1

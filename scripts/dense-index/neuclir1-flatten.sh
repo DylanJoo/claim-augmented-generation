@@ -1,7 +1,7 @@
 #!/bin/bash -l
-#SBATCH --job-name=neuclir-encode-claims
-#SBATCH --output=logs/neuclir-enc.out.%a
-#SBATCH --error=logs/neuclir-enc.err.%a
+#SBATCH --job-name=neuclir1-flatten
+#SBATCH --output=logs/neuclir1-flatten.out.%a
+#SBATCH --error=logs/neuclir1-flatten.err.%a
 #SBATCH --partition=standard
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
