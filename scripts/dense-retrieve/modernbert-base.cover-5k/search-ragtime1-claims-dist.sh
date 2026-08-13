@@ -32,10 +32,8 @@ done
 
 cd $HOME/claim-augmented-generation
 
-# for k in 1000 1500 2000; do
-# for FUSION in sum rrf max first; do
-for k in 100 500 750; do
-for FUSION in sum; do
+for k in 100 500 750 1000 1500 2000; do
+for FUSION in sum rrf; do
 singularity exec $SIF \
     python pipeline/run_dense.py \
     --topics data/ragtime2025.topics.test.jsonl \
