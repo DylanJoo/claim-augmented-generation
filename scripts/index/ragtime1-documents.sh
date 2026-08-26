@@ -1,19 +1,22 @@
 #!/bin/sh
-#SBATCH --job-name=index-d
-#SBATCH --cpus-per-task=32
-#SBATCH --partition cpu
+#SBATCH --job-name=index-doc
+#SBATCH --output=logs/index-doc.out
+#SBATCH --error=logs/index-doc.err
+#SBATCH --cpus-per-task=16
+#SBATCH --partition=small
 #SBATCH --mem=256G
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=36:00:00
-#SBATCH --output=logs/%x.out
+#SBATCH --time=12:00:00
+#SBATCH --account=project_465002532
 
-source ~/.bashrc
-initconda
-conda activate inference
+# ENV
+module use /appl/local/csc/modulefiles/
+module use /appl/local/training/modules/AI-20241126/
 
 cd $HOME/claim-augmented-generation
-python src/retrieval/indexing.py \
+srun singularity exec $SIF \
+    python src/retrieval/indexing.py \
     --input $HOME/scratch/ragtime1/*.processed-claims.jsonl.gz \
     --index $HOME/scratch/ragtime1/documents.bm25s \
     --include-title --k1 1.2 --b 0.75
