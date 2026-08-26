@@ -32,18 +32,16 @@ done
 
 cd $HOME/claim-augmented-generation
 
-# for k in 1000 1500 2000; do
-# for FUSION in sum rrf max first; do
-for k in 100 500 750; do
-for FUSION in sum; do
+for k in 100 500 750 1000 1500 2000; do
+for FUSION in sum rrf; do
 singularity exec $SIF \
     python pipeline/run_dense.py \
     --topics data/ragtime2026.topics.test.jsonl \
     --query_reps $query_dir/queries_emb.pkl \
     --shard_groups "${SHARD_GROUPS[@]}" \
-    --output runs/ragtime2/run.ragtime2.claims-k${k}.${MODEL_NAME}.${FUSION}.txt \
+    --output runs/run.ragtime2.claims-k${k}.${MODEL_NAME}.${FUSION}.txt \
     --k $k \
     --fusion ${FUSION} \
-    --tag dense-claim-${FUSION}
+    --tag mdbert-cover-base:claim-${fusion}-${k}
     done
 done

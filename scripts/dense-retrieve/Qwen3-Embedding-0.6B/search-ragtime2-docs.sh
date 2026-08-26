@@ -28,7 +28,6 @@ singularity exec $SIF \
     --topics data/ragtime2026.topics.test.jsonl \
     --query_reps $query_dir/queries_emb.pkl \
     --passage_reps "$passage_dir/docs_emb.*.pkl" \
-    --output runs/ragtime2/run.ragtime2.documents.${MODEL_NAME}.txt \
+    --output runs/run.ragtime2.documents.${MODEL_NAME}.txt \
     --k 1000 \
-    --fusion sum \
-    --tag dense-doc
+    --tag qwen3-embed-0.6b:doc

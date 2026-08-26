@@ -1,7 +1,7 @@
 #!/bin/bash -l
 #SBATCH --job-name=search-docs
-#SBATCH --output=logs/search-docs.out
-#SBATCH --error=logs/search-docs.err
+#SBATCH --output=logs/search-neuclir1-docs.out
+#SBATCH --error=logs/search-neuclir1-docs.err
 #SBATCH --partition=debug
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
@@ -30,6 +30,4 @@ singularity exec $SIF \
     --passage_reps "$passage_dir/docs_emb.*.pkl" \
     --output runs/run.neuclir1.documents.${MODEL_NAME}.txt \
     --k 1000 \
-    --fusion sum \
-    --tag dense-doc
-    # --corpus "${HOME}/scratch/neuclir1/*.processed-claims.jsonl.gz" \
+    --tag qwen3-embed-0.6b:doc

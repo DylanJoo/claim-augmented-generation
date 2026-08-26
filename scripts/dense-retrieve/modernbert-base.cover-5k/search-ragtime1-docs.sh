@@ -28,7 +28,6 @@ singularity exec $SIF \
     --topics data/ragtime2025.topics.test.jsonl \
     --query_reps $query_dir/queries_emb.pkl \
     --passage_reps "$passage_dir/docs_emb.*.pkl" \
-    --output runs/ragtime1/run.ragtime1.documents.${MODEL_NAME}.txt \
+    --output runs/run.ragtime1.documents.${MODEL_NAME}.txt \
     --k 1000 \
-    --fusion sum \
-    --tag dense-doc
+    --tag mdbert-cover-base:doc

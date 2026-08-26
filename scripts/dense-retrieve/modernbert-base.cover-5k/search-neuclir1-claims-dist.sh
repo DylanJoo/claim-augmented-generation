@@ -1,7 +1,7 @@
 #!/bin/bash -l
 #SBATCH --job-name=search-claims-dist
-#SBATCH --output=logs/search-claims-dist.out
-#SBATCH --error=logs/search-claims-dist.err
+#SBATCH --output=logs/search-neuclir1-claims-dist.out
+#SBATCH --error=logs/search-neuclir1-claims-dist.err
 #SBATCH --partition=small
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
@@ -25,7 +25,6 @@ LANGS=(fas rus zho)
 
 SHARD_GROUPS=()
 for LANG in "${LANGS[@]}"; do
-    # lang-shard groups: one group per language
     for SHARD_FILE in "$passage_dir"/claims_emb.${LANG}-*.pkl; do
         SHARD_GROUPS+=("$SHARD_FILE")
     done
@@ -33,10 +32,8 @@ done
 
 cd $HOME/claim-augmented-generation
 
-# for k in 1000 1500 2000; do
-# for FUSION in sum rrf max first; do
-for k in 100 500 750; do
-for FUSION in sum; do
+for k in 100 500 750 1000 1500 2000; do
+for FUSION in sum rrf; do
 singularity exec $SIF \
     python pipeline/run_dense.py \
     --topics data/neuclir2024.topics.test.jsonl \
@@ -45,6 +42,6 @@ singularity exec $SIF \
     --output runs/run.neuclir1.claims-k${k}.${MODEL_NAME}.${FUSION}.txt \
     --k $k \
     --fusion ${FUSION} \
-    --tag dense-claim-${FUSION}
+    --tag mdbert-cover-base:claim-${fusion}-${k}
     done
 done

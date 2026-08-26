@@ -39,9 +39,9 @@ singularity exec $SIF \
     --topics data/ragtime2025.topics.test.jsonl \
     --query_reps $query_dir/queries_emb.pkl \
     --shard_groups "${SHARD_GROUPS[@]}" \
-    --output runs/ragtime1/run.ragtime1.claims-k${k}.${MODEL_NAME}.${FUSION}.txt \
+    --output runs/run.ragtime1.claims-k${k}.${MODEL_NAME}.${FUSION}.txt \
     --k $k \
     --fusion ${FUSION} \
-    --tag dense-claim-${FUSION}
+    --tag mdbert-cover-base:claim-${fusion}-${k}
     done
 done
