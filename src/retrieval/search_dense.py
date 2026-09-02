@@ -19,7 +19,7 @@ def _pickle_load(path):
     parallel list of ids."""
     with open(path, "rb") as f:
         reps, lookup = pickle.load(f)
-    return np.array(reps), lookup
+    return np.asarray(reps), lookup
 
 
 def _load_flat_from_files(index_files, desc="Loading shards into index"):
@@ -27,15 +27,20 @@ def _load_flat_from_files(index_files, desc="Loading shards into index"):
     inner-product faiss index (tevatron normalizes embeddings at encode
     time, so IP search is cosine similarity) -- same index-building mechanics
     as tevatron.retriever.driver.search.main()/FaissFlatSearcher.
-    """
-    p_reps_0, p_lookup_0 = _pickle_load(index_files[0])
-    index = faiss.IndexFlatIP(p_reps_0.shape[1])
 
-    shards = [(p_reps_0, p_lookup_0)] + [_pickle_load(f) for f in index_files[1:]]
+    Shards are loaded and added to the index one at a time (never all held
+    in memory together), so peak memory is one shard's reps plus the index
+    being built, not every shard's reps at once.
+    """
+    index = None
     look_up = []
-    for p_reps, p_lookup in tqdm(shards, desc=desc, leave=False):
+    for f in tqdm(index_files, desc=desc, leave=False):
+        p_reps, p_lookup = _pickle_load(f)
+        if index is None:
+            index = faiss.IndexFlatIP(p_reps.shape[1])
         index.add(p_reps)
         look_up += p_lookup
+        del p_reps
     return index, look_up
 
 
