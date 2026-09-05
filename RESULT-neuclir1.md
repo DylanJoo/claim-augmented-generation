@@ -1,5 +1,3 @@
-![neuclir1 top-10 runs by alpha_nDCG@10, cutoffs 1-20](results/plots/neuclir1.png)
-
 | Run | StRecall@1 | @10 | @20 | alpha_nDCG@10 | @20 |
 |---|---|---|---|---|---|
 | run.neuclir1.documents.bm25.txt | 0.2421 | 0.6650 | 0.7655 | 0.5306 | 0.5648 |

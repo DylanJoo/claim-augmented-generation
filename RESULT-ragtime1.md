@@ -1,5 +1,3 @@
-![ragtime1 top-10 runs by alpha_nDCG@10, cutoffs 1-20](results/plots/ragtime1.png)
-
 | Run | StRecall@1 | @10 | @20 | alpha_nDCG@10 | @20 |
 |---|---|---|---|---|---|
 | run.ragtime1.documents.bm25.txt | 0.1901 | 0.5246 | 0.5820 | 0.3638 | 0.3885 |
