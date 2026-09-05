@@ -1,6 +1,9 @@
+![neuclir1 top-10 runs by alpha_nDCG@10, cutoffs 1-20](results/plots/neuclir1.png)
+
 | Run | StRecall@1 | @10 | @20 | alpha_nDCG@10 | @20 |
 |---|---|---|---|---|---|
 | run.neuclir1.documents.bm25.txt | 0.2421 | 0.6650 | 0.7655 | 0.5306 | 0.5648 |
+| run.neuclir1.concat-claims.bm25.txt | 0.2317 | 0.6460 | 0.7326 | 0.5189 | 0.5515 |
 | run.neuclir1.documents.modernbert-base.cover-5k.txt | 0.2835 | 0.6879 | 0.7890 | 0.5711 | 0.5996 |
 | run.neuclir1.documents.Qwen3-Embedding-0.6B.txt | 0.2948 | 0.6963 | 0.7802 | 0.5642 | 0.5958 |
 | run.neuclir1.claims-k100.Qwen3-Embedding-0.6B.rrf.txt | 0.2315 | 0.6073 | 0.7048 | 0.4612 | 0.4984 |
@@ -27,3 +30,15 @@
 | run.neuclir1.claims-k750.modernbert-base.cover-5k.sum.txt | 0.3392 | 0.6859 | 0.7710 | 0.6014 | 0.6279 |
 | run.neuclir1.documents.Qwen3-Embedding-0.6B.txt | 0.2948 | 0.6963 | 0.7802 | 0.5642 | 0.5958 |
 | run.neuclir1.documents.modernbert-base.cover-5k.txt | 0.2835 | 0.6879 | 0.7890 | 0.5711 | 0.5996 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.0.txt | 0.2948 | 0.6963 | 0.7802 | 0.5642 | 0.5959 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.1.txt | 0.3155 | 0.7096 | 0.7917 | 0.5889 | 0.6172 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.2.txt | 0.3550 | 0.7060 | 0.7979 | 0.6161 | 0.6448 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.3.txt | 0.3780 | 0.7217 | 0.7965 | 0.6358 | 0.6610 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.4.txt | 0.3578 | 0.6934 | 0.8034 | 0.6301 | 0.6674 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.5.txt | 0.3806 | 0.6887 | 0.8258 | 0.6440 | 0.6848 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.0.txt | 0.2835 | 0.6879 | 0.7890 | 0.5711 | 0.5996 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.1.txt | 0.2973 | 0.6703 | 0.7989 | 0.5713 | 0.6086 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.2.txt | 0.3057 | 0.6838 | 0.7928 | 0.5917 | 0.6230 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.3.txt | 0.3422 | 0.7057 | 0.8066 | 0.6208 | 0.6465 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.4.txt | 0.3371 | 0.7057 | 0.8139 | 0.6344 | 0.6598 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.5.txt | 0.3926 | 0.6922 | 0.7917 | 0.6471 | 0.6731 |

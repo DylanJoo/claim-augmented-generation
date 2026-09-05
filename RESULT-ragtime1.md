@@ -1,3 +1,5 @@
+![ragtime1 top-10 runs by alpha_nDCG@10, cutoffs 1-20](results/plots/ragtime1.png)
+
 | Run | StRecall@1 | @10 | @20 | alpha_nDCG@10 | @20 |
 |---|---|---|---|---|---|
 | run.ragtime1.documents.bm25.txt | 0.1901 | 0.5246 | 0.5820 | 0.3638 | 0.3885 |
@@ -27,3 +29,9 @@
 | run.ragtime1.claims-k750.modernbert-base.cover-5k.rrf.txt | 0.2458 | 0.6595 | 0.7512 | 0.5109 | 0.5439 |
 | run.ragtime1.claims-k750.modernbert-base.cover-5k.sum.txt | 0.2851 | 0.6780 | 0.7674 | 0.5346 | 0.5624 |
 | run.ragtime1.documents.Qwen3-Embedding-0.6B.txt | 0.3101 | 0.6958 | 0.7700 | 0.5598 | 0.5843 |
+| run.ragtime1.documents.modernbert-base.cover-5k.txt | 0.2442 | 0.6592 | 0.7364 | 0.5230 | 0.5491 |
+| run.ragtime1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.0.txt | 0.2442 | 0.6592 | 0.7364 | 0.5230 | 0.5491 |
+| run.ragtime1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.1.txt | 0.2632 | 0.6669 | 0.7614 | 0.5360 | 0.5650 |
+| run.ragtime1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.2.txt | 0.2605 | 0.6925 | 0.7615 | 0.5515 | 0.5682 |
+| run.ragtime1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.3.txt | 0.3001 | 0.6985 | 0.7598 | 0.5709 | 0.5841 |
+| run.ragtime1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.4.txt | 0.2966 | 0.6953 | 0.7616 | 0.5651 | 0.5814 |
