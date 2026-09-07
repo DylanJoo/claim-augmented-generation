@@ -200,3 +200,23 @@ AGGREGATE (all files)
     Claims per doc                min=     0  mean=   11.3  max=   320
     Doc length (words)            min=     0  mean=  348.0  max= 14677
     Claim length (words)          min=     1  mean=   17.6  max=  3999
+
+![neuclir1 top-10 runs by alpha_nDCG@10, cutoffs 1-20](results/plots/neuclir1.png)
+
+Regenerate after new runs land:
+```
+bash scripts/run_eval_curve.sh neuclir1
+python -m src.evaluator.plot_eval_curve \
+    --csv results/curve-neuclir1.csv --out results/plots/neuclir1.png \
+    --title "neuclir1: top 10 runs by alpha_nDCG@10"
+```
+
+![ragtime1 top-10 runs by alpha_nDCG@10, cutoffs 1-20](results/plots/ragtime1.png)
+
+Regenerate after new runs land:
+```
+bash scripts/run_eval_curve.sh ragtime1
+python -m src.evaluator.plot_eval_curve \
+    --csv results/curve-ragtime1.csv --out results/plots/ragtime1.png \
+    --title "ragtime1: top 10 runs by alpha_nDCG@10"
+```

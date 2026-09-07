@@ -19,7 +19,7 @@ fi
 case "$system" in
     neuclir1)
         run_glob="runs/run.neuclir1*.txt"
-        priority_runs="runs/neuclir1/run.neuclir1.documents.bm25.txt runs/neulcir1/run.neuclir1.concat-claims.bm25.txt runs/neuclir1/run.neuclir1.documents.modernbert-base.cover-5k.txt runs/neuclir1/run.neuclir1.documents.Qwen3-Embedding-0.6B.txt"
+        priority_runs="runs/neuclir1/run.neuclir1.documents.bm25.txt runs/neuclir1/run.neuclir1.concat-claims.bm25.txt runs/neuclir1/run.neuclir1.documents.modernbert-base.cover-5k.txt runs/neuclir1/run.neuclir1.documents.Qwen3-Embedding-0.6B.txt"
         qrel="$HOME/trec2026/data/neuclir/neuclir24-test-request.qrel"
         ;;
     ragtime1)
