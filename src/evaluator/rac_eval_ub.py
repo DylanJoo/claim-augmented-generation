@@ -2,7 +2,7 @@
 Ground-truth-aware oracle reranking, reported as an upper-bound metric.
 
 Given a run file's top-k2 pool per topic (k2 defaults to 100 -- deliberately
-smaller than the 1000-doc pools mmr.py/cc_rerank.py/dc_gap.py rerank over, so
+smaller than the 1000-doc pools dd.py/cc.py/dc_gap.py rerank over, so
 this reads as "how much headroom is left in the part of the pool a reranker
 would realistically operate on"), this greedily reorders each query's pool
 using the subtopic-level ground truth qrel directly, then scores that oracle
@@ -11,7 +11,7 @@ ordering with the same ir_measures diversity metrics rac_eval.py reports.
 The result is not a method -- it cheats by reading the test qrel -- so it is
 never a run you'd submit. It's a ceiling: run it next to the real system's
 rac_eval.py output on the same run file to see how much of the top-100 pool's
-diversity potential the actual reranker (mmr/cc_rerank/dc_gap/...) is
+diversity potential the actual reranker (dd/cc/dc_gap/...) is
 capturing versus leaving on the table.
 
 There is no single oracle ordering because alpha_nDCG and StRecall reward

@@ -1,7 +1,7 @@
 """
 dc-gap (Doc-Claim Gap) re-ranking on top of a doc-level run file.
 
-Unlike mmr.py (whole-document similarity) and cc_rerank.py (claim-claim MaxSim),
+Unlike dd.py (whole-document similarity) and cc.py (claim-claim MaxSim),
 this is not a relevance/diversity trade-off and has no lambda knob. Instead,
 each already-selected document's full text is used as a query against every
 individual claim of every remaining candidate document:
