@@ -84,7 +84,19 @@ def main():
                         help=f"Path to APRIL's src/ directory (default: {DEFAULT_APRIL_SRC})")
     parser.add_argument("--tag", default=None,
                         help="Run tag written in the TREC output (default: rerank-<method>)")
+    parser.add_argument("--output-subquestions", default=None,
+                        help="Path to dump generated sub-questions as JSON (--method lancer only; "
+                             "ignored by other methods; default: derived from --topics, next to "
+                             "--output, so runs sharing topics share/overwrite one file)")
     args = parser.parse_args()
+
+    if args.output_subquestions is None and args.method == "lancer":
+        topics_name = os.path.splitext(os.path.basename(args.topics))[0]
+        args.output_subquestions = os.path.join(
+            os.path.dirname(args.output), f"{topics_name}.subquestions.json"
+        )
+    if args.output_subquestions:
+        logger.info("Sub-questions will be written to %s", args.output_subquestions)
 
     topics = load_topics(args.topics)
     logger.info("Loaded %d topic(s) from %s", len(topics), args.topics)
@@ -107,7 +119,8 @@ def main():
         temperature=args.temperature,
         k=args.k,
         query_batch_size=args.query_batch_size,
-        max_doc_length=args.max_doc_length
+        max_doc_length=args.max_doc_length,
+        output_subquestions=args.output_subquestions
     )
 
     write_trec(reranked_run, args.output, args.tag or f"rerank-{args.method}")

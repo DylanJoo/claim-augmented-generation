@@ -12,14 +12,7 @@ Both sides are read from pre-computed tevatron embedding shards (see
 scripts/dense-index/) instead of being scored by BM25 at rerank time: D_i's
 side from the doc-level shards (one vector per whole document), c's side
 from the claim-level shards (one vector per claim, docid
-"{parent_id}#{i}"). Embeddings are encoded with --normalize, so the dot
-product is already cosine similarity in [-1, 1] and needs no query-length
-renormalization -- unlike the BM25 variants' _normalize, which exists
-specifically to cancel out BM25 raw-score inflation from longer queries
-(see dc_gap.py's _doc_to_claim_scores docstring). Reusing that per-row
-min-max here would stretch already-comparable, bounded scores to fill
-[0, 1] on every row, manufacturing apparent signal out of noise, so this
-module skips it and works with raw cosine similarity throughout.
+"{parent_id}#{i}"). 
 
 Caveat: this trades a lexical-overlap signal for a semantic-embedding one,
 and the two don't behave the same way for novelty. BM25 gives an honest 0
@@ -67,14 +60,15 @@ def _load_reps(reps_path, needed_ids, id_transform=None):
         raise FileNotFoundError(f"No passage rep shards matched: {reps_path}")
 
     reps_by_id = {}
-    for fpath in files:
+    for i, fpath in enumerate(files, 1):
         reps, lookup = _pickle_load(fpath)
         for vec, repid in zip(reps, lookup):
             key = id_transform(repid) if id_transform else repid
             if key in needed_ids:
-                reps_by_id[repid] = vec
+                reps_by_id[repid] = vec.copy()
+        logger.info("dc-gap-dense: [%d/%d] loaded shard %s, %d/%d needed id(s) matched so far",
+                    i, len(files), fpath, len(reps_by_id), len(needed_ids))
     return reps_by_id
-
 
 def _load_query_reps(query_reps_path):
     reps, lookup = _pickle_load(query_reps_path)

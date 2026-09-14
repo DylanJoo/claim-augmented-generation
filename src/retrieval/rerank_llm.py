@@ -18,6 +18,7 @@ def run(
     k: int = 100,
     query_batch_size: int = 32,
     max_doc_length: int = 1024,
+    output_subquestions: str = None,
 ) -> Dict[str, Dict[str, float]]:
     """Rerank a first-stage run with APRIL's ModularReranker ($HOME/APRIL).
 
@@ -30,6 +31,8 @@ def run(
 
     initial_run: {qid: [(docid, score), ...]} as returned by utils.load_run.
     corpus: {docid: {"title":..., "text":..., ...}} as returned by utils.load_corpus.
+    output_subquestions: only consumed by APRIL's Lancer method, which dumps its
+        generated {qid: [subquestion, ...]} to this path as JSON; ignored otherwise.
     """
     if april_src not in sys.path:
         sys.path.insert(0, april_src)
@@ -60,7 +63,8 @@ def run(
         llm={"backend": backend, "base_url": base_url, "temperature": temperature},
         top_k=k,
         rank_end=k,
-        max_doc_length=max_doc_length
+        max_doc_length=max_doc_length,
+        data={"output_subquestions": output_subquestions}
     )
     reranked_run = reranker.rerank(
         run=run_input,

@@ -1,14 +1,15 @@
-#!/bin/sh
-#SBATCH --job-name=search-neuclir1-dc-gap
-#SBATCH --output=logs/search-neuclir1-dc-gap.out
-#SBATCH --error=logs/search-neuclir1-dc-gap.err
+#!/bin/bash
+#SBATCH --job-name=search-neuclir1-dc-gap-grid
+#SBATCH --output=logs/%x-%a.out
+#SBATCH --error=logs/%x-%a.err
 #SBATCH --partition=small
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=128
-#SBATCH --mem=128G
-#SBATCH --time=1-00:00:00
-#SBATCH --account=project_465002438
+#SBATCH --mem=256G
+#SBATCH --time=12:00:00
+#SBATCH --account=project_465002532
+#SBATCH --array=0-12
 
 # ENV
 module use /appl/local/csc/modulefiles/
@@ -25,24 +26,51 @@ cd $HOME/claim-augmented-generation
 MODEL_NAME=Qwen3-Embedding-0.6B
 EMB_ROOT=$HOME/scratch/neuclir1/${MODEL_NAME}
 
-# query-claim similarity filter, see src/retrieval/dc_gap_dense.py's
-# _doc_to_claim_scores docstring: keeps each pooled doc's top
-# CLAIMS_PER_DOC claims by similarity to the topic query (scaled down for
-# lower-relevance docs) so an off-topic claim can't tank a doc's novelty
-# score. Queries come from queries_emb.pkl, built by
-# scripts/dense-index/Qwen3-Embedding-0.6B/neuclir1-encode-q.sh.
-CLAIM_FILTER=topn
-CLAIMS_PER_DOC=3
+# Full grid over --claim-filter and its mode-specific params, see
+# src/retrieval/dc_gap_dense.py's _doc_to_claim_scores docstring. Each array
+# task runs one combo. Index -> filter:claims_per_doc:scale:threshold;
+# claims_per_doc/scale only apply to "topn", threshold only to "threshold".
+COMBOS=(
+  "none:0:0:0.0"
+  "topn:5:0:0.0"
+  "topn:5:1:0.0"
+  "topn:10:0:0.0"
+  "topn:10:1:0.0"
+  "topn:50:0:0.0"
+  "topn:50:1:0.0"
+  "topn:100:0:0.0"
+  "topn:100:1:0.0"
+  "threshold:0:0:0.2"
+  "threshold:0:0:0.4"
+  "threshold:0:0:0.6"
+  "threshold:0:0:0.8"
+)
+
+IFS=':' read -r CLAIM_FILTER CLAIMS_PER_DOC SCALE THRESHOLD <<< "${COMBOS[$SLURM_ARRAY_TASK_ID]}"
+
+EXTRA_ARGS=()
+TAG_SUFFIX="$CLAIM_FILTER"
+if [ "$CLAIM_FILTER" = "topn" ]; then
+    EXTRA_ARGS+=(--claims-per-doc "$CLAIMS_PER_DOC")
+    TAG_SUFFIX="topn-cpd${CLAIMS_PER_DOC}"
+    if [ "$SCALE" = "1" ]; then
+        EXTRA_ARGS+=(--scale-topn-by-relevance)
+        TAG_SUFFIX="${TAG_SUFFIX}-scaled"
+    fi
+elif [ "$CLAIM_FILTER" = "threshold" ]; then
+    EXTRA_ARGS+=(--claim-sim-threshold "$THRESHOLD")
+    TAG_SUFFIX="threshold-t${THRESHOLD}"
+fi
 
 python pipeline/run_dc_gap_dense.py \
     --topics data/neuclir2024.topics.test.jsonl \
-    --run-file runs/neuclir1/run.neuclir1.documents.bm25.txt \
+    --run-file runs/run.neuclir1.documents.Qwen3-Embedding-0.6B.txt \
     --corpus  "$HOME/scratch/neuclir1/*.processed-claims.jsonl.gz" \
     --doc-reps "$EMB_ROOT/docs_emb/docs_emb.*.pkl" \
     --claim-reps "$EMB_ROOT/claims_emb/claims_emb.*.pkl" \
     --query-reps "$EMB_ROOT/queries_emb/queries_emb.pkl" \
-    --claim-filter $CLAIM_FILTER \
-    --claims-per-doc $CLAIMS_PER_DOC \
-    --output runs/neuclir1/run.neuclir1.dc-gap-dense-doc.${MODEL_NAME}.${CLAIM_FILTER}.txt \
+    --claim-filter "$CLAIM_FILTER" \
+    "${EXTRA_ARGS[@]}" \
+    --output "runs/neuclir1/run.neuclir1.documents.Qwen3-Embedding-0.6B.dc-gap.${TAG_SUFFIX}.txt" \
     --k 1000 \
-    --tag dc-gap-dense-doc-${CLAIM_FILTER}
+    --tag "dc-gap-dense-doc-${TAG_SUFFIX}"
