@@ -6,7 +6,7 @@ from typing import List
 
 import numpy as np
 
-from utils import Result, Hit, load_run, load_corpus
+from utils import Result, Hit, load_run
 
 logger = logging.getLogger(__name__)
 
@@ -49,43 +49,42 @@ def _doc_matrix(list_docids, doc_reps_by_id, dim):
     return doc_matrix @ doc_matrix.T
 
 
-def _mmr_select(
-    hits, 
-    doc_reps_by_id, 
-    dim, 
+def _select(
+    hits,
+    doc_reps_by_id,
+    dim,
     k,
-    lambda_mult
+    lambda_mult,
+    mode,
 ):
     if len(hits) <= 1:
         return hits
+    if mode not in ("subtract", "add"):
+        raise ValueError(f"mode must be 'subtract' (MMR) or 'add' (doc-echo boost), got {mode!r}")
+    sign = -1.0 if mode == "subtract" else 1.0
 
     relevance = np.asarray([h.score for h in hits], dtype=np.float32)
     sim = _doc_matrix(
         list_docids=[h.docid for h in hits],
-        doc_reps_by_id=doc_reps_by_id, 
+        doc_reps_by_id=doc_reps_by_id,
         dim=dim
     )
 
     n = len(hits)
     n_select = min(k, n)
     selected = []
-    selected_scores = []
     max_sim_to_selected = np.zeros(n, dtype=np.float32)
 
     for _ in range(n_select):
-        scores = lambda_mult * relevance - (1 - lambda_mult) * max_sim_to_selected
+        scores = lambda_mult * relevance + sign * (1 - lambda_mult) * max_sim_to_selected
         scores[selected] = -np.inf
         pick = int(np.argmax(scores))
-        selected_scores.append(float(scores[pick]))
         selected.append(pick)
         max_sim_to_selected = np.maximum(max_sim_to_selected, sim[pick])
 
-    # selected_scores is non-increasing by construction (max_sim_to_selected only grows,
-    # so each round's best achievable score can only shrink) -- this keeps the written
-    # score monotonic with rank, which downstream TREC eval tools sort by, not rank.
     return [
-        Hit(docid=hits[idx].docid, score=selected_scores[rank - 1], rank=rank, content_dict=hits[idx].content_dict)
-        for rank, idx in enumerate(selected, start=1)
+        Hit(docid=hits[idx].docid, score=float(-rank_offset), rank=rank_offset + 1, content_dict=hits[idx].content_dict)
+        for rank_offset, idx in enumerate(selected)
     ]
 
 
@@ -96,13 +95,13 @@ def run(
     doc_reps: str,
     k: int = 1000,
     lambda_mult: float = 0.9,
-    mode: str = "subtract", # mmr always does subtract
+    mode: str = "subtract",
     agg: str = None, # No aggregation needed
 ) -> List[Result]:
-    logger.info("dd-dense: base relevance from run file %s, pool k=%d, lambda=%.2f, doc_reps=%s",
-                run_file, k, lambda_mult, doc_reps)
+    logger.info("dd-dense: mode=%s, base relevance from run file %s, pool k=%d, lambda=%.2f, doc_reps=%s",
+                mode, run_file, k, lambda_mult, doc_reps)
     base_run = load_run(run_file, k=k)
-    doc_corpus = load_corpus(corpus)
+    doc_corpus = {}  # corpus text unused downstream; skip loading to save memory
 
     needed_docids = {docid for pool in base_run.values() for docid, _ in pool}
     logger.info("dd-dense: %d unique pooled docid(s) across %d topic(s) need doc embeddings",
@@ -128,8 +127,8 @@ def run(
             for rank, (docid, score) in enumerate(pool, start=1)
         ]
         outputs[i].hits = hits
-        outputs[i].evidences = _mmr_select(
-            hits, doc_reps_by_id, dim, k, lambda_mult
+        outputs[i].evidences = _select(
+            hits, doc_reps_by_id, dim, k, lambda_mult, mode=mode,
         )
 
     return outputs

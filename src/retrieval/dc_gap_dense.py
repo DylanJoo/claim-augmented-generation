@@ -44,7 +44,7 @@ from typing import List
 
 import numpy as np
 
-from utils import Result, Hit, load_run, load_corpus
+from utils import Result, Hit, load_run
 
 logger = logging.getLogger(__name__)
 
@@ -281,7 +281,7 @@ def run(
     logger.info("dc-gap-dense: base relevance from run file %s, pool k=%d, doc_reps=%s, claim_reps=%s",
                 run_file, k, doc_reps, claim_reps)
     base_run = load_run(run_file, k=k)
-    claim_corpus = load_corpus(corpus)  # only needed for display fields (title/text/statements)
+    claim_corpus = {}  # corpus text unused downstream; skip loading to save memory
 
     # Union of pooled docids across every topic in this run -- the only ids
     # dc-gap will ever score, and typically a tiny fraction of the full

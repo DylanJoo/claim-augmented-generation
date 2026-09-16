@@ -1,1 +1,1 @@
-from .bm25s_deprecated import search
+# from .bm25s_deprecated import search

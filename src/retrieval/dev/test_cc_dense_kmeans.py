@@ -1,8 +1,8 @@
 """
-Standalone sanity check for kmeans_dd.py -- not pytest, just a script you
-run directly and eyeball the printed output against the hand-picked
-synthetic setup below (matches this repo's no-test-infra convention, see
-src/retrieval/dev/*.py).
+Standalone sanity check for cc_dense.py's agg="kmeans" path -- not pytest,
+just a script you run directly and eyeball the printed output against the
+hand-picked synthetic setup below (matches this repo's no-test-infra
+convention, see src/retrieval/dev/*.py).
 
 Builds a tiny synthetic pool for one topic "q1" with a known cluster
 structure in a 4-d embedding space (3 near-orthonormal directions, c0/c1/c2,
@@ -21,8 +21,9 @@ Base relevance is set so docA > docB > docC > docD > docE, i.e. already
 sorted -- so any change in output order after re-ranking is entirely the
 k-means diversity signal at work, nothing else.
 
-Run: python src/retrieval/dev/test_kmeans_dd.py
+Run: python src/retrieval/dev/test_cc_dense_kmeans.py
 """
+import json
 import os
 import pickle
 import sys
@@ -32,7 +33,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 
-from retrieval import kmeans_dd
+from retrieval import cc_dense
 from utils import Result
 
 RNG = np.random.default_rng(0)
@@ -78,10 +79,10 @@ def build_fixtures(tmpdir):
         for rank, (docid, score) in enumerate(base_scores.items(), start=1):
             f.write(f"q1 Q0 {docid} {rank} {score:.4f} base\n")
 
-    # -- corpus jsonl (only used for display fields) --
+    # -- corpus jsonl (unused by cc_dense.py's run() -- kept only so the
+    # --corpus CLI/plumbing shape matches the real pipeline) --
     corpus_path = os.path.join(tmpdir, "corpus.jsonl")
     with open(corpus_path, "w") as f:
-        import json
         for docid in base_scores:
             f.write(json.dumps({"id": docid, "title": docid, "text": "",
                                  "statements": [f"{docid} claim {i}" for i in range(len(claims_by_doc[docid]))]}) + "\n")
@@ -102,7 +103,7 @@ def main():
 
         for label_mode in ("binary", "scaled"):
             print(f"\n{'='*70}\nlabel_mode={label_mode}\n{'='*70}")
-            outputs = kmeans_dd.run(
+            outputs = cc_dense.run(
                 inputs,
                 run_file=run_path,
                 corpus=[corpus_path],
@@ -110,10 +111,10 @@ def main():
                 k=10,
                 lambda_mult=0.5,
                 mode="subtract",
+                agg="kmeans",
                 n_clusters=3,
                 label_mode=label_mode,
                 kmeans_n_init=5,
-                random_state=0,
             )
 
             evidences = outputs[0].evidences
@@ -127,19 +128,19 @@ def main():
             picked_docids = {h.docid for h in evidences}
             check("docE (no claims) present and didn't crash the pipeline", "docE" in picked_docids)
 
-        # -- clamping check: ask for more clusters than claims exist (11 claims total) --
-        print(f"\n{'='*70}\nn_clusters clamp check (request 100, only 11 claims exist)\n{'='*70}")
-        kmeans_dd.run(
+        # -- clamping check: ask for more clusters than claims exist (13 claims total) --
+        print(f"\n{'='*70}\nn_clusters clamp check (request 100, only 13 claims exist)\n{'='*70}")
+        cc_dense.run(
             inputs, run_file=run_path, corpus=[corpus_path], claim_reps=claim_reps_path,
-            k=10, lambda_mult=0.5, mode="subtract", n_clusters=100, label_mode="binary",
+            k=10, lambda_mult=0.5, mode="subtract", agg="kmeans", n_clusters=100, label_mode="binary",
         )
-        print("[PASS] n_clusters clamp ran without raising (watch for the '[kmeans_dd] ... clamping' line above)")
+        print("[PASS] n_clusters clamp ran without raising (watch for the '[cc_dense] ... clamping' line above)")
 
         # -- mode="add" sanity: scores should still come back sorted desc after the re-sort fix --
         print(f"\n{'='*70}\nmode=add check\n{'='*70}")
-        outputs = kmeans_dd.run(
+        outputs = cc_dense.run(
             inputs, run_file=run_path, corpus=[corpus_path], claim_reps=claim_reps_path,
-            k=10, lambda_mult=0.2, mode="add", n_clusters=3, label_mode="binary",
+            k=10, lambda_mult=0.2, mode="add", agg="kmeans", n_clusters=3, label_mode="binary",
         )
         scores = [h.score for h in outputs[0].evidences]
         check("mode=add scores non-increasing after re-sort", all(scores[i] >= scores[i+1] for i in range(len(scores)-1)))
@@ -149,9 +150,9 @@ def main():
         single_run_path = os.path.join(tmpdir, "run_single.txt")
         with open(single_run_path, "w") as f:
             f.write("q1 Q0 docA 1 5.0000 base\n")
-        outputs = kmeans_dd.run(
+        outputs = cc_dense.run(
             inputs, run_file=single_run_path, corpus=[corpus_path], claim_reps=claim_reps_path,
-            k=10, n_clusters=3,
+            k=10, agg="kmeans", n_clusters=3,
         )
         check("single-doc pool returned unchanged (len==1)", len(outputs[0].evidences) == 1)
 
