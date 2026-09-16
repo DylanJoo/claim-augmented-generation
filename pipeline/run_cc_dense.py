@@ -18,6 +18,7 @@ Usage:
         [--k 1000] [--lambda-mult 0.9] [--mode subtract|add] \
         [--agg maxsim|mean|kmeans] \
         [--kmeans-n-clusters 20] [--kmeans-label-mode binary|scaled] [--kmeans-n-init 10] \
+        [--kmeans-min-doc-support 1] \
         [--tag cc-dense]
 """
 
@@ -92,6 +93,11 @@ def main():
     parser.add_argument("--kmeans-n-init", type=int, default=10,
                         help="Only used when --agg kmeans. Number of k-means initializations (sklearn "
                              "KMeans n_init) (default: 10)")
+    parser.add_argument("--kmeans-min-doc-support", type=int, default=1,
+                        help="Only used when --agg kmeans. A cluster touched by fewer than this many "
+                             "distinct docs is zeroed out of every doc's vector (not redundant -- one "
+                             "doc's unique claim, not corroboration). Default 1 is a no-op; raise to "
+                             "e.g. 2 to require actual cross-document overlap (default: 1)")
     parser.add_argument("--tag", default="cc-dense",
                         help="Run tag written in the TREC output (default: cc-dense)")
     args = parser.parse_args()
@@ -112,6 +118,7 @@ def main():
         n_clusters=args.kmeans_n_clusters,
         label_mode=args.kmeans_label_mode,
         kmeans_n_init=args.kmeans_n_init,
+        min_doc_support=args.kmeans_min_doc_support,
     )
     logger.info(f"the run file is {args.run_file}")
 

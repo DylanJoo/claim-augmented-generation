@@ -28,7 +28,7 @@ for LAMBDA in 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9; do
         --corpus  "$HOME/scratch/ragtime1/*.processed-claims.jsonl.gz" \
         --claim-reps "$EMB_ROOT/claims_emb/claims_emb.*.pkl" \
         --output runs/ragtime1/run.ragtime1.documents.Qwen3-Embedding-0.6B.cc${AGG}-${MODE}.lambda-${LAMBDA}.txt \
-        --k 1000 \
+        --k 100 \
         --lambda-mult ${LAMBDA} \
         --mode $MODE \
         --agg $AGG \

@@ -136,6 +136,26 @@ def main():
         )
         print("[PASS] n_clusters clamp ran without raising (watch for the '[cc_dense] ... clamping' line above)")
 
+        # -- min_doc_support check: docD is the *only* doc near c2, so its
+        # cluster has doc-frequency 1 -- with min_doc_support=2 that cluster
+        # must get zeroed, leaving docD's vector all-zero (same as docE's).
+        print(f"\n{'='*70}\nmin_doc_support=2 check (docD's cluster has doc-frequency 1)\n{'='*70}")
+        doc_vecs, _ = cc_dense._kmeans_doc_vectors(
+            list_docids=["docA", "docB", "docC", "docD", "docE"],
+            claim_reps_by_id=cc_dense._load_claim_reps(claim_reps_path, {"docA", "docB", "docC", "docD", "docE"}),
+            rows_by_parent=cc_dense._rows_by_parent(
+                cc_dense._load_claim_reps(claim_reps_path, {"docA", "docB", "docC", "docD", "docE"})
+            ),
+            n_clusters=3,
+            label_mode="binary",
+            kmeans_n_init=5,
+            min_doc_support=2,
+        )
+        docD_idx = 3
+        check("docD's vector is all-zero once its singleton cluster is dropped",
+              not doc_vecs[docD_idx].any())
+        check("docA (shares a cluster with docC) is unaffected", doc_vecs[0].any())
+
         # -- mode="add" sanity: scores should still come back sorted desc after the re-sort fix --
         print(f"\n{'='*70}\nmode=add check\n{'='*70}")
         outputs = cc_dense.run(

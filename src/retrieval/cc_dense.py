@@ -52,6 +52,16 @@ single doc-doc similarity, sim(d, d'):
     first collapses that into a shared, topic-specific vocabulary of "claim
     topics" every pooled doc is scored against, letting diversity be
     reasoned about in terms of topic coverage rather than pairwise echoes.
+
+    min_doc_support (kmeans only, default 1 = off) guards against the
+    other failure mode: a cluster that only one doc happens to touch is
+    definitionally not redundant (it's that doc's unique claim, not
+    corroboration), so any cluster with fewer than min_doc_support distinct
+    docs is zeroed out of every doc's vector before label_mode is applied.
+    This also matters because kmeans is fit over the whole 1000-doc pool
+    (mostly irrelevant docs, in practice), so without this guard a chance
+    collision between one relevant doc and one irrelevant doc's claims can
+    register as "overlap" with no real corroboration behind it.
 """
 import copy
 import glob
@@ -147,13 +157,22 @@ def _kmeans_doc_vectors(
     n_clusters,
     label_mode="binary",
     kmeans_n_init=10,
+    min_doc_support=1,
 ):
     """Cluster every claim found for docs in `list_docids` with k-means (fit
     fresh per topic), then re-describe each doc as a fixed-length vector
     over cluster ids. See module docstring's "kmeans" bullet for the
-    binary/scaled label_mode trade-off. Returns (doc_vecs [n_docs,
-    effective_k], labels [n_claims] or None -- None only when no pooled doc
-    has any claim in the shards at all).
+    binary/scaled label_mode trade-off.
+
+    min_doc_support: a cluster touched by fewer than this many distinct
+    docs is, by definition, not redundant -- it's one doc's unique claim,
+    not corroboration -- so it is zeroed out of every doc's vector before
+    label_mode is applied. Default 1 is a no-op (every cluster counts,
+    matching prior behavior); raise it (e.g. 2) to require actual
+    cross-document overlap before two docs are treated as similar.
+
+    Returns (doc_vecs [n_docs, effective_k], labels [n_claims] or None --
+    None only when no pooled doc has any claim in the shards at all).
     """
     if label_mode not in ("binary", "scaled"):
         raise ValueError(f"label_mode must be 'binary' or 'scaled', got {label_mode!r}")
@@ -196,16 +215,25 @@ def _kmeans_doc_vectors(
         km = KMeans(n_clusters=effective_k, n_init=kmeans_n_init, random_state=_KMEANS_RANDOM_STATE)
         labels = km.fit_predict(claim_matrix)
 
-    doc_vecs = np.zeros((n, effective_k), dtype=np.float32)
+    counts = np.zeros((n, effective_k), dtype=np.float32)
     for doc_idx, cluster_id in zip(doc_of_claim, labels):
-        doc_vecs[doc_idx, cluster_id] += 1.0
+        counts[doc_idx, cluster_id] += 1.0
+
+    if min_doc_support > 1:
+        doc_freq = (counts > 0).sum(axis=0)
+        weak = doc_freq < min_doc_support
+        if weak.any():
+            print(f"[cc_dense] {int(weak.sum())}/{effective_k} cluster(s) touched by <{min_doc_support} "
+                  f"distinct doc(s); zeroing them out as non-redundant (no corroboration), "
+                  f"e.g. cluster ids {np.nonzero(weak)[0][:5].tolist()}")
+            counts[:, weak] = 0.0
 
     if label_mode == "binary":
-        doc_vecs = (doc_vecs > 0).astype(np.float32)
+        doc_vecs = (counts > 0).astype(np.float32)
     else:  # "scaled"
-        row_sums = doc_vecs.sum(axis=1, keepdims=True)
+        row_sums = counts.sum(axis=1, keepdims=True)
         row_sums[row_sums < 1e-9] = 1.0
-        doc_vecs = doc_vecs / row_sums
+        doc_vecs = counts / row_sums
 
     return doc_vecs, labels
 
@@ -242,6 +270,24 @@ def _print_sim_matrix(list_docids, sim, agg, topn=10):
         print(f"{ids[i]:<14}{row}")
 
 
+def _print_cluster_assignment(list_docids, doc_vecs, agg, topn=10):
+    """Print the top-N docs' cluster-membership vectors (rows: docs, cols:
+    cluster ids) -- which claim-topic cluster(s) each doc touches, and how
+    strongly (label_mode="binary" -> 0/1, "scaled" -> within-doc fraction).
+    More directly diagnostic than the doc-doc matrix for kmeans-based aggs,
+    since it shows *why* two docs are/aren't similar (shared cluster ids)
+    rather than just the collapsed pairwise score."""
+    n = min(topn, len(list_docids))
+    k = doc_vecs.shape[1]
+    ids = [str(d)[:12] for d in list_docids[:n]]
+    header = " " * 14 + "".join(f"c{j:<5}" for j in range(k))
+    print(f"[cc_dense] top-{n} doc x {k}-cluster ({agg}) assignment:")
+    print(header)
+    for i in range(n):
+        row = "".join(f"{doc_vecs[i, j]:>6.2f}" for j in range(k))
+        print(f"{ids[i]:<14}{row}")
+
+
 def _select(
     hits,
     claim_reps_by_id,
@@ -254,6 +300,7 @@ def _select(
     n_clusters=20,
     label_mode="binary",
     kmeans_n_init=10,
+    min_doc_support=1,
     qid=None,
 ):
     if len(hits) <= 1:
@@ -273,6 +320,7 @@ def _select(
             dim=dim,
             agg=agg
         )
+        _print_sim_matrix(list_docids, sim, agg=agg, topn=10)
     elif agg == "kmeans":
         doc_vecs, labels = _kmeans_doc_vectors(
             list_docids=list_docids,
@@ -281,13 +329,13 @@ def _select(
             n_clusters=n_clusters,
             label_mode=label_mode,
             kmeans_n_init=kmeans_n_init,
+            min_doc_support=min_doc_support,
         )
         _print_cluster_summary(qid, doc_vecs.shape[1], labels)
+        _print_cluster_assignment(list_docids, doc_vecs, agg=agg, topn=10)
         sim = _kmeans_sim_matrix(doc_vecs)
     else:
         raise ValueError(f"agg must be 'maxsim', 'mean', or 'kmeans', got {agg!r}")
-
-    _print_sim_matrix(list_docids, sim, agg=agg, topn=10)
 
     n = len(hits)
     n_select = min(k, n)
@@ -340,6 +388,7 @@ def run(
     n_clusters: int = 20,
     label_mode: str = "binary",
     kmeans_n_init: int = 10,
+    min_doc_support: int = 1,
 ) -> List[Result]:
     logger.info("cc-dense: mode=%s, agg=%s, base relevance from run file %s, pool k=%d, lambda=%.2f, claim_reps=%s",
                 mode, agg, run_file, k, lambda_mult, claim_reps)
@@ -377,7 +426,8 @@ def run(
         outputs[i].hits = hits
         outputs[i].evidences = _select(
             hits, claim_reps_by_id, rows_by_parent, dim, k, lambda_mult, mode=mode, agg=agg,
-            n_clusters=n_clusters, label_mode=label_mode, kmeans_n_init=kmeans_n_init, qid=qid,
+            n_clusters=n_clusters, label_mode=label_mode, kmeans_n_init=kmeans_n_init,
+            min_doc_support=min_doc_support, qid=qid,
         )
 
     return outputs

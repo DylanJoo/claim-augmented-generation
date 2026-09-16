@@ -72,5 +72,5 @@ python pipeline/run_dc_gap_dense.py \
     --claim-filter "$CLAIM_FILTER" \
     "${EXTRA_ARGS[@]}" \
     --output "runs/ragtime1/run.ragtime1.documents.Qwen3-Embedding-0.6B.dc-gap.${TAG_SUFFIX}.txt" \
-    --k 1000 \
+    --k 100 \
     --tag "dc-gap-dense-doc-${TAG_SUFFIX}"
