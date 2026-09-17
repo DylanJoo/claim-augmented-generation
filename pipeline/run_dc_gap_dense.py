@@ -15,7 +15,7 @@ Usage:
         --doc-reps <'docs_emb/docs_emb.*.pkl'> \
         --claim-reps <'claims_emb/claims_emb.*.pkl'> \
         --output <results.txt> \
-        [--k 1000] [--tag dc-gap-dense]
+        [--k 100] [--tag dc-gap-dense]
 """
 
 import argparse
@@ -64,8 +64,8 @@ def main():
                              "scripts/dense-index/*/*-encode-claims.sh), e.g. 'claims_emb/claims_emb.*.pkl'")
     parser.add_argument("--output", required=True,
                         help="Output file path (TREC run format)")
-    parser.add_argument("--k", type=int, default=1000,
-                        help="Pool size taken from the run file and re-ranked (default: 1000)")
+    parser.add_argument("--k", type=int, default=100,
+                        help="Pool size taken from the run file and re-ranked (default: 100)")
     parser.add_argument("--tag", default="dc-gap-dense",
                         help="Run tag written in the TREC output (default: dc-gap-dense)")
     parser.add_argument("--query-reps",

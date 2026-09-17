@@ -49,7 +49,8 @@ if [ "$scope" = "new" ]; then
     priority_runs=""
 fi
 
-echo "| Run | StRecall@1 | @10 | @20 | alpha_nDCG@10 | @20 |"
+# echo "| Run | StRecall@1 | @10 | @20 | alpha_nDCG@10 | @20 |"
+echo "| Run | StRecall@1 | @2 | @3 | @4 | @5 | @10 |"
 echo "|---|---|---|---|---|---|"
 for run in $priority_runs $run_glob; do
     case " $seen " in

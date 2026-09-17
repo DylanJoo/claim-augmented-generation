@@ -20,26 +20,20 @@ MODEL_NAME=Qwen3-Embedding-0.6B
 EMB_ROOT=$HOME/scratch/neuclir1/${MODEL_NAME}
 
 for LABEL_MODE in binary;do
-for MODE in subtract;do
 for N_CLUSTERS in 20 50; do
-for MIN_DOC_SUPPORT in 3 4 5; do
-for LAMBDA in 0.5 0.6 0.7 0.8 0.9; do
-    python pipeline/run_cc_dense.py \
+for ALPHA in 0.5 0.6 0.7 0.8 0.9; do
+    python pipeline/run_cc_kmeans.py \
         --topics data/neuclir2024.topics.test.jsonl \
         --run-file runs/run.neuclir1.documents.Qwen3-Embedding-0.6B.txt \
         --corpus  "$HOME/scratch/neuclir1/*.processed-claims.jsonl.gz" \
         --claim-reps "$EMB_ROOT/claims_emb/claims_emb.*.pkl" \
-        --output runs/neuclir1/run.neuclir1.documents.Qwen3-Embedding-0.6B.cckmeans-${MODE}.k${N_CLUSTERS}-${LABEL_MODE}-mds${MIN_DOC_SUPPORT}.lambda-${LAMBDA}.txt \
+        --output runs/neuclir1/run.neuclir1.documents.Qwen3-Embedding-0.6B.cckmeans.k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.txt \
         --k 100 \
-        --lambda-mult ${LAMBDA} \
-        --mode $MODE \
-        --agg kmeans \
+        --alpha ${ALPHA} \
         --kmeans-n-clusters ${N_CLUSTERS} \
         --kmeans-label-mode $LABEL_MODE \
-        --kmeans-min-doc-support ${MIN_DOC_SUPPORT} \
-        --tag doc-cckmeans-${MODE}-k${N_CLUSTERS}-${LABEL_MODE}-mds${MIN_DOC_SUPPORT}-l${LAMBDA}
-done
-done
+        --kmeans-min-doc-support 1 \
+        --tag doc-cckmeans-k${N_CLUSTERS}-${LABEL_MODE}-a${ALPHA}
 done
 done
 done

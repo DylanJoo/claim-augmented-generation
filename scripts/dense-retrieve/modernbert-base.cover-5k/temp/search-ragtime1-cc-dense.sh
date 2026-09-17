@@ -29,8 +29,8 @@ cd $HOME/claim-augmented-generation
 MODEL_NAME=modernbert-base.cover-5k
 EMB_ROOT=$HOME/scratch/ragtime1/${MODEL_NAME}
 
-for AGG in maxsim mean; do
-for MODE in add subtract; do
+for AGG in mean; do
+for MODE in subtract; do
 for LAMBDA in 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9; do
     python pipeline/run_cc_dense.py \
         --topics data/ragtime2025.topics.test.jsonl \

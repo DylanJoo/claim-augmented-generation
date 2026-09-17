@@ -67,10 +67,11 @@ def print_markdown_row(columns, run_name, values):
 def rac_eval(run, qrel, div_qrel, tau=3, filter_by_oracle=False):
     outputs = defaultdict(list)
 
-    for metric in ir_measures.iter_calc([StRecall@1, alpha_nDCG@10, alpha_nDCG@20, StRecall@10, StRecall@20], div_qrel, run):
+    metrics_used = [StRecall@k for k in range(1, 11)]
+    for metric in ir_measures.iter_calc(metrics_used, div_qrel, run):
         outputs[str(metric.measure)].append(metric.value)
 
-    return outputs
+    return outputs, metrics_used
 
 
 if __name__ == "__main__":
@@ -91,7 +92,7 @@ if __name__ == "__main__":
         div_qrel = div_qrel[div_qrel['query_id'].isin(run.keys())]
         logger.warning(f"Missing results for {len(missing_qids)} topics; evaluating on {len(qrel)}")
 
-    outputs = rac_eval(
+    outputs, metrics_used = rac_eval(
         run=run,
         qrel=qrel,
         div_qrel=div_qrel,
@@ -100,7 +101,7 @@ if __name__ == "__main__":
     )
 
     run_name = args.run.rsplit('/', 1)[-1]
-    keys = sorted(outputs.keys())
+    keys = [str(m) for m in metrics_used]
     values = ["{:.4f}".format(np.mean(outputs[key])) for key in keys]
 
     print_markdown_row(["Run"] + keys, run_name, values)

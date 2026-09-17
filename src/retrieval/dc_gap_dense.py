@@ -263,7 +263,7 @@ def run(
     corpus: List[str],
     doc_reps: str,
     claim_reps: str,
-    k: int = 1000,
+    k: int = 100,
     query_reps: str = None,
     claim_filter: str = "none",
     claims_per_doc: int = 5,

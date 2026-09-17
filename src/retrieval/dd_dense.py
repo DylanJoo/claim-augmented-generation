@@ -93,7 +93,7 @@ def run(
     run_file: str,
     corpus: List[str],
     doc_reps: str,
-    k: int = 1000,
+    k: int = 100,
     lambda_mult: float = 0.9,
     mode: str = "subtract",
     agg: str = None, # No aggregation needed

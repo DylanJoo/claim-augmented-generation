@@ -14,7 +14,7 @@ Usage:
         --corpus <path/to/collection.jsonl.gz> [<more files/globs>...] \
         --doc-reps <'docs_emb/docs_emb.*.pkl'> \
         --output <results.txt> \
-        [--k 1000] [--lambda-mult 0.9] [--mode subtract|add] [--tag dd-dense]
+        [--k 100] [--lambda-mult 0.9] [--mode subtract|add] [--tag dd-dense]
 """
 
 import argparse
@@ -59,8 +59,8 @@ def main():
                              "scripts/dense-index/*/*-encode-docs.sh), e.g. 'docs_emb/docs_emb.*.pkl'")
     parser.add_argument("--output", required=True,
                         help="Output file path (TREC run format)")
-    parser.add_argument("--k", type=int, default=1000,
-                        help="Pool size taken from the run file and re-ranked by MMR (default: 1000)")
+    parser.add_argument("--k", type=int, default=100,
+                        help="Pool size taken from the run file and re-ranked by MMR (default: 100)")
     parser.add_argument("--lambda-mult", type=float, default=0.9,
                         help="MMR trade-off: 1.0 = pure relevance, 0.0 = pure diversity (default: 0.9)")
     parser.add_argument("--mode", choices=["subtract", "add"], default="subtract",

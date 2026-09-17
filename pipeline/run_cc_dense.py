@@ -15,11 +15,11 @@ Usage:
         --corpus <path/to/collection.jsonl.gz> [<more files/globs>...] \
         --claim-reps <'claims_emb/claims_emb.*.pkl'> \
         --output <results.txt> \
-        [--k 1000] [--lambda-mult 0.9] [--mode subtract|add] \
-        [--agg maxsim|mean|kmeans] \
-        [--kmeans-n-clusters 20] [--kmeans-label-mode binary|scaled] [--kmeans-n-init 10] \
-        [--kmeans-min-doc-support 1] \
-        [--tag cc-dense]
+        [--k 100] [--lambda-mult 0.9] [--mode subtract|add] \
+        [--agg maxsim|mean] [--tag cc-dense]
+
+For the k-means-clustered variant of --agg (claims collapsed into topic
+buckets instead of scored pairwise), see pipeline/run_cc_kmeans.py.
 """
 
 import argparse
@@ -65,39 +65,20 @@ def main():
                              "scripts/dense-index/*/*-encode-claims.sh), e.g. 'claims_emb/claims_emb.*.pkl'")
     parser.add_argument("--output", required=True,
                         help="Output file path (TREC run format)")
-    parser.add_argument("--k", type=int, default=1000,
-                        help="Pool size taken from the run file and re-ranked (default: 1000)")
+    parser.add_argument("--k", type=int, default=100,
+                        help="Pool size taken from the run file and re-ranked (default: 100)")
     parser.add_argument("--lambda-mult", type=float, default=0.9,
                         help="Relevance/claim-signal trade-off: 1.0 = pure relevance, 0.0 = pure claim signal (default: 0.9)")
     parser.add_argument("--mode", choices=["subtract", "add"], default="subtract",
                         help="subtract = MMR (penalize claim overlap with selected docs); "
                              "add = claim-echo boost (reward it) (default: subtract)")
-    parser.add_argument("--agg", choices=["maxsim", "mean", "kmeans"], default="maxsim",
+    parser.add_argument("--agg", choices=["maxsim", "mean"], default="maxsim",
                         help="How to reduce each doc-doc claim x claim block to one similarity. "
                              "'maxsim': ColBERT-style sum of each claim's best match, row-normalized "
                              "(equivalent to mean-of-max over d's claims -- see src/retrieval/cc_dense.py). "
                              "'mean': plain mean over every claim-claim pair, already bounded in [-1, 1] "
-                             "so no normalization is applied. "
-                             "'kmeans': cluster the topic's pooled claims into topic buckets first, then "
-                             "score doc-doc similarity as cosine over cluster-membership vectors -- see "
-                             "the --kmeans-* flags below (default: maxsim)")
-    parser.add_argument("--kmeans-n-clusters", type=int, default=20,
-                        help="Only used when --agg kmeans. Number of k-means clusters fit per topic over "
-                             "that topic's pooled claim embeddings (clamped down if fewer claims are "
-                             "available) (default: 20)")
-    parser.add_argument("--kmeans-label-mode", choices=["binary", "scaled"], default="binary",
-                        help="Only used when --agg kmeans. How a doc's claims-per-cluster counts become "
-                             "its cluster vector. 'binary': multi-hot, 1 if the doc has >=1 claim in that "
-                             "cluster. 'scaled': within-doc fraction of claims per cluster, summing to 1 "
-                             "(default: binary)")
-    parser.add_argument("--kmeans-n-init", type=int, default=10,
-                        help="Only used when --agg kmeans. Number of k-means initializations (sklearn "
-                             "KMeans n_init) (default: 10)")
-    parser.add_argument("--kmeans-min-doc-support", type=int, default=1,
-                        help="Only used when --agg kmeans. A cluster touched by fewer than this many "
-                             "distinct docs is zeroed out of every doc's vector (not redundant -- one "
-                             "doc's unique claim, not corroboration). Default 1 is a no-op; raise to "
-                             "e.g. 2 to require actual cross-document overlap (default: 1)")
+                             "so no normalization is applied (default: maxsim). For the k-means-clustered "
+                             "variant, use pipeline/run_cc_kmeans.py instead.")
     parser.add_argument("--tag", default="cc-dense",
                         help="Run tag written in the TREC output (default: cc-dense)")
     args = parser.parse_args()
@@ -115,10 +96,6 @@ def main():
         lambda_mult=args.lambda_mult,
         mode=args.mode,
         agg=args.agg,
-        n_clusters=args.kmeans_n_clusters,
-        label_mode=args.kmeans_label_mode,
-        kmeans_n_init=args.kmeans_n_init,
-        min_doc_support=args.kmeans_min_doc_support,
     )
     logger.info(f"the run file is {args.run_file}")
 
