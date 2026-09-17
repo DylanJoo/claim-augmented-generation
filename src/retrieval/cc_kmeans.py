@@ -2,8 +2,8 @@
 cc-kmeans (Claim-Claim k-means rerank) on top of a doc-level run file --
 dense embedding variant. Detached from cc_dense.py (which keeps only the
 maxsim/mean claim-pair aggregations) since k-means needs its own fit/predict
-machinery and a few k-means-only knobs (n_clusters, label_mode, top_m,
-min_doc_support) that don't apply to maxsim/mean at all.
+machinery and a few k-means-only knobs (n_clusters, label_mode, top_m)
+that don't apply to maxsim/mean at all.
 
 Rather than scoring exact claim-pair similarity (cc_dense.py's maxsim/mean),
 every claim among the topic's pooled documents is first clustered with
@@ -49,15 +49,6 @@ actually fit on:
     fitting. Passing top_m >= len(pool) degenerates to the top_m=None case
     exactly (the tail-predict loop below is simply empty), so this is a
     strict generalization, not a separate code path.
-
-min_doc_support (default 1 = off) guards against a different failure mode:
-a cluster that only one doc happens to touch is definitionally not
-redundant (it's that doc's unique claim, not corroboration), so any cluster
-with fewer than min_doc_support distinct docs is zeroed out of every doc's
-vector before label_mode is applied. This matters most when top_m is large
-(or None) -- fitting on a noisy pool means a chance collision between one
-relevant doc and one irrelevant doc's claims can otherwise register as
-"overlap" with no real corroboration behind it.
 
 Selection is pure coverage, not an MMR relevance/diversity blend (for that,
 see cc_dense.py's own subtract/add modes, which do exact claim-pair MMR
@@ -131,14 +122,12 @@ def _kmeans_doc_vectors(
     top_m=None,
     label_mode="binary",
     kmeans_n_init=10,
-    min_doc_support=1,
 ):
     """Fit k-means on the claims of the top `top_m` docs only (by base
     relevance -- `list_docids` must already be sorted that way), then assign
     every pooled doc's claims to those fitted centroids. top_m=None (or
     top_m >= len(list_docids)) fits on the whole pool -- see module
-    docstring for the full mechanism, and for label_mode/min_doc_support
-    semantics.
+    docstring for the full mechanism, and for label_mode semantics.
 
     Returns (doc_vecs [n_docs, effective_k], core_labels [n_core_claims] or
     None -- None only when the core itself has no claims in the shards).
@@ -208,15 +197,6 @@ def _kmeans_doc_vectors(
             for cluster_id in km.predict(tail_claim_matrix):
                 counts[doc_idx, cluster_id] += 1.0
 
-    if min_doc_support > 1:
-        doc_freq = (counts > 0).sum(axis=0)
-        weak = doc_freq < min_doc_support
-        if weak.any():
-            print(f"[cc_kmeans] {int(weak.sum())}/{effective_k} cluster(s) touched by "
-                  f"<{min_doc_support} distinct doc(s); zeroing them out as non-redundant, "
-                  f"e.g. cluster ids {np.nonzero(weak)[0][:5].tolist()}")
-            counts[:, weak] = 0.0
-
     if label_mode == "binary":
         doc_vecs = (counts > 0).astype(np.float32)
     else:  # "scaled"
@@ -260,7 +240,6 @@ def _select(
     top_m=None,
     label_mode="binary",
     kmeans_n_init=10,
-    min_doc_support=1,
     alpha=0.5,
     qid=None,
 ):
@@ -277,7 +256,6 @@ def _select(
         top_m=top_m,
         label_mode=label_mode,
         kmeans_n_init=kmeans_n_init,
-        min_doc_support=min_doc_support,
     )
     agg_label = "kmeans" if (top_m is None or top_m >= len(hits)) else f"kmeans-core(top{top_m})"
     _print_cluster_summary(qid, doc_vecs.shape[1], labels)
@@ -322,7 +300,6 @@ def run(
     top_m: int = None,
     label_mode: str = "binary",
     kmeans_n_init: int = 10,
-    min_doc_support: int = 1,
     alpha: float = 0.5,
 ) -> List[Result]:
     logger.info("cc-kmeans: n_clusters=%d, top_m=%s, base relevance from run file %s, "
@@ -363,7 +340,7 @@ def run(
         outputs[i].evidences = _select(
             hits, claim_reps_by_id, rows_by_parent, k,
             n_clusters=n_clusters, top_m=top_m, label_mode=label_mode,
-            kmeans_n_init=kmeans_n_init, min_doc_support=min_doc_support, alpha=alpha, qid=qid,
+            kmeans_n_init=kmeans_n_init, alpha=alpha, qid=qid,
         )
 
     return outputs

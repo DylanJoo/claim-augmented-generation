@@ -1,5 +1,5 @@
 | Run | StRecall@1 | @2 | @3 | @4 | @5 | @6 | @7 | @8 | @9 | @10 |
-|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|---|---|---|
 | run.ragtime1.documents.Qwen3-Embedding-0.6B.cckmeans-core.top20-k50-binary.alpha-0.2.txt | 0.2673 | 0.3671 | 0.4377 | 0.4874 | 0.5142 | 0.5311 | 0.5588 | 0.5662 | 0.5948 | 0.6126 |
 | run.ragtime1.documents.Qwen3-Embedding-0.6B.cckmeans-core.top20-k50-binary.alpha-0.3.txt | 0.2673 | 0.3579 | 0.4405 | 0.5042 | 0.5194 | 0.5294 | 0.5481 | 0.5868 | 0.6027 | 0.6091 |
 | run.ragtime1.documents.Qwen3-Embedding-0.6B.cckmeans-core.top20-k50-binary.alpha-0.7.txt | 0.2673 | 0.3866 | 0.4475 | 0.4973 | 0.5216 | 0.5624 | 0.5803 | 0.5882 | 0.6158 | 0.6322 |

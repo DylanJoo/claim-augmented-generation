@@ -26,7 +26,6 @@ Usage:
         [--k 100] [--alpha 0.5] \
         [--kmeans-n-clusters 20] [--kmeans-top-m <int, default: whole pool>] \
         [--kmeans-label-mode binary|scaled] [--kmeans-n-init 10] \
-        [--kmeans-min-doc-support 1] \
         [--tag cc-kmeans]
 """
 
@@ -96,11 +95,6 @@ def main():
                              "(default: binary)")
     parser.add_argument("--kmeans-n-init", type=int, default=10,
                         help="Number of k-means initializations (sklearn KMeans n_init) (default: 10)")
-    parser.add_argument("--kmeans-min-doc-support", type=int, default=1,
-                        help="A cluster touched by fewer than this many distinct docs is zeroed out of "
-                             "every doc's vector (not redundant -- one doc's unique claim, not "
-                             "corroboration). Default 1 is a no-op; raise to e.g. 2 to require actual "
-                             "cross-document overlap (default: 1)")
     parser.add_argument("--tag", default="cc-kmeans",
                         help="Run tag written in the TREC output (default: cc-kmeans)")
     args = parser.parse_args()
@@ -120,7 +114,6 @@ def main():
         top_m=args.kmeans_top_m,
         label_mode=args.kmeans_label_mode,
         kmeans_n_init=args.kmeans_n_init,
-        min_doc_support=args.kmeans_min_doc_support,
     )
 
     write_trec(results, args.output, args.tag)

@@ -1,5 +1,5 @@
 | Run | StRecall@1 | @2 | @3 | @4 | @5 | @6 | @7 | @8 | @9 | @10 |
-|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|---|---|---|
 | run.neuclir1.documents.Qwen3-Embedding-0.6B.cckmeans-core.top20-k50-binary.alpha-0.2.txt | 0.3671 | 0.4298 | 0.5028 | 0.5707 | 0.5965 | 0.6117 | 0.6326 | 0.6677 | 0.6698 | 0.6796 |
 | run.neuclir1.documents.Qwen3-Embedding-0.6B.cckmeans-core.top20-k50-binary.alpha-0.3.txt | 0.3671 | 0.4215 | 0.5155 | 0.5520 | 0.5856 | 0.6088 | 0.6393 | 0.6501 | 0.6708 | 0.6743 |
 | run.neuclir1.documents.Qwen3-Embedding-0.6B.cckmeans-core.top20-k50-binary.alpha-0.7.txt | 0.3671 | 0.4337 | 0.5069 | 0.5428 | 0.5575 | 0.5877 | 0.6137 | 0.6351 | 0.6486 | 0.6667 |

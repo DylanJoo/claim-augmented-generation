@@ -221,27 +221,6 @@ def main():
         )
         print("[PASS] n_clusters clamp ran without raising (watch for the '[cc_kmeans] ... clamping' line above)")
 
-        # -- min_doc_support check: docD is the *only* doc near c2, so its
-        # cluster has doc-frequency 1 -- with min_doc_support=2 that cluster
-        # must get zeroed, leaving docD's vector all-zero (same as docE's).
-        print(f"\n{'='*70}\nmin_doc_support=2 check (docD's cluster has doc-frequency 1)\n{'='*70}")
-        doc_vecs_mds, _ = cc_kmeans._kmeans_doc_vectors(
-            list_docids=["docA", "docB", "docC", "docD", "docE", "docF", "docG"],
-            claim_reps_by_id=cc_kmeans._load_claim_reps(
-                claim_reps_path, {"docA", "docB", "docC", "docD", "docE", "docF", "docG"}),
-            rows_by_parent=cc_kmeans._rows_by_parent(
-                cc_kmeans._load_claim_reps(
-                    claim_reps_path, {"docA", "docB", "docC", "docD", "docE", "docF", "docG"})),
-            n_clusters=3,
-            top_m=None,
-            label_mode="binary",
-            kmeans_n_init=5,
-            min_doc_support=2,
-        )
-        docD_idx = 3
-        check("docD's vector is all-zero once its singleton cluster is dropped",
-              not doc_vecs_mds[docD_idx].any())
-
         # -- alpha=0.0 sanity: no novelty discount at all, so gain reduces to
         # raw cluster-touch count and ties are broken by pool order --
         print(f"\n{'='*70}\nalpha=0.0 check (no novelty discount)\n{'='*70}")

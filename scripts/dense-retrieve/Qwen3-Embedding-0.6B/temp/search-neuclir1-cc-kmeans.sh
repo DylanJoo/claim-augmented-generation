@@ -32,7 +32,6 @@ for ALPHA in 0.5 0.6 0.7 0.8 0.9; do
         --alpha ${ALPHA} \
         --kmeans-n-clusters ${N_CLUSTERS} \
         --kmeans-label-mode $LABEL_MODE \
-        --kmeans-min-doc-support 1 \
         --tag doc-cckmeans-k${N_CLUSTERS}-${LABEL_MODE}-a${ALPHA}
 done
 done

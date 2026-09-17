@@ -37,7 +37,7 @@ single doc-doc similarity, sim(d, d'):
 For the k-means-clustered variant of this same idea (claims collapsed into
 topic buckets instead of scored pairwise), see cc_kmeans.py -- it was
 detached from this module since it needs its own fit/predict machinery and
-knobs (n_clusters, label_mode, top_m, min_doc_support) that don't apply to
+knobs (n_clusters, label_mode, top_m) that don't apply to
 maxsim/mean at all.
 """
 import copy
