@@ -39,6 +39,19 @@ topic buckets instead of scored pairwise), see cc_kmeans.py -- it was
 detached from this module since it needs its own fit/predict machinery and
 knobs (n_clusters, label_mode, top_m) that don't apply to
 maxsim/mean at all.
+
+query_reps/claim_filter (optional): the same query-claim similarity filter
+dc_gap_dense.py uses, applied here before the claim-claim aggsim matrix is
+built. Every claim in a doc counts equally in both "maxsim" and "mean", so a
+claim that is essentially unrelated to the query still gets to (a) be the
+arg-max some other claim latches onto in "maxsim", or (b) dilute the "mean"
+average with a near-zero pair -- either way it can suppress a doc's true
+claim-echo/overlap signal or, in "subtract" mode, its diversity signal, for
+reasons that have nothing to do with the query. Dropping (or, for "topn",
+reweighting the quota of) off-topic claims by query-claim cosine similarity
+before aggregation keeps sim(d, d') focused on claims that are actually
+about the query. Default claim_filter="none" keeps every claim, matching
+prior behavior exactly.
 """
 import copy
 import glob
@@ -58,6 +71,10 @@ def _pickle_load(path):
     with open(path, "rb") as f:
         reps, lookup = pickle.load(f)
     return np.asarray(reps), lookup
+
+def _load_query_reps(query_reps_path):
+    reps, lookup = _pickle_load(query_reps_path)
+    return reps, {str(qid): i for i, qid in enumerate(lookup)}
 
 def _load_claim_reps(claim_reps_path, needed_docids):
     files = sorted(glob.glob(claim_reps_path))
@@ -84,22 +101,62 @@ def _rows_by_parent(claim_reps_by_id):
     return rows_by_parent
 
 
-def _claim_aggsim_matrix(list_docids, claim_reps_by_id, rows_by_parent, dim, agg="maxsim"):
+def _filter_claims_for_doc(cids, claim_reps_by_id, query_vec, doc_relevance, claim_filter,
+                            claims_per_doc, scale_topn_by_relevance, claim_sim_threshold):
+    """Query-claim similarity filter, identical to dc_gap_dense.py's
+    per-doc claim selection (see module docstring)."""
+    sims = np.asarray(
+        [float(np.dot(query_vec, claim_reps_by_id[cid])) for cid in cids],
+        dtype=np.float32,
+    )
+    orders = np.argsort(sims)[::-1]  # descending by query-claim similarity
+
+    if claim_filter == "topn":
+        n = claims_per_doc
+        if scale_topn_by_relevance:
+            n = max(1, round(claims_per_doc * doc_relevance))
+        keep = orders[:n]
+    elif claim_filter == "threshold":
+        keep = orders[sims[orders] >= claim_sim_threshold]
+        if len(keep) == 0:
+            keep = orders[:1]  # never zero out a doc entirely -- keep its single best claim
+    else:
+        raise ValueError(f"Unknown claim_filter: {claim_filter!r}")
+
+    return [cids[i] for i in keep]
+
+
+def _claim_aggsim_matrix(list_docids, claim_reps_by_id, rows_by_parent, dim, agg="maxsim",
+                          list_relevance=None, query_vec=None, claim_filter="none",
+                          claims_per_doc=5, scale_topn_by_relevance=False, claim_sim_threshold=0.0):
     """Doc-doc similarity via claim-level aggregation of dense embeddings.
 
     See module docstring for the "maxsim" vs "mean" trade-off. "maxsim" is
     row-normalized to [0, 1] (mathematically equivalent to averaging each
     max over d's claim count, see module docstring); "mean" is already
     bounded in [-1, 1] by construction and left as-is.
+
+    claim_filter != "none" applies the query-claim similarity filter (see
+    module docstring) to each doc's claims before they enter the matrix.
     """
     if agg not in ("maxsim", "mean"):
         raise ValueError(f"agg must be 'maxsim' or 'mean', got {agg!r}")
+
+    if claim_filter != "none":
+        values = np.asarray(list_relevance, dtype=np.float32)
+        lo, hi = values.min(), values.max()
+        norm_relevance = np.ones_like(values) if hi - lo < 1e-9 else (values - lo) / (hi - lo)
 
     n = len(list_docids)
     doc_of_claim = []
     claim_vecs = []
     for doc_idx, docid in enumerate(list_docids):
         claim_ids = rows_by_parent.get(docid) or []
+        if claim_filter != "none" and claim_ids:
+            claim_ids = _filter_claims_for_doc(
+                claim_ids, claim_reps_by_id, query_vec, float(norm_relevance[doc_idx]),
+                claim_filter, claims_per_doc, scale_topn_by_relevance, claim_sim_threshold,
+            )
         vecs = [claim_reps_by_id[cid] for cid in claim_ids]
         if not vecs:
             vecs = [np.zeros(dim, dtype=np.float32)]
@@ -147,6 +204,11 @@ def _select(
     lambda_mult,
     mode,
     agg,
+    query_vec=None,
+    claim_filter="none",
+    claims_per_doc=5,
+    scale_topn_by_relevance=False,
+    claim_sim_threshold=0.0,
 ):
     if len(hits) <= 1:
         return hits
@@ -163,6 +225,12 @@ def _select(
         rows_by_parent=rows_by_parent,
         dim=dim,
         agg=agg,
+        list_relevance=relevance,
+        query_vec=query_vec,
+        claim_filter=claim_filter,
+        claims_per_doc=claims_per_doc,
+        scale_topn_by_relevance=scale_topn_by_relevance,
+        claim_sim_threshold=claim_sim_threshold,
     )
     _print_sim_matrix(list_docids, sim, agg=agg, topn=10)
 
@@ -214,9 +282,22 @@ def run(
     lambda_mult: float = 0.9,
     mode: str = "subtract",
     agg: str = "maxsim",
+    query_reps: str = None,
+    claim_filter: str = "none",
+    claims_per_doc: int = 5,
+    scale_topn_by_relevance: bool = False,
+    claim_sim_threshold: float = 0.0,
 ) -> List[Result]:
-    logger.info("cc-dense: mode=%s, agg=%s, base relevance from run file %s, pool k=%d, lambda=%.2f, claim_reps=%s",
-                mode, agg, run_file, k, lambda_mult, claim_reps)
+    """query_reps/claim_filter: optional query-claim similarity filter on
+    each pooled doc's claims before the claim-claim aggsim matrix is built
+    (see module docstring). claim_filter="none" (default) keeps every claim
+    found in the shards, matching pre-existing behavior; query_reps is
+    required for "topn"/"threshold"."""
+    if claim_filter != "none" and not query_reps:
+        raise ValueError(f"claim_filter={claim_filter!r} requires query_reps")
+
+    logger.info("cc-dense: mode=%s, agg=%s, base relevance from run file %s, pool k=%d, lambda=%.2f, claim_reps=%s, claim_filter=%s",
+                mode, agg, run_file, k, lambda_mult, claim_reps, claim_filter)
     base_run = load_run(run_file, k=k)
     claim_corpus = {}  # corpus text unused downstream; skip loading to save memory
 
@@ -228,10 +309,21 @@ def run(
     dim = next(iter(claim_reps_by_id.values())).shape[0]
     rows_by_parent = _rows_by_parent(claim_reps_by_id)
 
+    q_reps, q_pos = (None, {})
+    if query_reps:
+        q_reps, q_pos = _load_query_reps(query_reps)
+        logger.info("cc-dense: loaded %d query embedding(s) from %s for claim_filter=%r",
+                    len(q_pos), query_reps, claim_filter)
+
     outputs = copy.deepcopy(inputs)
     for i, inp in enumerate(inputs):
         qid = str(inp.topic["qid"])
         pool = base_run.get(qid, [])
+
+        query_vec = None
+        if claim_filter != "none":
+            query_vec = q_reps[q_pos[qid]]
+
         hits = [
             Hit(
                 docid=docid,
@@ -251,6 +343,11 @@ def run(
         outputs[i].hits = hits
         outputs[i].evidences = _select(
             hits, claim_reps_by_id, rows_by_parent, dim, k, lambda_mult, mode=mode, agg=agg,
+            query_vec=query_vec,
+            claim_filter=claim_filter,
+            claims_per_doc=claims_per_doc,
+            scale_topn_by_relevance=scale_topn_by_relevance,
+            claim_sim_threshold=claim_sim_threshold,
         )
 
     return outputs

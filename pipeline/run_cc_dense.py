@@ -16,7 +16,8 @@ Usage:
         --claim-reps <'claims_emb/claims_emb.*.pkl'> \
         --output <results.txt> \
         [--k 100] [--lambda-mult 0.9] [--mode subtract|add] \
-        [--agg maxsim|mean] [--tag cc-dense]
+        [--agg maxsim|mean] [--tag cc-dense] \
+        [--query-reps <query_emb.pkl> --claim-filter none|topn|threshold]
 
 For the k-means-clustered variant of --agg (claims collapsed into topic
 buckets instead of scored pairwise), see pipeline/run_cc_kmeans.py.
@@ -81,6 +82,28 @@ def main():
                              "variant, use pipeline/run_cc_kmeans.py instead.")
     parser.add_argument("--tag", default="cc-dense",
                         help="Run tag written in the TREC output (default: cc-dense)")
+    parser.add_argument("--query-reps",
+                        help="Path to a single tevatron query embedding pickle (reps, lookup) with one "
+                             "vector per topic qid (see scripts/dense-index/*/*-encode-q.sh). "
+                             "Required when --claim-filter is not 'none'.")
+    parser.add_argument("--claim-filter", choices=["none", "topn", "threshold"], default="none",
+                        help="Filter each pooled doc's claims by query-claim cosine similarity before "
+                             "the claim-claim aggsim matrix is built, so a claim unrelated to the query "
+                             "can't distort a doc's claim-echo/overlap or diversity signal. 'topn': keep "
+                             "each doc's N highest-similarity claims (see --claims-per-doc/"
+                             "--scale-topn-by-relevance). 'threshold': keep claims at or above "
+                             "--claim-sim-threshold, same cutoff for every doc (falls back to a doc's "
+                             "single best claim if none pass). Default 'none' keeps every claim found in "
+                             "the shards, matching prior behavior.")
+    parser.add_argument("--claims-per-doc", type=int, default=5,
+                        help="'topn' claim_filter: number of claims kept per doc (default: 5)")
+    parser.add_argument("--scale-topn-by-relevance", action="store_true",
+                        help="'topn' claim_filter: scale each doc's claim quota by its own base "
+                             "relevance (normalized 0-1 over the pool), so higher-relevance docs keep "
+                             "more claims: n = max(1, round(claims_per_doc * relevance))")
+    parser.add_argument("--claim-sim-threshold", type=float, default=0.0,
+                        help="'threshold' claim_filter: minimum query-claim cosine similarity to keep a "
+                             "claim (default: 0.0)")
     args = parser.parse_args()
 
     topics = load_topics(args.topics)
@@ -96,6 +119,11 @@ def main():
         lambda_mult=args.lambda_mult,
         mode=args.mode,
         agg=args.agg,
+        query_reps=args.query_reps,
+        claim_filter=args.claim_filter,
+        claims_per_doc=args.claims_per_doc,
+        scale_topn_by_relevance=args.scale_topn_by_relevance,
+        claim_sim_threshold=args.claim_sim_threshold,
     )
     logger.info(f"the run file is {args.run_file}")
 
