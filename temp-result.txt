@@ -1,0 +1,5 @@
+| Run | StRecall@1 | @2 | @3 | @4 | @5 | @6 | @7 | @8 | @9 | @10 |
+|---|---|---|---|---|---|
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.cckmeans.k50-binary.alpha-0.5.lambda-0.5.txt | 0.3278 | 0.4255 | 0.5258 | 0.5818 | 0.6120 | 0.6280 | 0.6420 | 0.6683 | 0.6829 | 0.7024 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.ccmaxsim-add.lambda-0.6.txt | 0.3101 | 0.4263 | 0.5345 | 0.5783 | 0.6125 | 0.6393 | 0.6594 | 0.6867 | 0.6973 | 0.7074 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.ccmaxsim-add.lambda-0.7.txt | 0.3101 | 0.4198 | 0.5357 | 0.5806 | 0.6032 | 0.6407 | 0.6571 | 0.6719 | 0.6863 | 0.7087 |

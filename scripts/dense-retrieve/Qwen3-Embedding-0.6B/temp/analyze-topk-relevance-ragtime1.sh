@@ -2,16 +2,16 @@
 #SBATCH --job-name=analyze-topk-relevance-ragtime1
 #SBATCH --output=logs/analyze-topk-relevance-ragtime1.out
 #SBATCH --error=logs/analyze-topk-relevance-ragtime1.err
-#SBATCH --partition=small
+#SBATCH --partition=cpu
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=64
 #SBATCH --mem=128G
 #SBATCH --time=6:00:00
-#SBATCH --account=project_465002532
 
-module use /appl/local/csc/modulefiles/
-module load pytorch/2.5
+source ~/.bashrc
+initconda
+conda activate basic
 
 cd $HOME/claim-augmented-generation
 

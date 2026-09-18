@@ -2,17 +2,17 @@
 #SBATCH --job-name=search-neuclir1-hybrid
 #SBATCH --output=logs/search-neuclir1-hybrid.out
 #SBATCH --error=logs/search-neuclir1-hybrid.err
-#SBATCH --partition=small
+#SBATCH --partition=cpu
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=128
+#SBATCH --cpus-per-task=40
 #SBATCH --mem=512G
 #SBATCH --time=1-00:00:00
-#SBATCH --account=project_465002438
 
 # ENV
-module use /appl/local/csc/modulefiles/
-module load pytorch/2.5
+source ~/.bashrc
+initconda
+conda activate basic
 
 cd $HOME/claim-augmented-generation
 

@@ -2,17 +2,17 @@
 #SBATCH --job-name=search-claims-dist
 #SBATCH --output=logs/search-ragtime2-claims-dist.out
 #SBATCH --error=logs/search-ragtime2-claims-dist.err
-#SBATCH --partition=small
+#SBATCH --partition=cpu
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=128
 #SBATCH --mem=128G
 #SBATCH --time=1-00:00:00
-#SBATCH --account=project_465002438
 
 # ENV
-module use /appl/local/csc/modulefiles/
-module load pytorch/2.5
+source ~/.bashrc
+initconda
+conda activate basic
 
 MODEL_NAME_OR_PATH=Qwen/Qwen3-Embedding-0.6B
 MODEL_NAME=${MODEL_NAME_OR_PATH##*/}
@@ -36,7 +36,6 @@ cd $HOME/claim-augmented-generation
 for k in 100 500 750; do
 for FUSION in sum; do
 # for FUSION in sum rrf max first; do
-singularity exec $SIF \
     python pipeline/run_dense.py \
     --topics data/ragtime2026.topics.test.jsonl \
     --query_reps $query_dir/queries_emb.pkl \

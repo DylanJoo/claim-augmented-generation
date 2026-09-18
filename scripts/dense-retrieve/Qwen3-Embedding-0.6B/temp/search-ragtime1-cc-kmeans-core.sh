@@ -2,17 +2,17 @@
 #SBATCH --job-name=search-ragtime1-cc-kmeans-core
 #SBATCH --output=logs/search-ragtime1-cc-kmeans-core.out
 #SBATCH --error=logs/search-ragtime1-cc-kmeans-core.err
-#SBATCH --partition=small
+#SBATCH --partition=cpu
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=128
+#SBATCH --cpus-per-task=32
 #SBATCH --mem=256G
 #SBATCH --time=24:00:00
-#SBATCH --account=project_465002532
 
 # ENV
-module use /appl/local/csc/modulefiles/
-module load pytorch/2.5
+source ~/.bashrc
+initconda
+conda activate basic
 
 cd $HOME/claim-augmented-generation
 
@@ -28,9 +28,9 @@ EMB_ROOT=$HOME/scratch/ragtime1/${MODEL_NAME}
 # cc-dense/cc-kmeans sweeps.
 
 for LABEL_MODE in binary; do
-for TOP_M in 20; do
-for N_CLUSTERS in 50; do
-for ALPHA in 0.2 0.3 0.7 0.8; do
+for TOP_M in 100; do
+for N_CLUSTERS in 200; do
+for ALPHA in 0.2 0.3 0.5 0.7 0.8; do
     python pipeline/run_cc_kmeans.py \
         --topics data/ragtime2025.topics.test.jsonl \
         --run-file runs/run.ragtime1.documents.Qwen3-Embedding-0.6B.txt \

@@ -1,10 +1,4 @@
 """
-cc-kmeans (Claim-Claim k-means rerank) on top of a doc-level run file --
-dense embedding variant. Detached from cc_dense.py (which keeps only the
-maxsim/mean claim-pair aggregations) since k-means needs its own fit/predict
-machinery and a few k-means-only knobs (n_clusters, label_mode, top_m)
-that don't apply to maxsim/mean at all.
-
 Rather than scoring exact claim-pair similarity (cc_dense.py's maxsim/mean),
 every claim among the topic's pooled documents is first clustered with
 k-means into `n_clusters` groups, fit fresh per topic (a cluster id is only
@@ -50,9 +44,14 @@ actually fit on:
     exactly (the tail-predict loop below is simply empty), so this is a
     strict generalization, not a separate code path.
 
-Selection is pure coverage, not an MMR relevance/diversity blend (for that,
-see cc_dense.py's own subtract/add modes, which do exact claim-pair MMR
-without clustering): greedily maximize
+Selection greedily maximizes a lambda_mult blend of base relevance and
+per-round coverage gain, the same tradeoff construction cc_dense.py's
+_select uses for its MMR subtract/add modes:
+
+    score(d) = lambda_mult * relevance(d)
+             + (1 - lambda_mult) * coverage_gain(d) / max_d' coverage_gain(d')
+
+where coverage_gain(d) is
 
     sum_j doc_vecs[d, j] * (1 - alpha) ** covered_count[j]
 
@@ -64,8 +63,27 @@ label_mode="scaled") standing in for its J(d, s). covered_count[j] is how
 many already-picked docs touch cluster j (presence, not the scaled weight),
 so a cluster gets increasingly discounted the more it's already been
 covered, rather than only being compared to the single closest already-
-picked doc the way MMR's max-similarity penalty does. Base relevance never
-enters the objective -- alpha controls the novelty discount instead.
+picked doc the way MMR's max-similarity penalty does. coverage_gain is
+divided by n_clusters -- a fixed, round-invariant normalizer -- so it sits
+on the same roughly-[0, 1] scale as relevance before the two are blended,
+without swamping a lambda_mult blend against relevance scores that are
+typically close to 1. This must NOT be each round's own max achievable
+gain: dividing by that instead would map the current round's winning doc
+to exactly 1.0 every round by construction, destroying the
+decreasing-score signal a TREC run file's score column needs (and, at
+lambda_mult=0.0, tying every selected doc's score at 1.0 outright).
+
+lambda_mult=0.0 (default) is a true no-op reproducing the original pure-
+coverage selection bit-for-bit: dividing every round's gain by a positive
+per-round constant doesn't change its argmax, and relevance's contribution
+is exactly zero. lambda_mult=1.0 ignores clusters entirely and picks by
+base relevance alone, matching cc_dense's convention for the same value.
+This was added because pure coverage (lambda_mult=0.0) can and does demote
+the single most relevant doc out of rank 1 whenever it doesn't happen to
+touch the most claim clusters -- costing StRecall@1 outright, since nothing
+in the pure-coverage objective ever looks at relevance. Blending in
+relevance protects the top rank(s) the same way cc_dense's lambda_mult
+does, without discarding the coverage mechanism for later ranks.
 """
 import copy
 import glob
@@ -168,16 +186,8 @@ def _kmeans_doc_vectors(
         print(f"[cc_kmeans] only {n_core_claims} claim(s) available among the top-{top_m} core "
               f"doc(s); clamping n_clusters {n_clusters} -> {effective_k}")
 
-    km = None
-    if effective_k < 2:
-        # Degenerate core (0 or 1 distinct claim to cluster): every claim is
-        # trivially its own/the only cluster -- skip fitting k-means, and
-        # the tail has no meaningful centroid space to be scored against.
-        core_labels = np.zeros(n_core_claims, dtype=np.int64)
-        effective_k = 1
-    else:
-        km = KMeans(n_clusters=effective_k, n_init=kmeans_n_init, random_state=_KMEANS_RANDOM_STATE)
-        core_labels = km.fit_predict(core_claim_matrix)
+    km = KMeans(n_clusters=effective_k, n_init=kmeans_n_init, random_state=_KMEANS_RANDOM_STATE)
+    core_labels = km.fit_predict(core_claim_matrix)
 
     # 2. Score every doc's claims against the core's centroids: core docs
     # reuse the labels fit_predict already computed, tail docs (beyond
@@ -241,11 +251,18 @@ def _select(
     label_mode="binary",
     kmeans_n_init=10,
     alpha=0.5,
+    lambda_mult=0.0,
+    discount_floor=0.0,
     qid=None,
 ):
+    """lambda_mult (default 0.0, see module docstring's relevance-blend
+    section): 0.0 reproduces the original pure-coverage selection exactly;
+    > 0.0 blends in base relevance so rank 1 (and later ranks) can't be
+    handed to a doc that only wins on cluster coverage."""
     if len(hits) <= 1:
         return hits
 
+    relevance = np.asarray([h.score for h in hits], dtype=np.float32)
     list_docids = [h.docid for h in hits]  # already relevance-sorted, see utils.load_run
 
     doc_vecs, labels = _kmeans_doc_vectors(
@@ -269,21 +286,48 @@ def _select(
     # (Clarke et al. 2008's alpha-nDCG gain), with k-means cluster ids
     # standing in for that oracle's ground-truth subtopics and doc_vecs
     # (binary presence, or within-doc fraction under label_mode="scaled")
-    # standing in for its J(d, s). Pure coverage: base relevance plays no
-    # role in the objective at all.
+    # standing in for its J(d, s), blended against base relevance by
+    # lambda_mult (see module docstring and _select's own docstring).
     touched = doc_vecs > 0
     covered_count = np.zeros(doc_vecs.shape[1], dtype=np.float32)
+    # Fixed (round-invariant) normalizer: the most any single doc's gain
+    # could be this topic, if it touched every cluster and none were
+    # covered yet. Dividing by the CURRENT round's own max instead (i.e.
+    # gain.max() computed fresh each iteration) would map the winning doc's
+    # score to exactly 1.0 in every round by construction -- destroying the
+    # decreasing-score signal entirely and, for lambda_mult=0.0, tying
+    # every selected doc's score at 1.0 (silent bug caught by comparing
+    # eval numbers against pre-refactor output, not by the selection-order
+    # diff alone -- diffing the docid/rank columns can't see a broken score
+    # column when the argmax sequence is untouched).
+    effective_k = doc_vecs.shape[1]
     for _ in range(n_select):
-        gain = (doc_vecs * np.power(1.0 - alpha, covered_count)).sum(axis=1)
-        gain[selected] = -np.inf
-        pick = int(np.argmax(gain))
-        selected_scores.append(float(gain[pick]))
+        # discount_floor: a covered cluster never drops below this weight, so
+        # overlap with already-selected (i.e. likely relevant) docs keeps
+        # earning a little credit instead of only being penalized. 0.0 is a
+        # no-op ((1-alpha)**n >= 0 always).
+        discount = np.maximum(np.power(1.0 - alpha, covered_count), discount_floor)
+        gain = (doc_vecs * discount).sum(axis=1)
+        gain_norm = gain / effective_k if effective_k > 0 else gain
+        scores = lambda_mult * relevance + (1.0 - lambda_mult) * gain_norm
+        scores[selected] = -np.inf
+        pick = int(np.argmax(scores))
+        selected_scores.append(float(scores[pick]))
         selected.append(pick)
         covered_count += touched[pick]
 
-    # No re-sort needed: greedy maximization of a monotone submodular gain
-    # (the (1-alpha)**covered_count discount only ever grows) yields
-    # non-increasing picks by construction.
+    # lambda_mult=0.0's pure coverage_gain is monotone submodular (the
+    # (1-alpha)**covered_count discount only ever grows), so its raw scores
+    # are non-increasing by construction -- but per-round normalization by
+    # gain_max, and any lambda_mult > 0 blend against relevance (which
+    # doesn't shrink round to round the way coverage_gain does), aren't
+    # guaranteed to preserve that ordering. Re-sorting descending keeps
+    # every actually-computed magnitude but reassigns it by rank, so
+    # downstream TREC tooling (which sorts by the score column) can't
+    # silently discard the greedy order the loop above just computed --
+    # same fix cc_dense.py's mode="add" needed for the same reason.
+    selected_scores = sorted(selected_scores, reverse=True)
+
     return [
         Hit(docid=hits[idx].docid, score=selected_scores[rank - 1], rank=rank, content_dict=hits[idx].content_dict)
         for rank, idx in enumerate(selected, start=1)
@@ -301,10 +345,15 @@ def run(
     label_mode: str = "binary",
     kmeans_n_init: int = 10,
     alpha: float = 0.5,
+    lambda_mult: float = 0.0,
+    discount_floor: float = 0.0,
 ) -> List[Result]:
+    """lambda_mult (default 0.0, no-op -- see module docstring and
+    _select's docstring): relevance/coverage tradeoff, same convention as
+    cc_dense.py's lambda_mult (1.0 = pure relevance, 0.0 = pure coverage)."""
     logger.info("cc-kmeans: n_clusters=%d, top_m=%s, base relevance from run file %s, "
-                "pool k=%d, alpha=%.2f, claim_reps=%s",
-                n_clusters, top_m, run_file, k, alpha, claim_reps)
+                "pool k=%d, alpha=%.2f, lambda_mult=%.2f, claim_reps=%s",
+                n_clusters, top_m, run_file, k, alpha, lambda_mult, claim_reps)
     base_run = load_run(run_file, k=k)
     claim_corpus = {}  # corpus text unused downstream; skip loading to save memory
 
@@ -340,7 +389,8 @@ def run(
         outputs[i].evidences = _select(
             hits, claim_reps_by_id, rows_by_parent, k,
             n_clusters=n_clusters, top_m=top_m, label_mode=label_mode,
-            kmeans_n_init=kmeans_n_init, alpha=alpha, qid=qid,
+            kmeans_n_init=kmeans_n_init, alpha=alpha, lambda_mult=lambda_mult,
+            discount_floor=discount_floor, qid=qid,
         )
 
     return outputs

@@ -2,18 +2,18 @@
 #SBATCH --job-name=search-neuclir1-dc-gap-grid
 #SBATCH --output=logs/%x-%a.out
 #SBATCH --error=logs/%x-%a.err
-#SBATCH --partition=small
+#SBATCH --partition=cpu
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=128G
 #SBATCH --time=12:00:00
-#SBATCH --account=project_465002532
 #SBATCH --array=0-12
 
 # ENV
-module use /appl/local/csc/modulefiles/
-module load pytorch/2.5
+source ~/.bashrc
+initconda
+conda activate basic
 
 cd $HOME/claim-augmented-generation
 

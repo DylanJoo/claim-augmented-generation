@@ -1,12 +1,13 @@
 """
 cc-kmeans retrieval demo -- base relevance is read from a pre-computed
 doc-level TREC run file, followed by a greedy re-ranking that selects docs to
-maximize alpha-nDCG's own per-cluster diminishing-returns gain over per-doc
-k-means cluster-membership vectors (same construction as
-src/evaluator/rac_eval_ub.py's greedy_alpha_ndcg_oracle, with k-means
-clusters standing in for ground-truth subtopics). This is pure coverage --
-base relevance never enters the selection objective, only `--alpha` (the
-novelty discount). See src/retrieval/cc_kmeans.py for the full method
+maximize a `--lambda-mult` blend of that base relevance and alpha-nDCG's own
+per-cluster diminishing-returns gain over per-doc k-means cluster-membership
+vectors (same construction as src/evaluator/rac_eval_ub.py's
+greedy_alpha_ndcg_oracle, with k-means clusters standing in for ground-truth
+subtopics). `--lambda-mult 0.0` (default) is pure coverage, reproducing the
+original behavior exactly; `--alpha` is the novelty discount within that
+coverage term. See src/retrieval/cc_kmeans.py for the full method
 description. For exact-relevance MMR-style reranking instead, use
 cc_dense.py's subtract/add modes.
 
@@ -23,7 +24,7 @@ Usage:
         --corpus <path/to/collection.jsonl.gz> [<more files/globs>...] \
         --claim-reps <'claims_emb/claims_emb.*.pkl'> \
         --output <results.txt> \
-        [--k 100] [--alpha 0.5] \
+        [--k 100] [--alpha 0.5] [--lambda-mult 0.0] \
         [--kmeans-n-clusters 20] [--kmeans-top-m <int, default: whole pool>] \
         [--kmeans-label-mode binary|scaled] [--kmeans-n-init 10] \
         [--tag cc-kmeans]
@@ -79,6 +80,15 @@ def main():
                         help="Novelty discount: a cluster's marginal gain is multiplied by "
                              "(1 - alpha) for each already-selected doc that touches it, same "
                              "semantics as rac_eval_ub.py's --alpha (default: 0.5)")
+    parser.add_argument("--lambda-mult", type=float, default=0.0,
+                        help="Relevance/coverage trade-off, same convention as cc_dense.py's "
+                             "--lambda-mult: 1.0 = pure relevance, 0.0 = pure cluster-coverage gain "
+                             "(default: 0.0, reproduces pre-existing pure-coverage selection exactly)")
+    parser.add_argument("--discount-floor", type=float, default=0.0,
+                        help="Minimum weight a covered cluster keeps in the gain, i.e. the novelty "
+                             "discount is max((1 - alpha) ** covered_count, floor). Lets docs that "
+                             "overlap the already-selected set still earn credit for it "
+                             "(default: 0.0, no floor -- reproduces existing behavior exactly)")
     parser.add_argument("--kmeans-n-clusters", type=int, default=20,
                         help="Number of k-means clusters fit on the core docs' claims (clamped down if "
                              "fewer claims are available) (default: 20)")
@@ -110,6 +120,8 @@ def main():
         claim_reps=args.claim_reps,
         k=args.k,
         alpha=args.alpha,
+        lambda_mult=args.lambda_mult,
+        discount_floor=args.discount_floor,
         n_clusters=args.kmeans_n_clusters,
         top_m=args.kmeans_top_m,
         label_mode=args.kmeans_label_mode,
