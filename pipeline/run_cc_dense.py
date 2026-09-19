@@ -17,8 +17,7 @@ Usage:
         --output <results.txt> \
         [--k 100] [--lambda-mult 0.9] [--mode subtract|add] \
         [--agg maxsim|mean] [--tag cc-dense] \
-        [--query-reps <query_emb.pkl> --claim-filter none|abs_threshold|topic_percentile] \
-        [--novelty-weight 0.0 --coverage-threshold 0.0]
+        [--query-reps <query_emb.pkl> --doc-threshold T]
 
 For the k-means-clustered variant of --agg (claims collapsed into topic
 buckets instead of scored pairwise), see pipeline/run_cc_kmeans.py.
@@ -86,52 +85,11 @@ def main():
     parser.add_argument("--query-reps",
                         help="Path to a single tevatron query embedding pickle (reps, lookup) with one "
                              "vector per topic qid (see scripts/dense-index/*/*-encode-q.sh). "
-                             "Required when --claim-filter is not 'none'.")
-    parser.add_argument("--claim-filter",
-                        choices=["none", "abs_threshold", "topic_percentile", "neighbor_rescue"],
-                        default="none",
-                        help="Filter each pooled doc's claims by query-claim cosine similarity before "
-                             "the claim-claim aggsim matrix is built, so a claim unrelated to the query "
-                             "can't distort a doc's claim-echo/overlap or diversity signal. "
-                             "'abs_threshold': one flat --claim-sim-threshold cosine cutoff for every "
-                             "claim in every doc, regardless of that doc's own score. "
-                             "'topic_percentile': like 'abs_threshold', but the cutoff is resolved once "
-                             "per topic as --topic-percentile of that topic's own pool-wide claim "
-                             "query-cosine distribution, instead of one constant reused across every "
-                             "topic. 'neighbor_rescue': before the --claim-sim-threshold cutoff, a claim's "
-                             "own score is raised to the best score among its 'neighbor' claims elsewhere "
-                             "in the pool (other claims at or above --neighbor-threshold claim-claim "
-                             "similarity to it), so a claim that's a near-duplicate of something that "
-                             "scores well against the query isn't dropped just because its own phrasing "
-                             "scores lower. (An earlier per-document MARGIN variant, relative to each "
-                             "doc's own base score, was tried and removed -- it over-penalized "
-                             "high-relevance, comprehensive docs by setting a higher absolute bar for "
-                             "them.) Default 'none' keeps every claim found in the shards, matching prior "
-                             "behavior.")
-    parser.add_argument("--claim-sim-threshold", type=float, default=0.0,
-                        help="'abs_threshold'/'neighbor_rescue' claim_filter: flat minimum (rescued, for "
-                             "neighbor_rescue) query-claim cosine similarity to keep a claim (default: 0.0)")
-    parser.add_argument("--topic-percentile", type=float, default=25.0,
-                        help="'topic_percentile' claim_filter: percentile (0-100) of this topic's own "
-                             "pool-wide claim query-cosine distribution used as the flat cutoff -- e.g. "
-                             "25.0 drops the bottom quarter of claims by query-similarity, topic by topic "
-                             "(default: 25.0)")
-    parser.add_argument("--neighbor-threshold", type=float, default=0.5,
-                        help="'neighbor_rescue' claim_filter: minimum claim-claim cosine similarity for "
-                             "another claim elsewhere in the pool to count as this claim's 'neighbor'. "
-                             "Should be looser than a same-nugget bar (~0.75): a genuinely rare claim has "
-                             "no neighbor at all at a strict bar (rarity is exactly why it scored low), so "
-                             "nothing could ever rescue it (default: 0.5)")
-    parser.add_argument("--novelty-weight", type=float, default=0.0,
-                        help="Weight of the claim-coverage bonus added to each round's greedy selection "
-                             "score, rewarding candidates with claims still uncovered by everything "
-                             "selected so far (see src/retrieval/cc_dense.py module docstring's 'claim "
-                             "coverage' section). Default 0.0 is a no-op, reproducing pre-existing "
-                             "selection exactly.")
-    parser.add_argument("--coverage-threshold", type=float, default=0.0,
-                        help="Minimum claim-claim cosine similarity for an already-selected claim to "
-                             "count as 'covering' a candidate doc's claim, used by --novelty-weight's "
-                             "coverage tracker (default: 0.0)")
+                             "Required when --doc-threshold is set.")
+    parser.add_argument("--doc-threshold", type=float, default=None,
+                        help="Drop a pooled document entirely if its best claim's query-cosine "
+                             "similarity is below this value (a topic always keeps at least its "
+                             "best-scoring doc). Default: no filtering.")
     args = parser.parse_args()
 
     topics = load_topics(args.topics)
@@ -148,12 +106,7 @@ def main():
         mode=args.mode,
         agg=args.agg,
         query_reps=args.query_reps,
-        claim_filter=args.claim_filter,
-        claim_sim_threshold=args.claim_sim_threshold,
-        topic_percentile=args.topic_percentile,
-        neighbor_threshold=args.neighbor_threshold,
-        novelty_weight=args.novelty_weight,
-        coverage_threshold=args.coverage_threshold,
+        doc_threshold=args.doc_threshold,
     )
     logger.info(f"the run file is {args.run_file}")
 
