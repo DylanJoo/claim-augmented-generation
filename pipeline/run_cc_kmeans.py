@@ -89,6 +89,26 @@ def main():
                              "discount is max((1 - alpha) ** covered_count, floor). Lets docs that "
                              "overlap the already-selected set still earn credit for it "
                              "(default: 0.0, no floor -- reproduces existing behavior exactly)")
+    parser.add_argument("--gain-norm", choices=["nclusters", "poolmax"], default="nclusters",
+                        help="Normalizer for the coverage gain before blending with relevance. "
+                             "'nclusters': divide by n_clusters (fixed). 'poolmax': divide by the "
+                             "topic's largest round-0 gain (per-topic, round-invariant) "
+                             "(default: nclusters)")
+    parser.add_argument("--score-mode", choices=["gain", "penalty", "both", "entropy"], default="gain",
+                        help="'gain': lambda*rel + (1-lambda)*novelty_gain (default). 'penalty': "
+                             "lambda*rel - (1-lambda)*redundancy, where redundancy = "
+                             "sum_j v_j*(1-(1-alpha)**covered_j), the mirror of the gain, "
+                             "same normalizer. 'both': lambda*rel + (1-lambda)*(gain - penalty_weight*redundancy). 'entropy': lambda*rel + (1-lambda)*H(q), H = binary entropy of q = new fraction of the doc's cluster mass (replaces the gain)")
+    parser.add_argument("--penalty-weight", type=float, default=1.0,
+                        help="Weight of the redundancy term in --score-mode both (default: 1.0)")
+    parser.add_argument("--novelty-ratio", type=float, default=None,
+                        help="New/covered ratio rho = w(0)/w(1) of the per-cluster gain weight: "
+                             "w(0)=1, w(c>=1)=(1/rho)*(1-alpha)**(c-1). Default: 1/(1-alpha), "
+                             "which reproduces the plain (1-alpha)**c discount exactly. "
+                             "Larger rho rewards uncovered clusters more")
+    parser.add_argument("--gain-scale", type=float, default=1.0,
+                        help="Multiplier applied to the normalized gain (default: 1.0). Note: for a "
+                             "fixed normalizer this is equivalent to re-parametrizing --lambda-mult")
     parser.add_argument("--kmeans-n-clusters", type=int, default=20,
                         help="Number of k-means clusters fit on the core docs' claims (clamped down if "
                              "fewer claims are available) (default: 20)")
@@ -98,11 +118,21 @@ def main():
                              "against those fitted centroids via .predict(), not included in the fit "
                              "itself. Omit (or set >= pool depth) to fit on the whole pool instead "
                              "(default: whole pool)")
-    parser.add_argument("--kmeans-label-mode", choices=["binary", "scaled"], default="binary",
+    parser.add_argument("--kmeans-label-mode", choices=["binary", "scaled", "centroid", "centroid_count"], default="binary",
                         help="How a doc's claims-per-cluster counts become its cluster vector. "
                              "'binary': multi-hot, 1 if the doc has >=1 claim in that cluster. "
                              "'scaled': within-doc fraction of claims per cluster, summing to 1 "
-                             "(default: binary)")
+                             "'centroid': multi-hot times the cluster's query-centroid cosine "
+                             "(needs --query-reps). "
+                             "'centroid_count': raw per-cluster claim count times the cluster's "
+                             "query-centroid cosine (needs --query-reps) (default: binary)")
+    parser.add_argument("--cluster-reweight", choices=["none", "idf"], default="none",
+                        help="Rarity reweighting of clusters in the coverage gain: 'idf' scales each "
+                             "cluster by log(1 + top_m / #core docs touching it), normalized to mean 1, "
+                             "so rare clusters count more (default: none)")
+    parser.add_argument("--query-reps", default=None,
+                        help="Tevatron query embedding pkl (reps, qids); required for "
+                             "--kmeans-label-mode centroid")
     parser.add_argument("--kmeans-n-init", type=int, default=10,
                         help="Number of k-means initializations (sklearn KMeans n_init) (default: 10)")
     parser.add_argument("--tag", default="cc-kmeans",
@@ -126,6 +156,13 @@ def main():
         top_m=args.kmeans_top_m,
         label_mode=args.kmeans_label_mode,
         kmeans_n_init=args.kmeans_n_init,
+        query_reps=args.query_reps,
+        cluster_reweight=args.cluster_reweight,
+        gain_norm_mode=args.gain_norm,
+        gain_scale=args.gain_scale,
+        score_mode=args.score_mode,
+        penalty_weight=args.penalty_weight,
+        novelty_ratio=args.novelty_ratio,
     )
 
     write_trec(results, args.output, args.tag)

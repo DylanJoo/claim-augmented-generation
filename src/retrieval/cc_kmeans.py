@@ -10,6 +10,29 @@ claims landing in several clusters):
     j, else 0.
   - label_mode="scaled": v_d[j] = (# of d's claims in cluster j) / (# of d's
     claims total) -- a within-doc distribution over clusters, summing to 1.
+  - label_mode="centroid": v_d[j] = 1[d has >=1 claim in cluster j] * w_j,
+    where w_j = max(0, cos(query, centroid_j)) is the cluster's relevance to
+    the query (centroids L2-normalized first). Clusters the query cares about
+    weigh more in the coverage gain, so no separate irrelevant-cluster
+    filter is needed. Raw cosines are used (no rescaling), so the coverage
+    term is smaller than in binary mode and lambda_mult may need retuning.
+    Requires query_reps.
+  - label_mode="centroid_count": v_d[j] = (# of d's claims in cluster j) * w_j,
+    same w_j as "centroid" but multiplying the raw claim count instead of
+    the 0/1 presence indicator, so a doc with many claims on a query-relevant
+    cluster gains more than one that merely touches it. Counts are unbounded,
+    so _select normalizes the gain by the pool's largest doc-vector sum
+    instead of n_clusters. Requires query_reps.
+
+cluster_reweight -- orthogonal to label_mode -- rescales each cluster's column
+of doc_vecs by a rarity weight so that small/rare clusters (which k-means
+tends to swallow into big generic ones, and which few core docs touch) are
+worth more coverage gain than the big clusters nearly every doc touches:
+
+  - "none" (default): no-op.
+  - "idf": w_j = log(1 + top_m / df_j), df_j = # of core docs with >=1 claim
+    in cluster j, then rescaled to mean 1 so the coverage term stays on the
+    same scale as without reweighting.
 
 A doc with zero claims in the shards gets the all-zero vector (it is *not*
 padded into the k-means fit with a dummy zero-vector claim -- doing so would
@@ -124,12 +147,42 @@ def _load_claim_reps(claim_reps_path, needed_docids):
                     i, len(files), fpath, len(reps_by_id))
     return reps_by_id
 
+def _load_query_reps(query_reps_path):
+    reps, lookup = _pickle_load(query_reps_path)
+    return {str(q): reps[i].astype(np.float32) for i, q in enumerate(lookup)}
+
 def _rows_by_parent(claim_reps_by_id):
     rows_by_parent = defaultdict(list)
     for claim_docid in claim_reps_by_id:
         parent_id = claim_docid.rsplit("#", 1)[0]
         rows_by_parent[parent_id].append(claim_docid)
     return rows_by_parent
+
+
+def _counts_to_doc_vecs(counts, centers, top_m, label_mode, cluster_reweight, query_vec=None):
+    """counts [n_docs, n_clusters] (claims per doc per cluster, core docs
+    first) -> doc_vecs per label_mode / cluster_reweight (see module
+    docstring). centers [n_clusters, dim] are only read by the centroid
+    modes."""
+    if label_mode == "binary":
+        doc_vecs = (counts > 0).astype(np.float32)
+    elif label_mode in ("centroid", "centroid_count"):
+        centroids = centers / np.maximum(np.linalg.norm(centers, axis=1, keepdims=True), 1e-9)
+        cluster_w = np.maximum(centroids @ query_vec, 0.0).astype(np.float32)
+        base = (counts > 0).astype(np.float32) if label_mode == "centroid" else counts
+        doc_vecs = base * cluster_w
+    else:  # "scaled"
+        row_sums = counts.sum(axis=1, keepdims=True)
+        row_sums[row_sums < 1e-9] = 1.0
+        doc_vecs = counts / row_sums
+
+    if cluster_reweight == "idf":
+        df = (counts[:top_m] > 0).sum(axis=0).astype(np.float32)
+        idf = np.log1p(top_m / np.maximum(df, 1.0))
+        idf /= idf.mean()
+        doc_vecs = doc_vecs * idf.astype(np.float32)
+
+    return doc_vecs
 
 
 def _kmeans_doc_vectors(
@@ -140,6 +193,8 @@ def _kmeans_doc_vectors(
     top_m=None,
     label_mode="binary",
     kmeans_n_init=10,
+    query_vec=None,
+    cluster_reweight="none",
 ):
     """Fit k-means on the claims of the top `top_m` docs only (by base
     relevance -- `list_docids` must already be sorted that way), then assign
@@ -150,8 +205,12 @@ def _kmeans_doc_vectors(
     Returns (doc_vecs [n_docs, effective_k], core_labels [n_core_claims] or
     None -- None only when the core itself has no claims in the shards).
     """
-    if label_mode not in ("binary", "scaled"):
-        raise ValueError(f"label_mode must be 'binary' or 'scaled', got {label_mode!r}")
+    if label_mode not in ("binary", "scaled", "centroid", "centroid_count"):
+        raise ValueError(f"label_mode must be 'binary', 'scaled', 'centroid' or 'centroid_count', got {label_mode!r}")
+    if label_mode in ("centroid", "centroid_count") and query_vec is None:
+        raise ValueError(f"label_mode={label_mode!r} requires query_vec (pass --query-reps)")
+    if cluster_reweight not in ("none", "idf"):
+        raise ValueError(f"cluster_reweight must be 'none' or 'idf', got {cluster_reweight!r}")
 
     n = len(list_docids)
     if top_m is None or top_m > n:
@@ -207,12 +266,8 @@ def _kmeans_doc_vectors(
             for cluster_id in km.predict(tail_claim_matrix):
                 counts[doc_idx, cluster_id] += 1.0
 
-    if label_mode == "binary":
-        doc_vecs = (counts > 0).astype(np.float32)
-    else:  # "scaled"
-        row_sums = counts.sum(axis=1, keepdims=True)
-        row_sums[row_sums < 1e-9] = 1.0
-        doc_vecs = counts / row_sums
+    doc_vecs = _counts_to_doc_vecs(
+        counts, km.cluster_centers_, top_m, label_mode, cluster_reweight, query_vec)
 
     return doc_vecs, core_labels
 
@@ -241,43 +296,12 @@ def _print_cluster_assignment(list_docids, doc_vecs, agg, topn=10):
         print(f"{ids[i]:<14}{row}")
 
 
-def _select(
-    hits,
-    claim_reps_by_id,
-    rows_by_parent,
-    k,
-    n_clusters,
-    top_m=None,
-    label_mode="binary",
-    kmeans_n_init=10,
-    alpha=0.5,
-    lambda_mult=0.0,
-    discount_floor=0.0,
-    qid=None,
-):
-    """lambda_mult (default 0.0, see module docstring's relevance-blend
-    section): 0.0 reproduces the original pure-coverage selection exactly;
-    > 0.0 blends in base relevance so rank 1 (and later ranks) can't be
-    handed to a doc that only wins on cluster coverage."""
-    if len(hits) <= 1:
-        return hits
-
+def _greedy_select(hits, doc_vecs, k, label_mode, alpha, lambda_mult, discount_floor,
+                   gain_norm_mode="nclusters", gain_scale=1.0, score_mode="gain",
+                   penalty_weight=1.0, novelty_ratio=None):
+    """Greedy alpha-nDCG-style selection over doc_vecs [n_docs, n_clusters],
+    blended with base relevance (hits' scores) by lambda_mult."""
     relevance = np.asarray([h.score for h in hits], dtype=np.float32)
-    list_docids = [h.docid for h in hits]  # already relevance-sorted, see utils.load_run
-
-    doc_vecs, labels = _kmeans_doc_vectors(
-        list_docids=list_docids,
-        claim_reps_by_id=claim_reps_by_id,
-        rows_by_parent=rows_by_parent,
-        n_clusters=n_clusters,
-        top_m=top_m,
-        label_mode=label_mode,
-        kmeans_n_init=kmeans_n_init,
-    )
-    agg_label = "kmeans" if (top_m is None or top_m >= len(hits)) else f"kmeans-core(top{top_m})"
-    _print_cluster_summary(qid, doc_vecs.shape[1], labels)
-    _print_cluster_assignment(list_docids, doc_vecs, agg=agg_label, topn=10)
-
     n_select = min(k, len(hits))
     selected = []
     selected_scores = []
@@ -301,15 +325,58 @@ def _select(
     # diff alone -- diffing the docid/rank columns can't see a broken score
     # column when the argmax sequence is untouched).
     effective_k = doc_vecs.shape[1]
+    # centroid_count vectors are unbounded counts, so n_clusters is no longer
+    # a ceiling; use the pool's largest fresh (round-0) gain instead -- still
+    # round-invariant, so the decreasing-score argument above still holds.
+    norm = float(doc_vecs.sum(axis=1).max()) if label_mode == "centroid_count" else float(effective_k)
+    # gain_norm_mode="poolmax": per-topic normalizer = the pool's largest
+    # round-0 gain (still round-invariant). Unlike a global gain_scale (which
+    # is just a reparametrization of lambda_mult), this adapts the
+    # relevance/coverage balance to how many clusters this topic's docs touch.
+    if gain_norm_mode == "poolmax":
+        norm = float(doc_vecs.sum(axis=1).max())
     for _ in range(n_select):
         # discount_floor: a covered cluster never drops below this weight, so
         # overlap with already-selected (i.e. likely relevant) docs keeps
         # earning a little credit instead of only being penalized. 0.0 is a
         # no-op ((1-alpha)**n >= 0 always).
-        discount = np.maximum(np.power(1.0 - alpha, covered_count), discount_floor)
-        gain = (doc_vecs * discount).sum(axis=1)
-        gain_norm = gain / effective_k if effective_k > 0 else gain
-        scores = lambda_mult * relevance + (1.0 - lambda_mult) * gain_norm
+        # Per-cluster weight w(c) by covered_count c:
+        #   w(0) = 1;  w(c>=1) = (1/ratio) * (1-alpha)**(c-1), floored at discount_floor.
+        # ratio = w(0)/w(1) is the new/covered ratio; None -> 1/(1-alpha), which
+        # reproduces the plain (1-alpha)**c discount exactly.
+        decay = 1.0 - alpha
+        ratio = novelty_ratio if novelty_ratio is not None else (1.0 / decay if decay > 0 else np.inf)
+        covered_w = np.power(decay, np.maximum(covered_count - 1.0, 0.0)) / ratio
+        weight = np.where(covered_count == 0, 1.0, np.maximum(covered_w, discount_floor))
+        gain = (doc_vecs * weight).sum(axis=1)
+        gain_norm = (gain / norm if norm > 0 else gain) * gain_scale
+        if score_mode == "entropy":
+            # Entropy gain: replaces the novelty gain. q = new fraction of the
+            # doc's cluster mass; binary entropy H(q) peaks at q=0.5 (half new,
+            # half already covered), 0 when all new (incl. round 0) or all old.
+            new_mass = (doc_vecs * (covered_count == 0)).sum(axis=1).astype(np.float64)
+            tot_mass = doc_vecs.sum(axis=1).astype(np.float64)
+            q = np.divide(new_mass, tot_mass, out=np.zeros_like(tot_mass), where=tot_mass > 0)
+            qc = np.clip(q, 1e-12, 1.0 - 1e-12)
+            ent = -(qc * np.log2(qc) + (1.0 - qc) * np.log2(1.0 - qc))
+            ent = np.where((q > 0) & (q < 1), ent, 0.0)
+            scores = lambda_mult * relevance + (1.0 - lambda_mult) * ent * gain_scale
+        elif score_mode == "both":
+            # gain rewards fresh clusters, penalty charges for re-touched ones;
+            # penalty_weight scales the latter (1.0 = equal footing).
+            pen = (doc_vecs * (1.0 - weight)).sum(axis=1)
+            pen_norm = (pen / norm if norm > 0 else pen) * gain_scale
+            scores = lambda_mult * relevance + (1.0 - lambda_mult) * (gain_norm - penalty_weight * pen_norm)
+        elif score_mode == "penalty":
+            # Mirror of the gain: redundancy mass sum_j v_j * (1 - w_j)
+            # = mass(d) - gain(d). Same alpha / v_j / normalizer as the gain,
+            # but subtracted, so it doesn't favor docs that merely touch many
+            # clusters.
+            pen = (doc_vecs * (1.0 - weight)).sum(axis=1)
+            pen_norm = (pen / norm if norm > 0 else pen) * gain_scale
+            scores = lambda_mult * relevance - (1.0 - lambda_mult) * pen_norm
+        else:
+            scores = lambda_mult * relevance + (1.0 - lambda_mult) * gain_norm
         scores[selected] = -np.inf
         pick = int(np.argmax(scores))
         selected_scores.append(float(scores[pick]))
@@ -334,6 +401,55 @@ def _select(
     ]
 
 
+def _select(
+    hits,
+    claim_reps_by_id,
+    rows_by_parent,
+    k,
+    n_clusters,
+    top_m=None,
+    label_mode="binary",
+    kmeans_n_init=10,
+    alpha=0.5,
+    lambda_mult=0.0,
+    discount_floor=0.0,
+    qid=None,
+    query_vec=None,
+    cluster_reweight="none",
+    gain_norm_mode="nclusters",
+    gain_scale=1.0,
+    score_mode="gain",
+    penalty_weight=1.0,
+    novelty_ratio=None,
+):
+    """lambda_mult (default 0.0, see module docstring's relevance-blend
+    section): 0.0 reproduces the original pure-coverage selection exactly;
+    > 0.0 blends in base relevance so rank 1 (and later ranks) can't be
+    handed to a doc that only wins on cluster coverage."""
+    if len(hits) <= 1:
+        return hits
+
+    list_docids = [h.docid for h in hits]  # already relevance-sorted, see utils.load_run
+
+    doc_vecs, labels = _kmeans_doc_vectors(
+        list_docids=list_docids,
+        claim_reps_by_id=claim_reps_by_id,
+        rows_by_parent=rows_by_parent,
+        n_clusters=n_clusters,
+        top_m=top_m,
+        label_mode=label_mode,
+        kmeans_n_init=kmeans_n_init,
+        query_vec=query_vec,
+        cluster_reweight=cluster_reweight,
+    )
+    agg_label = "kmeans" if (top_m is None or top_m >= len(hits)) else f"kmeans-core(top{top_m})"
+    _print_cluster_summary(qid, doc_vecs.shape[1], labels)
+    _print_cluster_assignment(list_docids, doc_vecs, agg=agg_label, topn=10)
+
+    return _greedy_select(hits, doc_vecs, k, label_mode, alpha, lambda_mult, discount_floor,
+                          gain_norm_mode, gain_scale, score_mode, penalty_weight, novelty_ratio)
+
+
 def run(
     inputs: List[Result],
     run_file: str,
@@ -347,10 +463,20 @@ def run(
     alpha: float = 0.5,
     lambda_mult: float = 0.0,
     discount_floor: float = 0.0,
+    query_reps: str = None,
+    cluster_reweight: str = "none",
+    gain_norm_mode: str = "nclusters",
+    gain_scale: float = 1.0,
+    score_mode: str = "gain",
+    penalty_weight: float = 1.0,
+    novelty_ratio: float = None,
 ) -> List[Result]:
     """lambda_mult (default 0.0, no-op -- see module docstring and
     _select's docstring): relevance/coverage tradeoff, same convention as
-    cc_dense.py's lambda_mult (1.0 = pure relevance, 0.0 = pure coverage)."""
+    cc_dense.py's lambda_mult (1.0 = pure relevance, 0.0 = pure coverage).
+    query_reps: tevatron query embedding pkl, required for label_mode="centroid"."""
+    if label_mode in ("centroid", "centroid_count") and not query_reps:
+        raise ValueError(f"label_mode={label_mode!r} requires query_reps")
     logger.info("cc-kmeans: n_clusters=%d, top_m=%s, base relevance from run file %s, "
                 "pool k=%d, alpha=%.2f, lambda_mult=%.2f, claim_reps=%s",
                 n_clusters, top_m, run_file, k, alpha, lambda_mult, claim_reps)
@@ -364,9 +490,13 @@ def run(
     claim_reps_by_id = _load_claim_reps(claim_reps, needed_docids)
     rows_by_parent = _rows_by_parent(claim_reps_by_id)
 
+    query_vecs = _load_query_reps(query_reps) if label_mode in ("centroid", "centroid_count") else {}
+
     outputs = copy.deepcopy(inputs)
     for i, inp in enumerate(inputs):
         qid = str(inp.topic["qid"])
+        if label_mode in ("centroid", "centroid_count") and qid not in query_vecs:
+            raise KeyError(f"qid {qid} not found in query reps {query_reps}")
         pool = base_run.get(qid, [])
         hits = [
             Hit(
@@ -391,6 +521,9 @@ def run(
             n_clusters=n_clusters, top_m=top_m, label_mode=label_mode,
             kmeans_n_init=kmeans_n_init, alpha=alpha, lambda_mult=lambda_mult,
             discount_floor=discount_floor, qid=qid,
+            query_vec=query_vecs.get(qid),
+            cluster_reweight=cluster_reweight,
+            gain_norm_mode=gain_norm_mode, gain_scale=gain_scale, score_mode=score_mode, penalty_weight=penalty_weight, novelty_ratio=novelty_ratio,
         )
 
     return outputs

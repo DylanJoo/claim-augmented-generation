@@ -10,7 +10,7 @@
 
 cd ${HOME}/claim-augmented-generation/
 
-K2=20
+K2=100
 system=$1
 if [ -z "$system" ]; then
     echo "usage: $0 <neuclir1|ragtime1|ragtime2>" >&2
@@ -34,8 +34,8 @@ case "$system" in
         ;;
 esac
 
-echo "| UB(Run) | StRecall@1 | @2 | @3 | @4 | @5 | @6 | @7 | @8 | @9 | @10 |"
-echo "|---|---|---|---|---|---|---|---|---|---|---|"
+echo "| UB(Run) | StRecall@10 | @20 | alpha_nDCG@10 | @20 |"
+echo "|---|---|---|---|---|"
 # for run in $priority_runs $run_glob; do
 for run in $priority_runs; do
     case " $seen " in

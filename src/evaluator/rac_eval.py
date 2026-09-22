@@ -64,10 +64,20 @@ def print_markdown_row(columns, run_name, values):
     print("| " + " | ".join([run_name] + values) + " |")
 
 
+# Reported metrics, in column order. Shared with rac_eval_ub.py so the two
+# tables line up column for column.
+EVAL_CUTOFFS = (10, 20)
+MARKDOWN_HEADER = ["Run", "StRecall@10", "@20", "alpha_nDCG@10", "@20"]
+
+
+def eval_metrics():
+    return [StRecall@k for k in EVAL_CUTOFFS] + [alpha_nDCG@k for k in EVAL_CUTOFFS]
+
+
 def rac_eval(run, qrel, div_qrel, tau=3, filter_by_oracle=False):
     outputs = defaultdict(list)
 
-    metrics_used = [StRecall@k for k in range(1, 11)]
+    metrics_used = eval_metrics()
     for metric in ir_measures.iter_calc(metrics_used, div_qrel, run):
         outputs[str(metric.measure)].append(metric.value)
 

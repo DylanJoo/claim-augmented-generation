@@ -11,7 +11,7 @@
 # Evaluates the relevant-only sanity-check runs (see
 # pipeline/filter_relevant_run.py and runs/sanity-relevant-only/) against the
 # same qrels used by scripts/run_eval.sh. Because every candidate in these
-# runs is already judged relevant, differences in StRecall@k across rows
+# runs is already judged relevant, differences in StRecall/alpha_nDCG across rows
 # isolate the effect of the diversity reranker's ordering -- relevance can no
 # longer explain them.
 
@@ -38,8 +38,8 @@ case "$system" in
         ;;
 esac
 
-echo "| Run | StRecall@1 | @2 | @3 | @4 | @5 | @6 | @7 | @8 | @9 | @10 |"
-echo "|---|---|---|---|---|---|---|---|---|---|---|"
+echo "| Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |"
+echo "|---|---|---|---|---|"
 for run in $run_glob; do
     python -m src.evaluator.rac_eval \
         --run $run \

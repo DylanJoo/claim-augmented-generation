@@ -6,7 +6,8 @@ smaller than the 1000-doc pools dd.py/cc.py/dc_gap.py rerank over, so
 this reads as "how much headroom is left in the part of the pool a reranker
 would realistically operate on"), this greedily reorders each query's pool
 using the subtopic-level ground truth qrel directly, then scores that oracle
-ordering with the same metrics rac_eval.py reports (StRecall@1..10).
+ordering with the same metrics rac_eval.py reports (StRecall@10/@20 and
+alpha_nDCG@10/@20).
 
 The result is not a method -- it cheats by reading the test qrel -- so it is
 never a run you'd submit. It's a ceiling: run it next to the real system's
@@ -14,11 +15,15 @@ rac_eval.py output on the same run file to see how much of the top-k2 pool's
 diversity potential the actual reranker is capturing versus leaving on the
 table.
 
-Oracle: at each step pick the pool doc covering the most subtopics not yet
-covered by any already-picked doc (classic greedy maximum coverage). This is
-a monotonic submodular objective, so a single greedy sequence is near-optimal
-at every prefix length simultaneously -- one oracle run is truncated at every
-cutoff @1..@10.
+Two oracles, one per metric family, each a single greedy sequence that is
+near-optimal at every prefix length (monotone submodular objectives), so it
+is simply truncated at every cutoff:
+  - StRecall: at each step pick the pool doc covering the most subtopics not
+    yet covered by any already-picked doc (classic greedy maximum coverage).
+  - alpha_nDCG: at each step pick the pool doc with the largest
+    sum_s (1 - alpha) ** (# already-picked docs covering subtopic s) over its
+    subtopics (Clarke et al., 2008's greedy ideal gain), alpha=0.5 to match
+    ir_measures' default.
 
 Usage:
     python -m src.evaluator.rac_eval_ub \
@@ -36,12 +41,12 @@ from collections import defaultdict
 
 import numpy as np
 import ir_measures
-from ir_measures import StRecall
+from ir_measures import StRecall, alpha_nDCG
 
 try:
-    from .rac_eval import load_run_or_qrel, load_diversity_qrel, print_markdown_row
+    from .rac_eval import load_run_or_qrel, load_diversity_qrel, print_markdown_row, EVAL_CUTOFFS
 except ImportError:
-    from rac_eval import load_run_or_qrel, load_diversity_qrel, print_markdown_row
+    from rac_eval import load_run_or_qrel, load_diversity_qrel, print_markdown_row, EVAL_CUTOFFS
 
 
 def build_subtopic_map(div_qrel):
@@ -69,25 +74,46 @@ def greedy_strecall_oracle(pool, doc_subtopics):
     return order
 
 
+def greedy_alpha_ndcg_oracle(pool, doc_subtopics, alpha=0.5):
+    covered_count = defaultdict(int)
+    remaining = list(pool)
+    order = []
+    while remaining:
+        best_idx, best_gain = 0, -1.0
+        for idx, docid in enumerate(remaining):
+            gain = sum((1.0 - alpha) ** covered_count[s] for s in doc_subtopics.get(docid, ()))
+            if gain > best_gain:
+                best_idx, best_gain = idx, gain
+        pick = remaining.pop(best_idx)
+        order.append(pick)
+        for s in doc_subtopics.get(pick, ()):
+            covered_count[s] += 1
+    return order
+
+
 def _to_run_scores(order):
     n = len(order)
     return {docid: float(n - rank) for rank, docid in enumerate(order)}
 
 
 def oracle_upper_bound(run, div_qrel):
-    """run: qid -> {docid: score}, already loaded with topk=k2 (see main())."""
+    """run: qid -> {docid: score}, already loaded with topk=k2 (see main()).
+    Returns (outputs, metrics_used) in rac_eval.eval_metrics() column order."""
     subtopic_map = build_subtopic_map(div_qrel)
-    metrics_used = [StRecall@k for k in range(1, 11)]
+    strecall_metrics = [StRecall@k for k in EVAL_CUTOFFS]
+    ndcg_metrics = [alpha_nDCG@k for k in EVAL_CUTOFFS]
 
-    oracle_run = {}
+    strecall_run, ndcg_run = {}, {}
     for qid, docs in run.items():
         doc_subtopics = subtopic_map.get(qid, {})
-        oracle_run[qid] = _to_run_scores(greedy_strecall_oracle(list(docs.keys()), doc_subtopics))
+        strecall_run[qid] = _to_run_scores(greedy_strecall_oracle(list(docs.keys()), doc_subtopics))
+        ndcg_run[qid] = _to_run_scores(greedy_alpha_ndcg_oracle(list(docs.keys()), doc_subtopics))
 
     outputs = defaultdict(list)
-    for metric in ir_measures.iter_calc(metrics_used, div_qrel, oracle_run):
-        outputs[str(metric.measure)].append(metric.value)
-    return outputs, metrics_used
+    for metrics, oracle_run in ((strecall_metrics, strecall_run), (ndcg_metrics, ndcg_run)):
+        for metric in ir_measures.iter_calc(metrics, div_qrel, oracle_run):
+            outputs[str(metric.measure)].append(metric.value)
+    return outputs, strecall_metrics + ndcg_metrics
 
 
 if __name__ == "__main__":
