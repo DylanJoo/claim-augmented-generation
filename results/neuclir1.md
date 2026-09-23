@@ -1,0 +1,86 @@
+## sanity-relevant-only
+
+| Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
+|---|---|---|---|---|
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.txt | 0.7349 | 0.8427 | 0.6431 | 0.6805 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.2.lambda-0.5.txt | 0.7840 | 0.8427 | 0.6882 | 0.7107 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.2.lambda-0.6.txt | 0.7754 | 0.8427 | 0.6870 | 0.7136 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.2.lambda-0.7.txt | 0.7756 | 0.8427 | 0.6730 | 0.7010 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.3.lambda-0.5.txt | 0.7953 | 0.8427 | 0.6870 | 0.7098 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.3.lambda-0.6.txt | 0.7824 | 0.8427 | 0.6866 | 0.7132 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.3.lambda-0.7.txt | 0.7831 | 0.8427 | 0.6750 | 0.7002 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.4.lambda-0.5.txt | 0.7940 | 0.8427 | 0.6867 | 0.7092 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.4.lambda-0.6.txt | 0.7870 | 0.8427 | 0.6892 | 0.7131 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.4.lambda-0.7.txt | 0.7844 | 0.8427 | 0.6730 | 0.6975 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.5.lambda-0.5.txt | 0.7917 | 0.8427 | 0.6871 | 0.7107 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.5.lambda-0.6.txt | 0.7857 | 0.8427 | 0.6884 | 0.7124 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.5.lambda-0.7.txt | 0.7859 | 0.8427 | 0.6713 | 0.6945 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.6.lambda-0.5.txt | 0.8021 | 0.8427 | 0.6940 | 0.7123 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.6.lambda-0.6.txt | 0.7870 | 0.8427 | 0.6844 | 0.7090 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.6.lambda-0.7.txt | 0.7859 | 0.8427 | 0.6702 | 0.6936 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.7.lambda-0.5.txt | 0.7910 | 0.8427 | 0.6850 | 0.7075 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.7.lambda-0.6.txt | 0.7809 | 0.8427 | 0.6807 | 0.7071 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k100-binary.alpha-0.7.lambda-0.7.txt | 0.7789 | 0.8427 | 0.6661 | 0.6926 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.5.txt | 0.7832 | 0.8427 | 0.7007 | 0.7227 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.6.txt | 0.7829 | 0.8427 | 0.7045 | 0.7269 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.7.txt | 0.7923 | 0.8427 | 0.6974 | 0.7179 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.3.lambda-0.5.txt | 0.7791 | 0.8427 | 0.6958 | 0.7207 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.3.lambda-0.6.txt | 0.7952 | 0.8427 | 0.7064 | 0.7267 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.3.lambda-0.7.txt | 0.7993 | 0.8427 | 0.6957 | 0.7162 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.4.lambda-0.5.txt | 0.7776 | 0.8427 | 0.6941 | 0.7202 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.4.lambda-0.6.txt | 0.7987 | 0.8427 | 0.7052 | 0.7248 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.4.lambda-0.7.txt | 0.7987 | 0.8427 | 0.6920 | 0.7136 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.5.txt | 0.7846 | 0.8427 | 0.6959 | 0.7199 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.6.txt | 0.7987 | 0.8427 | 0.7042 | 0.7245 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.7.txt | 0.7958 | 0.8427 | 0.6896 | 0.7128 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.6.lambda-0.5.txt | 0.7881 | 0.8427 | 0.6946 | 0.7169 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.6.lambda-0.6.txt | 0.7904 | 0.8427 | 0.6980 | 0.7232 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.6.lambda-0.7.txt | 0.7870 | 0.8427 | 0.6871 | 0.7131 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.7.lambda-0.5.txt | 0.7899 | 0.8427 | 0.6920 | 0.7158 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.7.lambda-0.6.txt | 0.7808 | 0.8427 | 0.6939 | 0.7221 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.7.lambda-0.7.txt | 0.7844 | 0.8427 | 0.6862 | 0.7123 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.5.txt | 0.7909 | 0.8427 | 0.6820 | 0.7037 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.6.txt | 0.7802 | 0.8427 | 0.6756 | 0.7026 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.7.txt | 0.7741 | 0.8427 | 0.6710 | 0.6991 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.3.lambda-0.5.txt | 0.7853 | 0.8427 | 0.6760 | 0.7024 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.3.lambda-0.6.txt | 0.7884 | 0.8427 | 0.6773 | 0.7020 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.3.lambda-0.7.txt | 0.7767 | 0.8427 | 0.6679 | 0.6978 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.4.lambda-0.5.txt | 0.7880 | 0.8427 | 0.6766 | 0.7029 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.4.lambda-0.6.txt | 0.7871 | 0.8427 | 0.6761 | 0.7016 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.4.lambda-0.7.txt | 0.7807 | 0.8427 | 0.6688 | 0.6960 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.5.lambda-0.5.txt | 0.7853 | 0.8427 | 0.6743 | 0.7001 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.5.lambda-0.6.txt | 0.7877 | 0.8427 | 0.6788 | 0.7045 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.5.lambda-0.7.txt | 0.7807 | 0.8427 | 0.6711 | 0.6985 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.6.lambda-0.5.txt | 0.7888 | 0.8427 | 0.6761 | 0.6982 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.6.lambda-0.6.txt | 0.7877 | 0.8427 | 0.6780 | 0.7037 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.6.lambda-0.7.txt | 0.7621 | 0.8427 | 0.6635 | 0.6981 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.5.txt | 0.7888 | 0.8427 | 0.6732 | 0.6970 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.6.txt | 0.7877 | 0.8427 | 0.6778 | 0.7040 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.7.txt | 0.7702 | 0.8427 | 0.6648 | 0.6982 |
+
+## runs
+
+| Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
+|---|---|---|---|---|
+| run.neuclir1.documents.bm25.txt | 0.6650 | 0.7655 | 0.5306 | 0.5648 |
+| run.neuclir1.documents.modernbert-base.cover-5k.txt | 0.6879 | 0.7890 | 0.5711 | 0.5996 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.txt | 0.6963 | 0.7802 | 0.5642 | 0.5958 |
+| run.neuclir1.concat-claims.bm25.txt | 0.6460 | 0.7326 | 0.5189 | 0.5515 |
+| run.neuclir1.documents.modernbert-base.cover-5k.autollmrerank-70b-lancer.txt | 0.7180 | 0.8085 | 0.6185 | 0.6520 |
+| run.neuclir1.documents.modernbert-base.cover-5k.autollmrerank-70b-point.txt | 0.6687 | 0.8124 | 0.5576 | 0.6081 |
+| run.neuclir1.documents.modernbert-base.cover-5k.autollmrerank-70b-rankgpt.txt | 0.7011 | 0.8126 | 0.6422 | 0.6721 |
+| run.neuclir1.documents.modernbert-base.cover-5k.autollmrerank-70b-umbrela.txt | 0.6665 | 0.7683 | 0.5298 | 0.5670 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-lancer.txt | 0.7468 | 0.8415 | 0.6540 | 0.6840 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-point.txt | 0.6625 | 0.7988 | 0.5889 | 0.6388 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-rankgpt.txt | 0.7075 | 0.8076 | 0.6377 | 0.6658 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-umbrela.txt | 0.6856 | 0.7817 | 0.5973 | 0.6295 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.1.txt | 0.6703 | 0.7989 | 0.5713 | 0.6086 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.2.txt | 0.6838 | 0.7928 | 0.5917 | 0.6230 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.3.txt | 0.7057 | 0.8066 | 0.6208 | 0.6465 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.4.txt | 0.7057 | 0.8139 | 0.6344 | 0.6598 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.5.txt | 0.6922 | 0.7917 | 0.6471 | 0.6731 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.1.txt | 0.7096 | 0.7917 | 0.5889 | 0.6172 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.2.txt | 0.7060 | 0.7979 | 0.6161 | 0.6448 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.3.txt | 0.7217 | 0.7965 | 0.6358 | 0.6610 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.4.txt | 0.6934 | 0.8034 | 0.6301 | 0.6674 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.5.txt | 0.6887 | 0.8258 | 0.6440 | 0.6848 |
