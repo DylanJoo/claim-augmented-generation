@@ -16,16 +16,16 @@ conda activate basic
 
 cd $HOME/claim-augmented-generation
 
-MODEL_NAME=Qwen3-Embedding-0.6B
+MODEL_NAME=modernbert-base.cover-5k
 EMB_ROOT=$HOME/scratch/neuclir1/${MODEL_NAME}
-BASE=runs/sanity-relevant-only/base/run.neuclir1.documents.${MODEL_NAME}.relevant-only.txt 
+BASE=runs/sanity-relevant-only/base/run.neuclir1.documents.${MODEL_NAME}.relevant-only.txt
 
 LABEL_MODE=binary
 for TOP_M in 20; do
 for ALPHA in 0.2 0.3 0.4 0.5 0.6 0.7;do
 for N_CLUSTERS in 50 75 100; do
 for LAMBDA in 0.5 0.6 0.7; do
-    OUT=runs/sanity-relevant-only/reranked/run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
+    OUT=runs/sanity-relevant-only/reranked/run.neuclir1.documents.${MODEL_NAME}.relevant-only.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
     [ -s "$OUT" ] && { echo "skip $OUT"; continue; }
     python pipeline/run_cc_kmeans.py \
         --topics data/neuclir2024.topics.test.jsonl \

@@ -16,7 +16,7 @@ conda activate basic
 
 cd $HOME/claim-augmented-generation
 
-MODEL_NAME=Qwen3-Embedding-0.6B
+MODEL_NAME=modernbert-base.cover-5k
 EMB_ROOT=$HOME/scratch/ragtime1/${MODEL_NAME}
 
 for AGG in maxsim; do
