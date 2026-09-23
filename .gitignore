@@ -23,7 +23,7 @@ analysis/
 # *.jsonl
 *.json
 *.tsv
-*.csv
+# *.csv
 
 # Logs and Slurm outputs
 *.log
