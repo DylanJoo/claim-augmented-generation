@@ -38,10 +38,6 @@ case "$system" in
         ;;
 esac
 
-echo "| Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |"
-echo "|---|---|---|---|---|"
-for run in $run_glob; do
-    python -m src.evaluator.rac_eval \
-        --run $run \
-        --qrel $qrel
-done
+python -m src.evaluator.rac_eval \
+    --run $run_glob \
+    --qrel $qrel

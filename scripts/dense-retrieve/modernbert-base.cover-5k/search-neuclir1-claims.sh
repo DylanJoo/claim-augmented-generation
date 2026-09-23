@@ -1,0 +1,58 @@
+#!/bin/bash -l
+#SBATCH --job-name=search-claims-dist
+#SBATCH --output=logs/search-neuclir1-claims-dist.out
+#SBATCH --error=logs/search-neuclir1-claims-dist.err
+#SBATCH --partition=cpu
+#SBATCH --ntasks-per-node=1
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=128G
+#SBATCH --time=1-00:00:00
+
+# ENV
+source ~/.bashrc
+initconda
+conda activate basic
+
+MODEL_NAME_OR_PATH=DylanJHJ/modernbert-base.cover-5k
+MODEL_NAME=${MODEL_NAME_OR_PATH##*/}
+
+EMB_ROOT=${HOME}/scratch/neuclir1/${MODEL_NAME}
+query_dir=${EMB_ROOT}/queries_emb
+passage_dir=${EMB_ROOT}/claims_emb
+
+LANGS=(fas rus zho)
+
+SHARD_GROUPS=()
+for LANG in "${LANGS[@]}"; do
+    for SHARD_FILE in "$passage_dir"/claims_emb.${LANG}-*.pkl; do
+        SHARD_GROUPS+=("$SHARD_FILE")
+    done
+done
+
+cd $HOME/claim-augmented-generation
+
+for k in 100 200 300 400 500 750 1000 2000; do
+for FUSION in sum rrf; do
+    python pipeline/run_dense.py \
+    --topics data/neuclir2024.topics.test.jsonl \
+    --query_reps $query_dir/queries_emb.pkl \
+    --shard_groups "${SHARD_GROUPS[@]}" \
+    --output runs/claims-agg/run.neuclir1.claims-k${k}.${MODEL_NAME}.${FUSION}.txt \
+    --k $k \
+    --fusion ${FUSION} \
+    --tag dense-claims-${FUSION}
+    done
+done
+
+# Max and first
+FUSION=max
+k=200
+python pipeline/run_dense.py \
+    --topics data/neuclir2024.topics.test.jsonl \
+    --query_reps $query_dir/queries_emb.pkl \
+    --shard_groups "${SHARD_GROUPS[@]}" \
+    --output runs/claims-agg/run.neuclir1.claims.${MODEL_NAME}.${FUSION}.txt \
+    --k $k \
+    --fusion ${FUSION} \
+    --tag dense-claims-${FUSION}

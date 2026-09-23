@@ -25,7 +25,13 @@ case "$system" in
     *) echo "usage: $0 <neuclir1|ragtime1> [sanity_vs_base args]" >&2; exit 1 ;;
 esac
 
-python -m src.evaluator.sanity_vs_base \
-    --base runs/sanity-relevant-only/base/run.${system}.documents.Qwen3-Embedding-0.6B.relevant-only.txt \
-    --runs "runs/sanity-relevant-only/reranked/run.${system}*.txt" \
-    --qrel $qrel "$@"
+# Each model's reranked runs are tested against that model's own base pool.
+for model in Qwen3-Embedding-0.6B modernbert-base.cover-5k; do
+    base=runs/sanity-relevant-only/base/run.${system}.documents.${model}.relevant-only.txt
+    [ -f "$base" ] || { echo "skip ${model}: no base $base" >&2; continue; }
+    echo "== ${model}"
+    python -m src.evaluator.sanity_vs_base \
+        --base $base \
+        --runs "runs/sanity-relevant-only/reranked/run.${system}.documents.${model}.*.txt" \
+        --qrel $qrel "$@"
+done

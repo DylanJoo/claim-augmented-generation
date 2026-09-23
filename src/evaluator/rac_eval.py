@@ -11,6 +11,10 @@ import ir_measures
 from ir_measures import Metric, MAP, nDCG, P, alpha_nDCG, StRecall
 import pandas as pd
 
+EVAL_CUTOFFS = (10, 20)
+
+def eval_metrics():
+    return [StRecall@k for k in EVAL_CUTOFFS] + [alpha_nDCG@k for k in EVAL_CUTOFFS]
 
 def load_run_or_qrel(path, topk=1000, threshold=1):
     run_dict = defaultdict(dict)
@@ -26,92 +30,82 @@ def load_run_or_qrel(path, topk=1000, threshold=1):
                     run_dict[qid][docid] = int(rel)
     return run_dict
 
-
 def load_diversity_qrel(path):
     df = pd.read_csv(path, sep=r'\s+', names=['query_id', 'iteration', 'doc_id', 'relevance'])
     df['query_id'] = df['query_id'].astype(str)
     df['doc_id'] = df['doc_id'].astype(str)
     return df
 
+def markdown_columns(metrics):
+    """Column names for metrics; a metric sharing the previous one's name is shortened to '@k'."""
+    columns, prev = [], None
+    for m in metrics:
+        name, _, cutoff = str(m).rpartition('@')
+        if not name:
+            name, cutoff = str(m), None
+        columns.append(f"@{cutoff}" if name == prev and cutoff else str(m))
+        prev = name
+    return columns
 
-def load_ratings(path):
-    ratings = defaultdict(lambda: defaultdict(lambda: None))
-    with open(path, 'r') as f:
-        for line in f:
-            data = json.loads(line.strip())
-            ratings[str(data['id'])][str(data['docid'])] = data['rating']
-    return ratings
-
-
-def coverage_measures(ratings, ratings_oracle, filter_by_oracle=False, tau=3):
-    if filter_by_oracle:
-        answerable = np.array([r >= tau for r in ratings_oracle])
-    else:
-        answerable = np.array([True for _ in ratings])
-    value = sum(ratings[answerable] >= tau) / sum(answerable)
-    return Metric(query_id='dummy', value=value, measure='Cov')
-
-
+def print_markdown_header(columns):
+    print("| " + " | ".join(columns) + " |")
+    print("|" + "---|" * len(columns))
 
 def print_markdown_row(columns, run_name, values):
-    """Print this run's row as a Markdown table row (no header) to stdout.
-
-    Each invocation only knows about its own run, so the caller (see
-    scripts/run_eval*.sh) is responsible for printing the Markdown header
-    once and accumulating rows across a loop of run files, e.g. by
-    redirecting the whole script's stdout to a file with `> RESULT.md`.
-    """
     print("| " + " | ".join([run_name] + values) + " |")
 
 
-# Reported metrics, in column order. Shared with rac_eval_ub.py so the two
-# tables line up column for column.
-EVAL_CUTOFFS = (10, 20)
-MARKDOWN_HEADER = ["Run", "StRecall@10", "@20", "alpha_nDCG@10", "@20"]
-
-
-def eval_metrics():
-    return [StRecall@k for k in EVAL_CUTOFFS] + [alpha_nDCG@k for k in EVAL_CUTOFFS]
-
-
-def rac_eval(run, qrel, div_qrel, tau=3, filter_by_oracle=False):
+def rac_eval(run, qrel, div_qrel, tau=3, metrics=None):
     outputs = defaultdict(list)
 
-    metrics_used = eval_metrics()
+    metrics_used = metrics if metrics is not None else eval_metrics()
     for metric in ir_measures.iter_calc(metrics_used, div_qrel, run):
         outputs[str(metric.measure)].append(metric.value)
 
     return outputs, metrics_used
 
 
-if __name__ == "__main__":
+def main(metrics=None):
+    """CLI shared by rac_eval variants; a variant only needs to pass its own metrics list."""
+    metrics_used = metrics if metrics is not None else eval_metrics()
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run", type=str, required=True)
+    parser.add_argument("--run", type=str, nargs="+", required=True)
     parser.add_argument("--qrel", type=str, required=True)
-    parser.add_argument("--filter_by_oracle", action="store_true", default=False)
     parser.add_argument("--tau", type=int, default=3)
+    parser.add_argument("--no_header", action="store_true")
     args = parser.parse_args()
 
-    run = load_run_or_qrel(args.run, topk=1000)
-    qrel = load_run_or_qrel(args.qrel, threshold=1)
-    div_qrel = load_diversity_qrel(args.qrel)
+    full_qrel = load_run_or_qrel(args.qrel, threshold=1)
+    full_div_qrel = load_diversity_qrel(args.qrel)
 
-    missing_qids = [qid for qid in qrel if qid not in run]
-    if missing_qids:
-        qrel = {k: v for k, v in qrel.items() if k in run}
-        div_qrel = div_qrel[div_qrel['query_id'].isin(run.keys())]
-        logger.warning(f"Missing results for {len(missing_qids)} topics; evaluating on {len(qrel)}")
-
-    outputs, metrics_used = rac_eval(
-        run=run,
-        qrel=qrel,
-        div_qrel=div_qrel,
-        tau=args.tau,
-        filter_by_oracle=args.filter_by_oracle,
-    )
-
-    run_name = args.run.rsplit('/', 1)[-1]
     keys = [str(m) for m in metrics_used]
-    values = ["{:.4f}".format(np.mean(outputs[key])) for key in keys]
+    if not args.no_header:
+        print_markdown_header(["Run"] + markdown_columns(metrics_used))
 
-    print_markdown_row(["Run"] + keys, run_name, values)
+    for run_path in args.run:
+        run = load_run_or_qrel(run_path, topk=1000)
+        qrel, div_qrel = full_qrel, full_div_qrel
+
+        missing_qids = [qid for qid in qrel if qid not in run]
+        if missing_qids:
+            qrel = {k: v for k, v in qrel.items() if k in run}
+            div_qrel = div_qrel[div_qrel['query_id'].isin(run.keys())]
+            logger.warning(f"{run_path}: missing results for {len(missing_qids)} topics; evaluating on {len(qrel)}")
+
+        outputs, _ = rac_eval(
+            run=run,
+            qrel=qrel,
+            div_qrel=div_qrel,
+            tau=args.tau,
+            metrics=metrics_used,
+        )
+
+        run_name = run_path.rsplit('/', 1)[-1]
+        values = ["{:.4f}".format(np.mean(outputs[key])) for key in keys]
+        print_markdown_row(["Run"] + keys, run_name, values)
+        sys.stdout.flush()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,6 +1,6 @@
 300 Q0 e41263f6-140a-458d-b8c8-2a5a7a6ae8b2 1 0.891529 doc-ccmaxsim-add-l0.8
 300 Q0 68a6ccf1-ec07-4aee-ae48-e974a80ba9ca 2 0.868288 doc-ccmaxsim-add-l0.8
-300 Q0 379ed495-7cc8-481b-a7cb-3eaa0421ef3f 3 0.862416 doc-ccmaxsim-add-l0.8
+300 Q0 379ed495-7cc8-481b-a7cb-3eaa0421ef3f 3 0.862415 doc-ccmaxsim-add-l0.8
 300 Q0 56b44b0f-fd8d-4d81-bae9-7f8d80e6b745 4 0.860580 doc-ccmaxsim-add-l0.8
 300 Q0 7e19709c-0f56-4d67-a450-d97baf8c0f00 5 0.858542 doc-ccmaxsim-add-l0.8
 300 Q0 d35cb1c3-06ee-4116-bf06-ae398c64fb8b 6 0.850961 doc-ccmaxsim-add-l0.8
@@ -22,7 +22,7 @@
 300 Q0 cc611c28-88e4-48fe-9f4f-b9a2a3d23824 22 0.833990 doc-ccmaxsim-add-l0.8
 300 Q0 191bb6b1-48c9-47b5-becd-6d4345d63aa7 23 0.832801 doc-ccmaxsim-add-l0.8
 300 Q0 904f8373-88db-4def-b28c-d4ec29c8d4de 24 0.832756 doc-ccmaxsim-add-l0.8
-300 Q0 dfc82fdd-b654-481d-94d6-2c098801e1af 25 0.831352 doc-ccmaxsim-add-l0.8
+300 Q0 dfc82fdd-b654-481d-94d6-2c098801e1af 25 0.831353 doc-ccmaxsim-add-l0.8
 300 Q0 26b401fe-7a56-4f85-a091-a89c9e6721de 26 0.826588 doc-ccmaxsim-add-l0.8
 300 Q0 92cc4841-9dc4-4fb9-827d-1cc18c88cae0 27 0.826006 doc-ccmaxsim-add-l0.8
 300 Q0 08fe5abc-c7b5-4b2a-966b-a86a17e8c133 28 0.825374 doc-ccmaxsim-add-l0.8
@@ -38,7 +38,7 @@
 300 Q0 8c177ba0-87bc-48c4-ab43-9c3962089c74 38 0.816794 doc-ccmaxsim-add-l0.8
 300 Q0 71b6a4d1-784c-4cd8-9cd8-2e23ad152e34 39 0.815318 doc-ccmaxsim-add-l0.8
 300 Q0 a1230468-d6e6-44c6-b58c-85b5ed9b8342 40 0.815111 doc-ccmaxsim-add-l0.8
-300 Q0 8e81a558-c441-4a3a-b0ca-efec46e7c58b 41 0.814474 doc-ccmaxsim-add-l0.8
+300 Q0 8e81a558-c441-4a3a-b0ca-efec46e7c58b 41 0.814475 doc-ccmaxsim-add-l0.8
 300 Q0 2e98dece-e04b-4451-bf12-f21e4672bc1d 42 0.811985 doc-ccmaxsim-add-l0.8
 300 Q0 7c0dfbf7-d7f2-4d8f-bcce-3abf677358d7 43 0.811631 doc-ccmaxsim-add-l0.8
 300 Q0 09f684c9-503f-4668-bc9e-35ebcfb3050c 44 0.811396 doc-ccmaxsim-add-l0.8
@@ -393,7 +393,7 @@
 309 Q0 9d37fa07-76ca-4415-b75a-b9da61bb6fb7 93 0.698309 doc-ccmaxsim-add-l0.8
 309 Q0 c3a56ecd-8140-4e72-ab13-7cdaec8f07f6 94 0.697640 doc-ccmaxsim-add-l0.8
 309 Q0 036fcfdd-dc11-4e08-8e16-398378216d2b 95 0.697633 doc-ccmaxsim-add-l0.8
-309 Q0 2b57f07f-6dca-4751-8e47-013a85a727b7 96 0.697123 doc-ccmaxsim-add-l0.8
+309 Q0 2b57f07f-6dca-4751-8e47-013a85a727b7 96 0.697124 doc-ccmaxsim-add-l0.8
 309 Q0 2c830240-e6e7-46d5-b499-e92f7886aad2 97 0.696680 doc-ccmaxsim-add-l0.8
 309 Q0 03135bfe-0c90-4ede-8104-239dec405f0f 98 0.696524 doc-ccmaxsim-add-l0.8
 309 Q0 e52fc1fd-e448-45c8-b9d2-8a9b3b93e40c 99 0.693513 doc-ccmaxsim-add-l0.8
@@ -406,7 +406,7 @@
 310 Q0 e7c5f2a3-a5a2-49f4-b977-506cf29d6990 6 0.754660 doc-ccmaxsim-add-l0.8
 310 Q0 260f6b4b-4f1d-48cb-9dad-b0fc3eaa8798 7 0.749639 doc-ccmaxsim-add-l0.8
 310 Q0 a6548811-e0ef-420b-b5dd-9cac6edc1dd9 8 0.748456 doc-ccmaxsim-add-l0.8
-310 Q0 9541e98e-9f5f-4d93-bf85-d70ffe7eb6fc 9 0.742180 doc-ccmaxsim-add-l0.8
+310 Q0 9541e98e-9f5f-4d93-bf85-d70ffe7eb6fc 9 0.742181 doc-ccmaxsim-add-l0.8
 310 Q0 12e958ab-4db8-48a9-a5b9-3a9e5c801ea8 10 0.737805 doc-ccmaxsim-add-l0.8
 310 Q0 133cc77b-7447-413c-b7bc-6710c31e4a04 11 0.735728 doc-ccmaxsim-add-l0.8
 310 Q0 d7711e43-edec-4621-8a0d-b2c27beb4986 12 0.735605 doc-ccmaxsim-add-l0.8
@@ -448,7 +448,7 @@
 310 Q0 a24cc37f-5d7b-446b-a0fe-50db0f431124 48 0.717486 doc-ccmaxsim-add-l0.8
 310 Q0 1611e2e4-a7f8-410c-a765-dddb3aa56054 49 0.717406 doc-ccmaxsim-add-l0.8
 310 Q0 060d70cb-3b3d-4978-b9e9-c4d9da221600 50 0.717226 doc-ccmaxsim-add-l0.8
-310 Q0 b2bd4c05-c6c5-4ce2-bb17-552d5a27d29f 51 0.716834 doc-ccmaxsim-add-l0.8
+310 Q0 b2bd4c05-c6c5-4ce2-bb17-552d5a27d29f 51 0.716833 doc-ccmaxsim-add-l0.8
 310 Q0 8c90430e-a919-4de6-9a1c-e60b2ed1789f 52 0.716740 doc-ccmaxsim-add-l0.8
 310 Q0 a8b95e1c-98da-4189-97e5-49e3e8eb0515 53 0.716338 doc-ccmaxsim-add-l0.8
 310 Q0 1a532b82-312f-4afe-babf-2f4451504aa3 54 0.715671 doc-ccmaxsim-add-l0.8
@@ -458,15 +458,15 @@
 310 Q0 43c96b5a-a8b6-4137-bbe3-e60d6c01f340 58 0.714767 doc-ccmaxsim-add-l0.8
 310 Q0 d3451691-8aaa-4a3a-81bd-59d4a474ac12 59 0.714643 doc-ccmaxsim-add-l0.8
 310 Q0 44f8d605-e2af-47b9-8b1f-d77fad5b964f 60 0.714500 doc-ccmaxsim-add-l0.8
-310 Q0 bf30a4da-1f0e-4ca4-88f8-0dbfcef59783 61 0.714253 doc-ccmaxsim-add-l0.8
-310 Q0 08c74abf-36d1-4acc-bcc5-40fc3e0ed85d 62 0.714136 doc-ccmaxsim-add-l0.8
+310 Q0 bf30a4da-1f0e-4ca4-88f8-0dbfcef59783 61 0.714252 doc-ccmaxsim-add-l0.8
+310 Q0 08c74abf-36d1-4acc-bcc5-40fc3e0ed85d 62 0.714135 doc-ccmaxsim-add-l0.8
 310 Q0 ae8c35ac-c107-4f33-96ac-e47bfb2881b1 63 0.713994 doc-ccmaxsim-add-l0.8
 310 Q0 ff667eb3-d9df-4f22-b7b1-7bbe58b2b5f8 64 0.713808 doc-ccmaxsim-add-l0.8
 310 Q0 ff1eb937-585d-4e77-ac04-a9a6fec4ba2e 65 0.713776 doc-ccmaxsim-add-l0.8
 310 Q0 3bf47452-c684-4fed-839f-d8dff56b11cd 66 0.713174 doc-ccmaxsim-add-l0.8
 310 Q0 8af05b71-168f-4e00-9ef6-75ac6686ef17 67 0.711829 doc-ccmaxsim-add-l0.8
 310 Q0 0297ec59-99c5-4414-9417-92247eae8469 68 0.711784 doc-ccmaxsim-add-l0.8
-310 Q0 39b92b3e-d7c7-4c51-986d-10a2e0218753 69 0.711661 doc-ccmaxsim-add-l0.8
+310 Q0 39b92b3e-d7c7-4c51-986d-10a2e0218753 69 0.711660 doc-ccmaxsim-add-l0.8
 310 Q0 9c54cb80-4d46-4ca6-8ca0-22acf0f71149 70 0.711521 doc-ccmaxsim-add-l0.8
 310 Q0 3e8f1041-fdd4-47a0-8c15-43cae785151c 71 0.711360 doc-ccmaxsim-add-l0.8
 310 Q0 b1d2e8ac-01c5-4b1b-a85a-7a229f18295a 72 0.711092 doc-ccmaxsim-add-l0.8
@@ -577,7 +577,7 @@
 334 Q0 33f16cd6-f123-4278-abb3-055339683fda 77 0.767540 doc-ccmaxsim-add-l0.8
 334 Q0 1452710b-3b57-4371-b799-7f099b33d8b5 78 0.767420 doc-ccmaxsim-add-l0.8
 334 Q0 aa7f7aa8-fcaa-406a-aa55-13fe0404dc92 79 0.767414 doc-ccmaxsim-add-l0.8
-334 Q0 f2493baf-cee6-415c-bae0-a5950a126826 80 0.767217 doc-ccmaxsim-add-l0.8
+334 Q0 f2493baf-cee6-415c-bae0-a5950a126826 80 0.767216 doc-ccmaxsim-add-l0.8
 334 Q0 2aeeac7c-7ffe-4f3e-bd71-8204045d6bb0 81 0.766075 doc-ccmaxsim-add-l0.8
 334 Q0 d6e5e2eb-8073-4383-83e0-3029bcf4290e 82 0.764983 doc-ccmaxsim-add-l0.8
 334 Q0 328da120-5d6e-4f79-a7e3-5848c19071a1 83 0.764606 doc-ccmaxsim-add-l0.8
@@ -633,7 +633,7 @@
 335 Q0 98b1a94f-9716-45b5-83d3-c52d164d6977 33 0.751746 doc-ccmaxsim-add-l0.8
 335 Q0 a3e2ced6-791b-4949-a1ed-f3f25b5ca069 34 0.751736 doc-ccmaxsim-add-l0.8
 335 Q0 e7e49238-e932-4dde-a2e6-0280531a2e6e 35 0.751639 doc-ccmaxsim-add-l0.8
-335 Q0 fbeefdd0-f410-4630-82fc-bb061c00eed6 36 0.750437 doc-ccmaxsim-add-l0.8
+335 Q0 fbeefdd0-f410-4630-82fc-bb061c00eed6 36 0.750438 doc-ccmaxsim-add-l0.8
 335 Q0 bf7b8c9e-5117-4302-a420-d3e9f79acf58 37 0.748328 doc-ccmaxsim-add-l0.8
 335 Q0 7ed84ac7-bfd2-469a-8e57-510fec60ea61 38 0.746363 doc-ccmaxsim-add-l0.8
 335 Q0 269d7e6b-0c31-41fe-ad50-77e7f0fca14e 39 0.745702 doc-ccmaxsim-add-l0.8
@@ -651,7 +651,7 @@
 335 Q0 c2faf96f-9723-4491-9e8d-5e5fc62b852c 51 0.736082 doc-ccmaxsim-add-l0.8
 335 Q0 67bbdce5-5454-43c0-bd8c-5092fdbc42d4 52 0.735756 doc-ccmaxsim-add-l0.8
 335 Q0 3b68746c-8c2f-4d02-83c4-89ed828c1abb 53 0.734828 doc-ccmaxsim-add-l0.8
-335 Q0 6615879c-e4a7-4a95-900d-7829db4956d9 54 0.734581 doc-ccmaxsim-add-l0.8
+335 Q0 6615879c-e4a7-4a95-900d-7829db4956d9 54 0.734582 doc-ccmaxsim-add-l0.8
 335 Q0 41770268-ff55-4829-8a0b-22f9e93bddd1 55 0.734461 doc-ccmaxsim-add-l0.8
 335 Q0 17bc1fbd-3085-4f0a-86ca-9fe294602eb7 56 0.734200 doc-ccmaxsim-add-l0.8
 335 Q0 88020976-9eee-48fc-9271-16f5b3be53bb 57 0.733983 doc-ccmaxsim-add-l0.8
@@ -695,10 +695,10 @@
 335 Q0 4bb7beca-2a48-45dc-b226-eb588025d95b 95 0.711229 doc-ccmaxsim-add-l0.8
 335 Q0 07caccb7-25b8-4b1f-ab92-1a45e8bd6628 96 0.710808 doc-ccmaxsim-add-l0.8
 335 Q0 fdbcf6b1-e37f-46bc-8f60-9d2b5758ef63 97 0.709351 doc-ccmaxsim-add-l0.8
-335 Q0 29b7562d-d105-475d-b75c-05f70d4cd077 98 0.708823 doc-ccmaxsim-add-l0.8
+335 Q0 29b7562d-d105-475d-b75c-05f70d4cd077 98 0.708824 doc-ccmaxsim-add-l0.8
 335 Q0 33873831-fe84-4c7e-b9a4-f85b4452c55b 99 0.708627 doc-ccmaxsim-add-l0.8
 335 Q0 43f059be-d7a5-408e-a65d-400493266fad 100 0.642961 doc-ccmaxsim-add-l0.8
-343 Q0 f9f81b47-b5c0-48db-b297-08505f401241 1 0.820770 doc-ccmaxsim-add-l0.8
+343 Q0 f9f81b47-b5c0-48db-b297-08505f401241 1 0.820769 doc-ccmaxsim-add-l0.8
 343 Q0 525c0db3-5ed5-4064-8195-6c040e496982 2 0.814432 doc-ccmaxsim-add-l0.8
 343 Q0 6d07cd2f-b231-4b64-9f2c-42c85cb20265 3 0.814268 doc-ccmaxsim-add-l0.8
 343 Q0 edf8ce6a-25f7-4655-80d6-b240ccb54651 4 0.811758 doc-ccmaxsim-add-l0.8
@@ -815,7 +815,7 @@
 351 Q0 43adee86-232e-4804-adcc-0832045f36a1 15 0.777440 doc-ccmaxsim-add-l0.8
 351 Q0 19cf5a8f-d23b-4960-83dd-f4bc93f025fa 16 0.777352 doc-ccmaxsim-add-l0.8
 351 Q0 e0c8337a-d56b-4f0d-8e65-b8d1881661f7 17 0.775657 doc-ccmaxsim-add-l0.8
-351 Q0 1ecab64a-f50c-4d78-a77a-4e555fcd9c4c 18 0.775434 doc-ccmaxsim-add-l0.8
+351 Q0 1ecab64a-f50c-4d78-a77a-4e555fcd9c4c 18 0.775435 doc-ccmaxsim-add-l0.8
 351 Q0 1f76e0fa-6c92-445d-86a6-e8e2016283ba 19 0.775207 doc-ccmaxsim-add-l0.8
 351 Q0 e38400fc-d615-45bd-b2a3-9f8870fba033 20 0.774362 doc-ccmaxsim-add-l0.8
 351 Q0 9f615d5c-25f1-4367-957d-651ca0f0e509 21 0.774268 doc-ccmaxsim-add-l0.8
@@ -863,7 +863,7 @@
 351 Q0 42ff5da4-a796-4044-8b4d-70412e589949 63 0.754576 doc-ccmaxsim-add-l0.8
 351 Q0 41830e46-7776-4296-8d72-bafd7e6c8851 64 0.754309 doc-ccmaxsim-add-l0.8
 351 Q0 988a3b40-147e-49ee-84a4-8ae51c441433 65 0.754132 doc-ccmaxsim-add-l0.8
-351 Q0 33cd0f83-5059-4090-8656-56ace26341eb 66 0.753306 doc-ccmaxsim-add-l0.8
+351 Q0 33cd0f83-5059-4090-8656-56ace26341eb 66 0.753305 doc-ccmaxsim-add-l0.8
 351 Q0 9102d5b1-1b50-49ca-b4e3-111f039583fd 67 0.752731 doc-ccmaxsim-add-l0.8
 351 Q0 48c88008-343c-4701-a4ea-a5afba5392f0 68 0.752277 doc-ccmaxsim-add-l0.8
 351 Q0 fe5da4b5-8895-4a47-b4b4-db0a42035f5b 69 0.752098 doc-ccmaxsim-add-l0.8
@@ -885,7 +885,7 @@
 351 Q0 6c3df17c-8e3a-4480-b676-3d2d0e9042c2 85 0.746256 doc-ccmaxsim-add-l0.8
 351 Q0 f3919f88-b62c-4ff9-be14-4df79300e358 86 0.745233 doc-ccmaxsim-add-l0.8
 351 Q0 97ecc1f7-508f-4267-83d0-dc9334beb385 87 0.744609 doc-ccmaxsim-add-l0.8
-351 Q0 3b11cbf5-a072-421a-ad17-b3d87d9c4d7f 88 0.744539 doc-ccmaxsim-add-l0.8
+351 Q0 3b11cbf5-a072-421a-ad17-b3d87d9c4d7f 88 0.744538 doc-ccmaxsim-add-l0.8
 351 Q0 cec82f3d-ab8f-4d21-8051-58697a05b87b 89 0.744032 doc-ccmaxsim-add-l0.8
 351 Q0 fd78bc51-f7cd-482b-995d-879a1fe6e9a0 90 0.743731 doc-ccmaxsim-add-l0.8
 351 Q0 8c08b3aa-52f4-40b1-b178-274fa9239cbc 91 0.742616 doc-ccmaxsim-add-l0.8
@@ -924,7 +924,7 @@
 352 Q0 cb860c60-c210-4d80-bcd2-56a46aa80d58 24 0.797083 doc-ccmaxsim-add-l0.8
 352 Q0 5ad97330-fa18-4e2f-a4b8-9a067efa97a3 25 0.796679 doc-ccmaxsim-add-l0.8
 352 Q0 6a25cece-2bdd-4863-9504-fc79dac15d57 26 0.796658 doc-ccmaxsim-add-l0.8
-352 Q0 6acc2e0f-2845-4523-8ae2-530af7440ff6 27 0.794448 doc-ccmaxsim-add-l0.8
+352 Q0 6acc2e0f-2845-4523-8ae2-530af7440ff6 27 0.794449 doc-ccmaxsim-add-l0.8
 352 Q0 f3d91618-96b0-4743-9447-48d841a19f55 28 0.793916 doc-ccmaxsim-add-l0.8
 352 Q0 888e6925-d505-4b8c-8d9d-0c5dacdcbccf 29 0.793761 doc-ccmaxsim-add-l0.8
 352 Q0 7a788184-f112-42d7-9f22-7b593e3a3ecd 30 0.793380 doc-ccmaxsim-add-l0.8
@@ -954,7 +954,7 @@
 352 Q0 2f18fc17-1bfa-476c-8d7a-0c83e962bef2 54 0.785834 doc-ccmaxsim-add-l0.8
 352 Q0 d3daa0ad-2bf6-41d7-8f3d-794d72580211 55 0.785565 doc-ccmaxsim-add-l0.8
 352 Q0 21bad3df-4543-4e2f-8e37-ac12f90a31bc 56 0.785171 doc-ccmaxsim-add-l0.8
-352 Q0 1330c582-40ba-4703-b7ba-262552d45111 57 0.785109 doc-ccmaxsim-add-l0.8
+352 Q0 1330c582-40ba-4703-b7ba-262552d45111 57 0.785108 doc-ccmaxsim-add-l0.8
 352 Q0 ce6adfae-53e9-48c9-a4cc-5b30693e2873 58 0.784556 doc-ccmaxsim-add-l0.8
 352 Q0 f270d9f0-b78b-4923-a07d-a5ba9848e481 59 0.783613 doc-ccmaxsim-add-l0.8
 352 Q0 f3ab9353-4382-408d-a671-f660111c5cf3 60 0.782270 doc-ccmaxsim-add-l0.8
@@ -1006,7 +1006,7 @@
 365 Q0 951a0400-5f9c-4e80-bb5c-fc38f843de27 6 0.829235 doc-ccmaxsim-add-l0.8
 365 Q0 5e54b5e5-d77f-491b-ad88-198f339c2dd5 7 0.828703 doc-ccmaxsim-add-l0.8
 365 Q0 b919ddef-8399-4d36-bb3d-f175816b5cba 8 0.827911 doc-ccmaxsim-add-l0.8
-365 Q0 d924500c-5bea-42ba-a106-4b2741118428 9 0.826906 doc-ccmaxsim-add-l0.8
+365 Q0 d924500c-5bea-42ba-a106-4b2741118428 9 0.826905 doc-ccmaxsim-add-l0.8
 365 Q0 50184ec4-4673-437a-bbf8-bd3316adf5b2 10 0.826613 doc-ccmaxsim-add-l0.8
 365 Q0 6c4c4090-54b4-4059-8e58-1cd9eedadc10 11 0.826580 doc-ccmaxsim-add-l0.8
 365 Q0 b05676f7-13ed-4a85-87b2-528c715ea489 12 0.826570 doc-ccmaxsim-add-l0.8
@@ -1077,7 +1077,7 @@
 365 Q0 2d4c2f71-78c9-4afb-8a1a-01800a3ae87b 77 0.784172 doc-ccmaxsim-add-l0.8
 365 Q0 9d9c4ff5-8839-4b0a-92b9-41d60b827b69 78 0.782157 doc-ccmaxsim-add-l0.8
 365 Q0 c661d26e-125d-448a-aac1-fa87f44ddb09 79 0.780766 doc-ccmaxsim-add-l0.8
-365 Q0 e6e5dbcf-ec17-4927-a606-48193e4d543d 80 0.780200 doc-ccmaxsim-add-l0.8
+365 Q0 e6e5dbcf-ec17-4927-a606-48193e4d543d 80 0.780201 doc-ccmaxsim-add-l0.8
 365 Q0 f0132328-5feb-4392-b24b-084626de2784 81 0.780107 doc-ccmaxsim-add-l0.8
 365 Q0 e4d5f03d-a37a-4354-8eba-ff076b6c1ead 82 0.779683 doc-ccmaxsim-add-l0.8
 365 Q0 8a7b08da-5a0a-450a-b762-046cad529a91 83 0.778767 doc-ccmaxsim-add-l0.8
@@ -1276,7 +1276,7 @@
 372 Q0 4e509956-eb89-431f-a2d0-3b06a906c123 76 0.718738 doc-ccmaxsim-add-l0.8
 372 Q0 d568c7e2-3dfb-49be-9859-028f29559ebc 77 0.717874 doc-ccmaxsim-add-l0.8
 372 Q0 b9c22b25-1984-401f-bc64-0c89da4564ac 78 0.717661 doc-ccmaxsim-add-l0.8
-372 Q0 c5471382-46e1-4d17-acf1-99619731da0f 79 0.717129 doc-ccmaxsim-add-l0.8
+372 Q0 c5471382-46e1-4d17-acf1-99619731da0f 79 0.717130 doc-ccmaxsim-add-l0.8
 372 Q0 ec855f48-d855-48d1-ac7b-ad7e35185372 80 0.717118 doc-ccmaxsim-add-l0.8
 372 Q0 5bdc32a7-9042-42f6-9f21-f81135bd6647 81 0.716504 doc-ccmaxsim-add-l0.8
 372 Q0 e24d23dc-522c-4468-966f-e684b4770334 82 0.716231 doc-ccmaxsim-add-l0.8
@@ -1348,13 +1348,13 @@
 373 Q0 a0df3a4c-b007-459d-8a89-7c92db01d46f 48 0.782246 doc-ccmaxsim-add-l0.8
 373 Q0 67d3af8a-6025-4f58-91df-6ddc564d09b1 49 0.782147 doc-ccmaxsim-add-l0.8
 373 Q0 1cb75a23-4f0b-4fa5-9707-e9b23af33632 50 0.782108 doc-ccmaxsim-add-l0.8
-373 Q0 c6c22a78-8231-4d7d-9bcb-60ffacee47ce 51 0.782042 doc-ccmaxsim-add-l0.8
+373 Q0 c6c22a78-8231-4d7d-9bcb-60ffacee47ce 51 0.782043 doc-ccmaxsim-add-l0.8
 373 Q0 1735761d-8e4e-4db5-8dfc-e904c1f0ea5b 52 0.782013 doc-ccmaxsim-add-l0.8
 373 Q0 1bc9d8bd-ab61-4ce3-971f-619a5a9b0c61 53 0.780356 doc-ccmaxsim-add-l0.8
 373 Q0 0a16338e-4b06-4c7d-9668-a8acae26838f 54 0.780181 doc-ccmaxsim-add-l0.8
 373 Q0 de088ce6-b1b7-40bf-81fc-2b4bd7e79aa8 55 0.780007 doc-ccmaxsim-add-l0.8
 373 Q0 ee30fdfd-802f-4e43-b7d4-2b51a5303b83 56 0.779989 doc-ccmaxsim-add-l0.8
-373 Q0 9854209d-e21c-4902-ae00-0d0402804349 57 0.779657 doc-ccmaxsim-add-l0.8
+373 Q0 9854209d-e21c-4902-ae00-0d0402804349 57 0.779656 doc-ccmaxsim-add-l0.8
 373 Q0 efb63de9-950e-4a51-8a63-8dcef996fbf6 58 0.779401 doc-ccmaxsim-add-l0.8
 373 Q0 50699484-dbba-430d-b7dc-9a64787f0b95 59 0.779363 doc-ccmaxsim-add-l0.8
 373 Q0 2784803e-ba9a-4e6f-8eeb-292498c20eff 60 0.779101 doc-ccmaxsim-add-l0.8
@@ -1373,7 +1373,7 @@
 373 Q0 3b92f0f5-d779-4d3e-a4b9-3d8238558271 73 0.774132 doc-ccmaxsim-add-l0.8
 373 Q0 3a12d3fc-110c-45cb-8b3b-95aa58dcd7e8 74 0.774086 doc-ccmaxsim-add-l0.8
 373 Q0 04700706-0578-4f37-98cb-378feb11bd81 75 0.773932 doc-ccmaxsim-add-l0.8
-373 Q0 ee359c10-b507-4e7e-913c-830ad9543812 76 0.773850 doc-ccmaxsim-add-l0.8
+373 Q0 ee359c10-b507-4e7e-913c-830ad9543812 76 0.773851 doc-ccmaxsim-add-l0.8
 373 Q0 904a4ecf-4319-474e-8bd6-0809fd663be0 77 0.773669 doc-ccmaxsim-add-l0.8
 373 Q0 7d81f848-e18a-440a-8457-03b2aff97220 78 0.773420 doc-ccmaxsim-add-l0.8
 373 Q0 5670ab15-95c1-4c7a-b589-c4beec614bb8 79 0.773061 doc-ccmaxsim-add-l0.8
@@ -1393,7 +1393,7 @@
 373 Q0 709617e2-1bb9-41ee-abc3-c992a33c385c 93 0.768444 doc-ccmaxsim-add-l0.8
 373 Q0 80c894e9-e17d-4cba-b81f-b42095403708 94 0.767777 doc-ccmaxsim-add-l0.8
 373 Q0 c48d3d29-e3ec-4163-9f9d-adad3c99ec58 95 0.766415 doc-ccmaxsim-add-l0.8
-373 Q0 78768cf0-8bfa-49aa-9a51-aa039ca63f22 96 0.763639 doc-ccmaxsim-add-l0.8
+373 Q0 78768cf0-8bfa-49aa-9a51-aa039ca63f22 96 0.763638 doc-ccmaxsim-add-l0.8
 373 Q0 72339876-a6ef-4a5d-b5f9-b403ef9e603f 97 0.763427 doc-ccmaxsim-add-l0.8
 373 Q0 4db0c245-df0a-4e60-80aa-a635261a990c 98 0.763194 doc-ccmaxsim-add-l0.8
 373 Q0 62873b70-4614-4b57-9098-230dfe2c2b5d 99 0.761916 doc-ccmaxsim-add-l0.8
@@ -1414,7 +1414,7 @@
 377 Q0 26bb13b9-a54b-4ca1-9b7c-899c44911a78 14 0.784653 doc-ccmaxsim-add-l0.8
 377 Q0 c6978192-ccaf-47af-a78d-1aec68550002 15 0.784235 doc-ccmaxsim-add-l0.8
 377 Q0 58eac949-f095-41ea-84e4-b617ded2214b 16 0.783553 doc-ccmaxsim-add-l0.8
-377 Q0 3690ec3d-22a9-44f3-b13a-407ed9ea96c6 17 0.782625 doc-ccmaxsim-add-l0.8
+377 Q0 3690ec3d-22a9-44f3-b13a-407ed9ea96c6 17 0.782626 doc-ccmaxsim-add-l0.8
 377 Q0 eb3f4a38-8e55-4aa6-8a36-cd57b023dc11 18 0.782583 doc-ccmaxsim-add-l0.8
 377 Q0 95ad81d2-ffe1-4e5a-b120-8583cb0d120f 19 0.781523 doc-ccmaxsim-add-l0.8
 377 Q0 9ba887a5-5565-4009-98bd-cecdbf8702f2 20 0.780023 doc-ccmaxsim-add-l0.8
@@ -1596,7 +1596,7 @@
 380 Q0 1c39a195-5564-4775-8f5d-18b5e11093db 96 0.775582 doc-ccmaxsim-add-l0.8
 380 Q0 3fc68caa-b225-41d5-b88d-afd5142b8a6a 97 0.772323 doc-ccmaxsim-add-l0.8
 380 Q0 f6683103-d116-455c-a958-cf639757cf64 98 0.770739 doc-ccmaxsim-add-l0.8
-380 Q0 3365ba9d-1858-405a-b1e2-318ce93b30ba 99 0.770291 doc-ccmaxsim-add-l0.8
+380 Q0 3365ba9d-1858-405a-b1e2-318ce93b30ba 99 0.770290 doc-ccmaxsim-add-l0.8
 380 Q0 bbd2597a-a714-4b85-9c20-fd970a52c186 100 0.668902 doc-ccmaxsim-add-l0.8
 382 Q0 aecaf37a-62e8-42fc-a88b-db707dd394dd 1 0.814944 doc-ccmaxsim-add-l0.8
 382 Q0 55f03ae7-157e-4e63-a0df-4d6d9cb8de74 2 0.814609 doc-ccmaxsim-add-l0.8
@@ -1637,7 +1637,7 @@
 382 Q0 c90de5da-f0b7-42ea-88a0-293447e03e99 37 0.793721 doc-ccmaxsim-add-l0.8
 382 Q0 56413e55-0f89-45e1-94f9-7626dd17cbe2 38 0.793616 doc-ccmaxsim-add-l0.8
 382 Q0 b4e80063-957d-4b3f-8721-6ac039e61f28 39 0.793353 doc-ccmaxsim-add-l0.8
-382 Q0 e2e51286-7058-4a88-adcc-b7555f8f772a 40 0.792416 doc-ccmaxsim-add-l0.8
+382 Q0 e2e51286-7058-4a88-adcc-b7555f8f772a 40 0.792417 doc-ccmaxsim-add-l0.8
 382 Q0 ca4ad247-415d-4236-ab9e-cd141b7aecfe 41 0.792362 doc-ccmaxsim-add-l0.8
 382 Q0 a7713e2b-af41-4981-9d3f-ef92cfed873a 42 0.792100 doc-ccmaxsim-add-l0.8
 382 Q0 2d8bbb1a-1d2c-4e2f-8b51-08812e79a22c 43 0.791838 doc-ccmaxsim-add-l0.8
@@ -1699,7 +1699,7 @@
 382 Q0 1fcf5728-1dd0-47c3-a639-fe61daabd469 99 0.742718 doc-ccmaxsim-add-l0.8
 382 Q0 cf314b12-01c5-4ea9-96dc-22c52ec5f3fb 100 0.651654 doc-ccmaxsim-add-l0.8
 383 Q0 249f068a-f51d-45b1-85a5-fec8b8c7de32 1 0.779668 doc-ccmaxsim-add-l0.8
-383 Q0 a713b5ba-ccde-40f3-9777-6b5f89f6c858 2 0.758589 doc-ccmaxsim-add-l0.8
+383 Q0 a713b5ba-ccde-40f3-9777-6b5f89f6c858 2 0.758588 doc-ccmaxsim-add-l0.8
 383 Q0 3f88a020-a96c-4ff6-8374-24d80005bf41 3 0.757991 doc-ccmaxsim-add-l0.8
 383 Q0 e76662d6-f9a5-4ed8-8cdb-93d0bafdf900 4 0.751328 doc-ccmaxsim-add-l0.8
 383 Q0 b862207a-9e9c-4b1e-a00d-8193f0ff0a1f 5 0.748124 doc-ccmaxsim-add-l0.8
@@ -1735,7 +1735,7 @@
 383 Q0 11126aec-483b-4213-9b3a-3433aef1457e 35 0.696604 doc-ccmaxsim-add-l0.8
 383 Q0 6e8fcc84-095a-4414-b870-7698962c08ef 36 0.696346 doc-ccmaxsim-add-l0.8
 383 Q0 eb3c425f-5bd8-4b57-a5b5-d22b533f26b7 37 0.696250 doc-ccmaxsim-add-l0.8
-383 Q0 f3c99fff-dc38-40e7-ab7f-cc2e0c4ac908 38 0.695454 doc-ccmaxsim-add-l0.8
+383 Q0 f3c99fff-dc38-40e7-ab7f-cc2e0c4ac908 38 0.695455 doc-ccmaxsim-add-l0.8
 383 Q0 83919936-0d6d-4c50-a004-597b697c41cb 39 0.695095 doc-ccmaxsim-add-l0.8
 383 Q0 da14f919-190c-4b01-9059-da6b23d0a14d 40 0.692884 doc-ccmaxsim-add-l0.8
 383 Q0 ee7170c8-d8cf-4282-8784-7bf644629c81 41 0.692849 doc-ccmaxsim-add-l0.8
@@ -1854,7 +1854,7 @@
 388 Q0 3a023d85-8389-4608-bc42-d2812ba5bded 54 0.718747 doc-ccmaxsim-add-l0.8
 388 Q0 aa278c76-6c68-4fb4-a426-e87332622f34 55 0.718443 doc-ccmaxsim-add-l0.8
 388 Q0 7c1ff250-85d5-4073-acf4-69b59403ce8a 56 0.718421 doc-ccmaxsim-add-l0.8
-388 Q0 f17d0d78-24c1-47c9-a7d4-af5576a0f27a 57 0.718034 doc-ccmaxsim-add-l0.8
+388 Q0 f17d0d78-24c1-47c9-a7d4-af5576a0f27a 57 0.718033 doc-ccmaxsim-add-l0.8
 388 Q0 a5107dd6-472a-4f6d-be13-ae99948e0f85 58 0.717865 doc-ccmaxsim-add-l0.8
 388 Q0 d37c97d0-5933-4ab3-9041-602b5f8e8413 59 0.717773 doc-ccmaxsim-add-l0.8
 388 Q0 dd438cde-6f78-47e3-83ea-f6ec0549b8b3 60 0.716694 doc-ccmaxsim-add-l0.8
@@ -1881,16 +1881,16 @@
 388 Q0 66dbe091-71b5-4372-b646-239250c67330 81 0.703714 doc-ccmaxsim-add-l0.8
 388 Q0 2181c6ec-c3a7-446f-af71-692d784c5b84 82 0.702115 doc-ccmaxsim-add-l0.8
 388 Q0 5321cc2d-596f-47db-b0da-543e8e5cae08 83 0.701307 doc-ccmaxsim-add-l0.8
-388 Q0 c61548f2-0cfa-4403-88e5-da21fa998366 84 0.700695 doc-ccmaxsim-add-l0.8
+388 Q0 c61548f2-0cfa-4403-88e5-da21fa998366 84 0.700694 doc-ccmaxsim-add-l0.8
 388 Q0 41a448d8-cae5-4515-9f06-ce757480be68 85 0.699766 doc-ccmaxsim-add-l0.8
 388 Q0 3bf67bc8-005b-4564-a563-bb0fcc74c248 86 0.699215 doc-ccmaxsim-add-l0.8
 388 Q0 b7de426b-10c0-4ff9-944c-3785125d407d 87 0.698854 doc-ccmaxsim-add-l0.8
 388 Q0 4680dac1-4d0b-4589-89a0-08d5823a49f0 88 0.697373 doc-ccmaxsim-add-l0.8
-388 Q0 31884872-a1f9-405e-ad3b-72a2c092767a 89 0.696051 doc-ccmaxsim-add-l0.8
+388 Q0 31884872-a1f9-405e-ad3b-72a2c092767a 89 0.696052 doc-ccmaxsim-add-l0.8
 388 Q0 dd60d845-7ba7-4d97-8f77-55bddaa4b38f 90 0.694861 doc-ccmaxsim-add-l0.8
 388 Q0 5a43e893-4e31-463f-a188-19ee95dc1a50 91 0.694479 doc-ccmaxsim-add-l0.8
 388 Q0 656d4e27-55f2-4fb0-8a07-be8989d97d66 92 0.692764 doc-ccmaxsim-add-l0.8
-388 Q0 853e0e24-40d6-425a-9ed0-57492c9a621e 93 0.692570 doc-ccmaxsim-add-l0.8
+388 Q0 853e0e24-40d6-425a-9ed0-57492c9a621e 93 0.692569 doc-ccmaxsim-add-l0.8
 388 Q0 c9225de3-7cd5-42e1-bcea-3e57298b4e28 94 0.692540 doc-ccmaxsim-add-l0.8
 388 Q0 88991d59-dfd2-428f-a00d-815db0ee0bf9 95 0.692283 doc-ccmaxsim-add-l0.8
 388 Q0 5e6ad9f8-61be-46ed-afa7-f2bda97dfd30 96 0.692134 doc-ccmaxsim-add-l0.8
