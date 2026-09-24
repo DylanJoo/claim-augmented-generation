@@ -1,0 +1,13 @@
+
+| Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
+|---|---|---|---|---|
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.1.txt | 0.6703 | 0.7989 | 0.5713 | 0.6086 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.2.txt | 0.6838 | 0.7928 | 0.5917 | 0.6230 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.3.txt | 0.7057 | 0.8066 | 0.6208 | 0.6465 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.4.txt | 0.7057 | 0.8139 | 0.6344 | 0.6598 |
+| run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.5.txt | 0.6922 | 0.7917 | 0.6471 | 0.6731 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.1.txt | 0.7096 | 0.7917 | 0.5889 | 0.6172 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.2.txt | 0.7060 | 0.7979 | 0.6161 | 0.6448 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.3.txt | 0.7217 | 0.7965 | 0.6358 | 0.6610 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.4.txt | 0.6934 | 0.8034 | 0.6301 | 0.6674 |
+| run.neuclir1.hybrid-claim-doc.Qwen3-Embedding-0.6B.alpha-0.5.txt | 0.6887 | 0.8258 | 0.6440 | 0.6848 |

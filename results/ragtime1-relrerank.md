@@ -1,0 +1,11 @@
+
+| Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
+|---|---|---|---|---|
+| run.ragtime1.documents.modernbert-base.cover-5k.autollmrerank-70b-lancer.txt | 0.6799 | 0.7486 | 0.5225 | 0.5419 |
+| run.ragtime1.documents.modernbert-base.cover-5k.autollmrerank-70b-point.txt | 0.6814 | 0.7619 | 0.5236 | 0.5491 |
+| run.ragtime1.documents.modernbert-base.cover-5k.autollmrerank-70b-rankgpt.txt | 0.6543 | 0.7630 | 0.5615 | 0.5960 |
+| run.ragtime1.documents.modernbert-base.cover-5k.autollmrerank-70b-umbrela.txt | 0.6275 | 0.7381 | 0.4537 | 0.4973 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-lancer.txt | 0.6935 | 0.7920 | 0.5643 | 0.5916 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-point.txt | 0.6732 | 0.7553 | 0.5241 | 0.5539 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-rankgpt.txt | 0.7063 | 0.7949 | 0.5720 | 0.6011 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-umbrela.txt | 0.6818 | 0.7543 | 0.4761 | 0.5138 |

@@ -1,0 +1,37 @@
+
+| Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
+|---|---|---|---|---|
+| run.ragtime1.claims-k1000.modernbert-base.cover-5k.rrf.txt | 0.6576 | 0.7512 | 0.5105 | 0.5438 |
+| run.ragtime1.claims-k1000.modernbert-base.cover-5k.sum.txt | 0.6793 | 0.7651 | 0.5367 | 0.5624 |
+| run.ragtime1.claims-k1000.Qwen3-Embedding-0.6B.rrf.txt | 0.6761 | 0.7459 | 0.5181 | 0.5442 |
+| run.ragtime1.claims-k1000.Qwen3-Embedding-0.6B.sum.txt | 0.6893 | 0.7614 | 0.5341 | 0.5624 |
+| run.ragtime1.claims-k100.modernbert-base.cover-5k.rrf.txt | 0.6496 | 0.7403 | 0.5068 | 0.5377 |
+| run.ragtime1.claims-k100.modernbert-base.cover-5k.sum.txt | 0.6942 | 0.7710 | 0.5619 | 0.5850 |
+| run.ragtime1.claims-k100.Qwen3-Embedding-0.6B.rrf.txt | 0.6688 | 0.7396 | 0.5161 | 0.5412 |
+| run.ragtime1.claims-k100.Qwen3-Embedding-0.6B.sum.txt | 0.6969 | 0.7509 | 0.5475 | 0.5664 |
+| run.ragtime1.claims-k2000.modernbert-base.cover-5k.rrf.txt | 0.6595 | 0.7512 | 0.5108 | 0.5438 |
+| run.ragtime1.claims-k2000.modernbert-base.cover-5k.sum.txt | 0.6804 | 0.7698 | 0.5228 | 0.5555 |
+| run.ragtime1.claims-k2000.Qwen3-Embedding-0.6B.rrf.txt | 0.6779 | 0.7508 | 0.5187 | 0.5448 |
+| run.ragtime1.claims-k2000.Qwen3-Embedding-0.6B.sum.txt | 0.6570 | 0.7336 | 0.5141 | 0.5438 |
+| run.ragtime1.claims-k200.modernbert-base.cover-5k.rrf.txt | 0.6595 | 0.7463 | 0.5099 | 0.5425 |
+| run.ragtime1.claims-k200.modernbert-base.cover-5k.sum.txt | 0.6919 | 0.7838 | 0.5583 | 0.5885 |
+| run.ragtime1.claims-k200.Qwen3-Embedding-0.6B.rrf.txt | 0.6761 | 0.7427 | 0.5180 | 0.5425 |
+| run.ragtime1.claims-k200.Qwen3-Embedding-0.6B.sum.txt | 0.6794 | 0.7642 | 0.5161 | 0.5494 |
+| run.ragtime1.claims-k300.modernbert-base.cover-5k.rrf.txt | 0.6595 | 0.7408 | 0.5105 | 0.5404 |
+| run.ragtime1.claims-k300.modernbert-base.cover-5k.sum.txt | 0.6914 | 0.7874 | 0.5374 | 0.5700 |
+| run.ragtime1.claims-k300.Qwen3-Embedding-0.6B.rrf.txt | 0.6761 | 0.7457 | 0.5182 | 0.5435 |
+| run.ragtime1.claims-k300.Qwen3-Embedding-0.6B.sum.txt | 0.6636 | 0.7737 | 0.5127 | 0.5533 |
+| run.ragtime1.claims-k400.modernbert-base.cover-5k.rrf.txt | 0.6595 | 0.7384 | 0.5108 | 0.5408 |
+| run.ragtime1.claims-k400.modernbert-base.cover-5k.sum.txt | 0.6869 | 0.7775 | 0.5320 | 0.5638 |
+| run.ragtime1.claims-k400.Qwen3-Embedding-0.6B.rrf.txt | 0.6761 | 0.7459 | 0.5182 | 0.5439 |
+| run.ragtime1.claims-k400.Qwen3-Embedding-0.6B.sum.txt | 0.6596 | 0.7682 | 0.5239 | 0.5637 |
+| run.ragtime1.claims-k500.modernbert-base.cover-5k.rrf.txt | 0.6595 | 0.7413 | 0.5108 | 0.5413 |
+| run.ragtime1.claims-k500.modernbert-base.cover-5k.sum.txt | 0.6824 | 0.7854 | 0.5360 | 0.5724 |
+| run.ragtime1.claims-k500.Qwen3-Embedding-0.6B.rrf.txt | 0.6761 | 0.7459 | 0.5181 | 0.5438 |
+| run.ragtime1.claims-k500.Qwen3-Embedding-0.6B.sum.txt | 0.6690 | 0.7690 | 0.5177 | 0.5553 |
+| run.ragtime1.claims-k750.modernbert-base.cover-5k.rrf.txt | 0.6595 | 0.7512 | 0.5109 | 0.5439 |
+| run.ragtime1.claims-k750.modernbert-base.cover-5k.sum.txt | 0.6780 | 0.7674 | 0.5346 | 0.5624 |
+| run.ragtime1.claims-k750.Qwen3-Embedding-0.6B.rrf.txt | 0.6761 | 0.7459 | 0.5180 | 0.5442 |
+| run.ragtime1.claims-k750.Qwen3-Embedding-0.6B.sum.txt | 0.6822 | 0.7623 | 0.5409 | 0.5706 |
+| run.ragtime1.claims.modernbert-base.cover-5k.max.txt | 0.6458 | 0.7289 | 0.4955 | 0.5282 |
+| run.ragtime1.claims.Qwen3-Embedding-0.6B.max.txt | 0.6545 | 0.7306 | 0.5110 | 0.5374 |
