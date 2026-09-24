@@ -1,6 +1,4 @@
-
 | Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
-|---|---|---|---|---|
 | run.ragtime1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.1.txt | 0.6669 | 0.7614 | 0.5360 | 0.5650 |
 | run.ragtime1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.2.txt | 0.6925 | 0.7615 | 0.5515 | 0.5682 |
 | run.ragtime1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.3.txt | 0.6985 | 0.7598 | 0.5709 | 0.5841 |

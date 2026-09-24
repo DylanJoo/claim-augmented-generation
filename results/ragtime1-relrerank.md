@@ -1,6 +1,4 @@
-
 | Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
-|---|---|---|---|---|
 | run.ragtime1.documents.modernbert-base.cover-5k.autollmrerank-70b-lancer.txt | 0.6799 | 0.7486 | 0.5225 | 0.5419 |
 | run.ragtime1.documents.modernbert-base.cover-5k.autollmrerank-70b-point.txt | 0.6814 | 0.7619 | 0.5236 | 0.5491 |
 | run.ragtime1.documents.modernbert-base.cover-5k.autollmrerank-70b-rankgpt.txt | 0.6543 | 0.7630 | 0.5615 | 0.5960 |

@@ -1,6 +1,4 @@
-
 | Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
-|---|---|---|---|---|
 | run.ragtime1.claims-k1000.modernbert-base.cover-5k.rrf.txt | 0.6576 | 0.7512 | 0.5105 | 0.5438 |
 | run.ragtime1.claims-k1000.modernbert-base.cover-5k.sum.txt | 0.6793 | 0.7651 | 0.5367 | 0.5624 |
 | run.ragtime1.claims-k1000.Qwen3-Embedding-0.6B.rrf.txt | 0.6761 | 0.7459 | 0.5181 | 0.5442 |

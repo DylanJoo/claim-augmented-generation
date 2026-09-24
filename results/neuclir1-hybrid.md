@@ -1,6 +1,4 @@
-
 | Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
-|---|---|---|---|---|
 | run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.1.txt | 0.6703 | 0.7989 | 0.5713 | 0.6086 |
 | run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.2.txt | 0.6838 | 0.7928 | 0.5917 | 0.6230 |
 | run.neuclir1.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.3.txt | 0.7057 | 0.8066 | 0.6208 | 0.6465 |
