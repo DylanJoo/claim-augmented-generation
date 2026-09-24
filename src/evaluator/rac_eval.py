@@ -43,13 +43,12 @@ def markdown_columns(metrics):
         name, _, cutoff = str(m).rpartition('@')
         if not name:
             name, cutoff = str(m), None
-        columns.append(f"@{cutoff}" if name == prev and cutoff else str(m))
+        columns.append(str(m))
         prev = name
     return columns
 
 def print_markdown_header(columns):
     print("| " + " | ".join(columns) + " |")
-    print("|" + "---|" * len(columns))
 
 def print_markdown_row(columns, run_name, values):
     print("| " + " | ".join([run_name] + values) + " |")

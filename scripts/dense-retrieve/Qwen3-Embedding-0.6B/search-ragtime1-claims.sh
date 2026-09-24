@@ -38,7 +38,7 @@ for FUSION in sum rrf; do
     --topics data/ragtime2025.topics.test.jsonl \
     --query_reps $query_dir/queries_emb.pkl \
     --shard_groups "${SHARD_GROUPS[@]}" \
-    --output runs/run.ragtime1.claims-k${k}.${MODEL_NAME}.${FUSION}.txt \
+    --output runs/claims-agg/run.ragtime1.claims-k${k}.${MODEL_NAME}.${FUSION}.txt \
     --k $k \
     --fusion ${FUSION} \
     --tag dense-claims-${FUSION}

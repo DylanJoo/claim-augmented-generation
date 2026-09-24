@@ -1,4 +1,4 @@
-| Run | StRecall@10 | @20 | alpha_nDCG@10 | @20 |
+| Run | StRecall@10 | StRecall@20 | alpha_nDCG@10 | alpha_nDCG@20 |
 | run.neuclir1.claims-k1000.modernbert-base.cover-5k.rrf.txt | 0.6727 | 0.7754 | 0.6054 | 0.6346 |
 | run.neuclir1.claims-k1000.modernbert-base.cover-5k.sum.txt | 0.6962 | 0.7622 | 0.6100 | 0.6297 |
 | run.neuclir1.claims-k1000.Qwen3-Embedding-0.6B.rrf.txt | 0.6179 | 0.7241 | 0.4655 | 0.5087 |
