@@ -27,7 +27,7 @@ for TOP_M in 20; do
 for ALPHA in 0.2 0.3 0.4 0.5 0.6 0.7;do
 for N_CLUSTERS in 50 75 100; do
 for LAMBDA in 0.5 0.6 0.7; do
-    OUT=runs/neuclir1/run.neuclir1.documents.${MODEL_NAME}.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
+    OUT=runs/cckmeans/run.neuclir1.documents.${MODEL_NAME}.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
     [ -s "$OUT" ] && { echo "skip $OUT"; continue; }
     python pipeline/run_cc_kmeans.py \
         --topics data/neuclir2024.topics.test.jsonl \
