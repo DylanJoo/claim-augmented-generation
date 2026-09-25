@@ -12,7 +12,7 @@ cd ${HOME}/claim-augmented-generation/
 
 system=$1
 scope=$2
-scopes="first|cckmeans|claim-based-scoring|claims-agg|hybrid|relrerank|sanity"
+scopes="first|cckmeans|claim-based-scoring|claims-agg|hybrid|relrerank|sanity|dice"
 if [ -z "$system" ] || [ -z "$scope" ]; then
     echo "usage: $0 <neuclir1|ragtime1> <$scopes>" >&2
     exit 1
@@ -31,7 +31,7 @@ case "$scope" in
     first)
         run_glob="runs/run.${system}*.txt"
         ;;
-    cckmeans|claim-based-scoring|claims-agg|hybrid|relrerank)
+    cckmeans|claim-based-scoring|claims-agg|hybrid|relrerank|dice)
         run_glob="runs/${scope}/run.${system}*.txt"
         ;;
     sanity)
