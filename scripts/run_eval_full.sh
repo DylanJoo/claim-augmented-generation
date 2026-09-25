@@ -1,7 +1,7 @@
 #!/bin/bash -l
 #SBATCH --job-name=rac-eval-full
-#SBATCH --output=logs/rac-eval-full.out
-#SBATCH --error=logs/rac-eval-full.err
+#SBATCH --output=logs/rac-eval-full-%j.out
+#SBATCH --error=logs/rac-eval-full-%j.err
 #SBATCH --partition=cpu
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
@@ -17,25 +17,23 @@ if [ -z "$system" ]; then
 fi
 
 case "$system" in
-    neuclir1)
-        run_glob="runs/run.neuclir1*.txt"
-        priority_runs="runs/neuclir1/run.neuclir1.documents.modernbert-base.cover-5k.txt runs/neuclir1/run.neuclir1.documents.Qwen3-Embedding-0.6B.txt"
-        qrel="$HOME/trec2026/data/neuclir/neuclir24-test-request.qrel"
-        ;;
-    ragtime1)
-        run_glob="runs/run.ragtime1*.txt"
-        priority_runs="runs/ragtime1/run.ragtime1.documents.modernbert-base.cover-5k.txt runs/ragtime1/run.ragtime1.documents.Qwen3-Embedding-0.6B.txt"
-        qrel="$HOME/trec2026/data/ragtime1/ragtime25-test-request.qrel"
-        ;;
+    neuclir1) qrel="$HOME/trec2026/data/neuclir/neuclir24-test-request.qrel" ;;
+    ragtime1) qrel="$HOME/trec2026/data/ragtime1/ragtime25-test-request.qrel" ;;
     *)
         echo "unknown system: $system (expected neuclir1|ragtime1)" >&2
         exit 1
         ;;
 esac
 
+# scopes: first (runs/*.txt) + claim-based-scoring; dense baselines listed first
+priority_runs="runs/run.${system}.documents.modernbert-base.cover-5k.txt runs/run.${system}.documents.Qwen3-Embedding-0.6B.txt"
+run_glob="runs/run.${system}*.txt runs/claim-based-scoring/run.${system}*.txt"
+
 out="results/${system}-full.md"
 mkdir -p "$(dirname "$out")"
 
+# unmatched globs stay literal in bash; keep only files that exist
+seen=""
 runs=()
 for run in $priority_runs $run_glob; do
     case " $seen " in
