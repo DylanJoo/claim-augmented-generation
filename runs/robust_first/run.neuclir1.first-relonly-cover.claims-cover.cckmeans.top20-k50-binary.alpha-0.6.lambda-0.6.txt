@@ -1,0 +1,1 @@
+../sanity-relevant-only/reranked/run.neuclir1.documents.modernbert-base.cover-5k.relevant-only.cckmeans.top20-k50-binary.alpha-0.6.lambda-0.6.txt

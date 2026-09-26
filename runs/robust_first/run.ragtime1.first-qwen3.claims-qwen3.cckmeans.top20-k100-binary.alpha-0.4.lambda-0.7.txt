@@ -1,0 +1,1 @@
+../cckmeans/run.ragtime1.documents.Qwen3-Embedding-0.6B.cckmeans.top20-k100-binary.alpha-0.4.lambda-0.7.txt
