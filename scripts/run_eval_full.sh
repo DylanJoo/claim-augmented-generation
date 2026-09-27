@@ -8,13 +8,20 @@
 #SBATCH --mem=16G
 #SBATCH --time=2:00:00
 
+# usage: run_eval_full.sh <neuclir1|ragtime1> [extra run paths/globs ...]
+#
+# Evaluates the BASELINES + SELECTED lists below (in that order), plus any
+# extra paths/globs given on the command line. Entries are relative to the
+# repo root, may be globs, and use {sys} as a placeholder for the system.
+
 cd ${HOME}/claim-augmented-generation/
 
 system=$1
 if [ -z "$system" ]; then
-    echo "usage: $0 <neuclir1|ragtime1>" >&2
+    echo "usage: $0 <neuclir1|ragtime1> [extra run paths/globs ...]" >&2
     exit 1
 fi
+shift
 
 case "$system" in
     neuclir1) qrel="$HOME/trec2026/data/neuclir/neuclir24-test-request.qrel" ;;
@@ -25,24 +32,51 @@ case "$system" in
         ;;
 esac
 
-# scopes: first (runs/*.txt) + claim-based-scoring; dense baselines listed first
-priority_runs="runs/run.${system}.documents.modernbert-base.cover-5k.txt runs/run.${system}.documents.Qwen3-Embedding-0.6B.txt"
-run_glob="runs/run.${system}*.txt runs/claim-based-scoring/run.${system}*.txt"
+# baselines: first-stage retrievers and LLM rerankers on the dense runs
+BASELINES=(
+    # first stage
+    "runs/run.{sys}.documents.bm25.txt"
+    "runs/run.{sys}.concat-claims.bm25.txt"
+    "runs/run.{sys}.documents.modernbert-base.cover-5k.txt"
+    "runs/run.{sys}.documents.Qwen3-Embedding-0.6B.txt"
+    # LLM rerankers (autollmrerank-70b) over the dense first stage
+    "runs/relrerank/run.{sys}.documents.modernbert-base.cover-5k.autollmrerank-70b-*.txt"
+    "runs/relrerank/run.{sys}.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-*.txt"
+)
+
+# selected runs: add the configs worth a full eval here
+SELECTED=(
+    # "runs/cckmeans/run.{sys}.documents.modernbert-base.cover-5k.cckmeans.top20-k100-binary.alpha-0.2.lambda-0.5.txt"
+)
 
 out="results/${system}-full.md"
 mkdir -p "$(dirname "$out")"
 
-# unmatched globs stay literal in bash; keep only files that exist
+# expand {sys} and globs; unmatched globs stay literal in bash, so keep only
+# files that exist and drop duplicates
 seen=""
 runs=()
-for run in $priority_runs $run_glob; do
-    case " $seen " in
-        *" $run "*) continue ;;
-    esac
-    seen="$seen $run"
-    [ -f "$run" ] || continue
-    runs+=("$run")
+for pattern in "${BASELINES[@]}" "${SELECTED[@]}" "$@"; do
+    pattern="${pattern//\{sys\}/$system}"
+    matched=0
+    for run in $pattern; do
+        [ -f "$run" ] || continue
+        matched=1
+        case " $seen " in
+            *" $run "*) continue ;;
+        esac
+        seen="$seen $run"
+        runs+=("$run")
+    done
+    [ "$matched" -eq 1 ] || echo "warning: no run matches $pattern" >&2
 done
+
+if [ "${#runs[@]}" -eq 0 ]; then
+    echo "no runs to evaluate" >&2
+    exit 1
+fi
+echo "evaluating ${#runs[@]} runs" >&2
+
 python -m src.evaluator.rac_eval_full \
     --run "${runs[@]}" \
     --qrel $qrel | tee "$out"
