@@ -17,6 +17,7 @@
 | run.neuclir1.first-bm25.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.5.txt | 0.6650 | 0.7655 | 0.5313 | 0.5660 |
 | run.neuclir1.first-bm25.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.6.txt | 0.6650 | 0.7655 | 0.5304 | 0.5651 |
 | run.neuclir1.first-bm25.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.7.txt | 0.6650 | 0.7655 | 0.5304 | 0.5651 |
+| run.neuclir1.first-bm25.claims-qwen3.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.5.txt | 0.6650 | 0.7655 | 0.5320 | 0.5661 |
 | run.neuclir1.first-bm25.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.5.txt | 0.6650 | 0.7655 | 0.5303 | 0.5653 |
 | run.neuclir1.first-bm25.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.6.txt | 0.6705 | 0.7655 | 0.5333 | 0.5653 |
 | run.neuclir1.first-bm25.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.7.txt | 0.6705 | 0.7655 | 0.5333 | 0.5653 |
@@ -89,6 +90,7 @@
 | run.neuclir1.first-cover.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.5.txt | 0.6905 | 0.8076 | 0.5633 | 0.6021 |
 | run.neuclir1.first-cover.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.6.txt | 0.6587 | 0.8107 | 0.5628 | 0.6089 |
 | run.neuclir1.first-cover.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.7.txt | 0.6694 | 0.7965 | 0.5596 | 0.6012 |
+| run.neuclir1.first-cover.claims-qwen3.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.5.txt | 0.7052 | 0.7777 | 0.6337 | 0.6500 |
 | run.neuclir1.first-cover.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.5.txt | 0.7110 | 0.8168 | 0.6262 | 0.6538 |
 | run.neuclir1.first-cover.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.6.txt | 0.6987 | 0.8064 | 0.6100 | 0.6380 |
 | run.neuclir1.first-cover.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.7.txt | 0.6985 | 0.8003 | 0.6216 | 0.6492 |

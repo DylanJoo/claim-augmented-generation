@@ -17,6 +17,7 @@
 | run.ragtime1.first-bm25.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.5.txt | 0.5246 | 0.5820 | 0.3640 | 0.3885 |
 | run.ragtime1.first-bm25.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.6.txt | 0.5246 | 0.5820 | 0.3639 | 0.3885 |
 | run.ragtime1.first-bm25.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.7.txt | 0.5246 | 0.5820 | 0.3636 | 0.3882 |
+| run.ragtime1.first-bm25.claims-qwen3.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.5.txt | 0.5246 | 0.5820 | 0.3647 | 0.3888 |
 | run.ragtime1.first-bm25.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.5.txt | 0.5246 | 0.5820 | 0.3640 | 0.3887 |
 | run.ragtime1.first-bm25.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.6.txt | 0.5246 | 0.5820 | 0.3640 | 0.3887 |
 | run.ragtime1.first-bm25.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.7.txt | 0.5246 | 0.5820 | 0.3638 | 0.3884 |
@@ -89,6 +90,7 @@
 | run.ragtime1.first-cover.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.5.txt | 0.6591 | 0.7508 | 0.5203 | 0.5496 |
 | run.ragtime1.first-cover.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.6.txt | 0.6614 | 0.7441 | 0.5339 | 0.5597 |
 | run.ragtime1.first-cover.claims-cover.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.7.txt | 0.6649 | 0.7441 | 0.5612 | 0.5853 |
+| run.ragtime1.first-cover.claims-qwen3.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.5.txt | 0.6192 | 0.7177 | 0.5046 | 0.5322 |
 | run.ragtime1.first-cover.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.5.txt | 0.6465 | 0.7341 | 0.5301 | 0.5586 |
 | run.ragtime1.first-cover.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.6.txt | 0.6491 | 0.7413 | 0.5501 | 0.5796 |
 | run.ragtime1.first-cover.claims-qwen3.cckmeans.top20-k75-binary.alpha-0.2.lambda-0.7.txt | 0.6547 | 0.7431 | 0.5454 | 0.5740 |
