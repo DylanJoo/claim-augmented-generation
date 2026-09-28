@@ -34,19 +34,20 @@ esac
 
 # baselines: first-stage retrievers and LLM rerankers on the dense runs
 BASELINES=(
-    # first stage
     "runs/run.{sys}.documents.bm25.txt"
-    "runs/run.{sys}.concat-claims.bm25.txt"
-    "runs/run.{sys}.documents.modernbert-base.cover-5k.txt"
+    # "runs/run.{sys}.concat-claims.bm25.txt"
+    # "runs/run.{sys}.documents.modernbert-base.cover-5k.txt"
     "runs/run.{sys}.documents.Qwen3-Embedding-0.6B.txt"
-    # LLM rerankers (autollmrerank-70b) over the dense first stage
-    "runs/relrerank/run.{sys}.documents.modernbert-base.cover-5k.autollmrerank-70b-*.txt"
-    "runs/relrerank/run.{sys}.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-*.txt"
+    # "runs/relrerank/run.{sys}.modernbert-base.cover-5k.autollmrerank-70b-lancer.txt"
+    "runs/relrerank/run.{sys}.documents.Qwen3-Embedding-0.6B.autollmrerank-70b-lancer.txt"
 )
 
 # selected runs: add the configs worth a full eval here
 SELECTED=(
-    # "runs/cckmeans/run.{sys}.documents.modernbert-base.cover-5k.cckmeans.top20-k100-binary.alpha-0.2.lambda-0.5.txt"
+    # DI
+    "runs/hybrid/run.{sys}.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.3.txt"
+    # DICE
+    "runs/dice/run.{sys}.hybrid-a0.3.Qwen3-Embedding-0.6B.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.5.txt"
 )
 
 out="results/${system}-full.md"
