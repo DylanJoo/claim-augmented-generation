@@ -34,9 +34,13 @@ def _normalize(hits):
 
 def _combine(claim_hits, aux_hits, alpha=0.5, normalize=True):
     """Combine two parent-doc-level ranked lists into one, keyed by docid."""
+    # minmax(sum-claim) + minmax(aux) is working
+    # rrf-claim + aux is working
+    # minmax(sum-claim) + aux
+
+    # aux_hits = _normalize(aux_hits) # we dont normalize
     if normalize:
-        claim_hits = _normalize(claim_hits)
-        aux_hits = _normalize(aux_hits)
+        claim_hits = _normalize(claim_hits) # TODO: revise it back
 
     contrib = defaultdict(list)  # docid -> [(weighted_score, rank), ...]
     content = {}

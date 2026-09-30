@@ -26,7 +26,7 @@ Usage:
         --output <results.txt> \
         [--k 100] [--alpha 0.5] [--lambda-mult 0.0] \
         [--kmeans-n-clusters 20] [--kmeans-top-m <int, default: whole pool>] \
-        [--kmeans-label-mode binary|scaled] [--kmeans-n-init 10] \
+        [--kmeans-n-init 10] \
         [--tag cc-kmeans]
 """
 
@@ -118,21 +118,13 @@ def main():
                              "against those fitted centroids via .predict(), not included in the fit "
                              "itself. Omit (or set >= pool depth) to fit on the whole pool instead "
                              "(default: whole pool)")
-    parser.add_argument("--kmeans-label-mode", choices=["binary", "scaled", "centroid", "centroid_count"], default="binary",
-                        help="How a doc's claims-per-cluster counts become its cluster vector. "
-                             "'binary': multi-hot, 1 if the doc has >=1 claim in that cluster. "
-                             "'scaled': within-doc fraction of claims per cluster, summing to 1 "
-                             "'centroid': multi-hot times the cluster's query-centroid cosine "
-                             "(needs --query-reps). "
-                             "'centroid_count': raw per-cluster claim count times the cluster's "
-                             "query-centroid cosine (needs --query-reps) (default: binary)")
+    parser.add_argument("--kmeans-label-mode", choices=["binary"], default="binary",
+                        help="Kept for script compatibility; only 'binary' (multi-hot, 1 if the doc "
+                             "has >=1 claim in that cluster) is supported (default: binary)")
     parser.add_argument("--cluster-reweight", choices=["none", "idf"], default="none",
                         help="Rarity reweighting of clusters in the coverage gain: 'idf' scales each "
                              "cluster by log(1 + top_m / #core docs touching it), normalized to mean 1, "
                              "so rare clusters count more (default: none)")
-    parser.add_argument("--query-reps", default=None,
-                        help="Tevatron query embedding pkl (reps, qids); required for "
-                             "--kmeans-label-mode centroid")
     parser.add_argument("--kmeans-n-init", type=int, default=10,
                         help="Number of k-means initializations (sklearn KMeans n_init) (default: 10)")
     parser.add_argument("--tag", default="cc-kmeans",
@@ -154,15 +146,14 @@ def main():
         discount_floor=args.discount_floor,
         n_clusters=args.kmeans_n_clusters,
         top_m=args.kmeans_top_m,
-        label_mode=args.kmeans_label_mode,
         kmeans_n_init=args.kmeans_n_init,
-        query_reps=args.query_reps,
         cluster_reweight=args.cluster_reweight,
         gain_norm_mode=args.gain_norm,
         gain_scale=args.gain_scale,
         score_mode=args.score_mode,
         penalty_weight=args.penalty_weight,
         novelty_ratio=args.novelty_ratio,
+        rel_norm="minmax" if "bm25" in args.run_file else "none",  # BM25 scores are unbounded
     )
 
     write_trec(results, args.output, args.tag)

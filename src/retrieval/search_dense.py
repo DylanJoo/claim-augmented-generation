@@ -95,7 +95,8 @@ def _fuse(temp, hits, strategy="sum"):
     fusion = {}
     for docid, items in temp.items():
         if strategy == "rrf":
-            fusion[docid] = sum(1 / rank for _, rank in items)
+            kappa = 60
+            fusion[docid] = sum(1 / (kappa + rank) for _, rank in items)
         elif strategy == "max":
             fusion[docid] = max(score for score, _ in items)
         elif strategy == "first":
