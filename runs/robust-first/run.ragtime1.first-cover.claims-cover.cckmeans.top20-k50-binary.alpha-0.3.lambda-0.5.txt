@@ -1,1 +1,0 @@
-../cckmeans/run.ragtime1.documents.modernbert-base.cover-5k.cckmeans.top20-k50-binary.alpha-0.3.lambda-0.5.txt

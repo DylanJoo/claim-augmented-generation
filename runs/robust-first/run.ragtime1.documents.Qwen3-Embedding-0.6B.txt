@@ -1,0 +1,1 @@
+../run.ragtime1.documents.Qwen3-Embedding-0.6B.txt

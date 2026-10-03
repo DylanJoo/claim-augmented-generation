@@ -1,1 +1,0 @@
-../cckmeans/run.neuclir1.documents.modernbert-base.cover-5k.cckmeans.top20-k75-binary.alpha-0.7.lambda-0.6.txt
