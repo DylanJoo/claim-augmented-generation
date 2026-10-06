@@ -1,0 +1,9 @@
+| Run | StRecall@10 | StRecall@20 | alpha_nDCG@10 | alpha_nDCG@20 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.all-relevant.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.6.txt | 0.7395 | 0.8295 | 0.6285 | 0.6575 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.all-relevant.txt | 0.7412 | 0.8275 | 0.6132 | 0.6433 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.6.txt | 0.6894 | 0.7732 | 0.5942 | 0.6169 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.6.txt | 0.7395 | 0.8295 | 0.6362 | 0.6645 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.relevant-only.txt | 0.7412 | 0.8275 | 0.6125 | 0.6419 |
+| run.ragtime1.documents.Qwen3-Embedding-0.6B.txt | 0.6958 | 0.7700 | 0.5598 | 0.5843 |
+| run.ragtime1.hybrid-a0.8.Qwen3-Embedding-0.6B.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.6.txt | 0.7211 | 0.7962 | 0.6119 | 0.6347 |
+| run.ragtime1.hybrid-claim-rrf-doc.Qwen3-Embedding-0.6B.alpha-0.8.txt | 0.7192 | 0.8023 | 0.5747 | 0.6054 |

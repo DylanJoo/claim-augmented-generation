@@ -1,0 +1,35 @@
+# Python
+**/__pycache__/
+*/__pycache__/
+*.py[cod]
+*.pyo
+*~
+
+# Editor
+*.swp
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment / secrets
+.env
+*.key
+
+# Data and experiment outputs
+submissions/
+analysis/
+# *.jsonl
+*.json
+*.tsv
+# *.csv
+
+# Logs and Slurm outputs
+*.log
+*.out
+*.err
+**/log*
+
+# Claude Code local settings
+.claude/settings.local.json

@@ -1,0 +1,9 @@
+| Run | StRecall@10 | StRecall@20 | alpha_nDCG@10 | alpha_nDCG@20 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.all-relevant.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.6.txt | 0.8062 | 0.8545 | 0.7132 | 0.7345 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.all-relevant.txt | 0.7349 | 0.8427 | 0.6431 | 0.6813 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.6.txt | 0.7223 | 0.7902 | 0.6342 | 0.6611 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.6.txt | 0.8062 | 0.8545 | 0.7141 | 0.7354 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.relevant-only.txt | 0.7349 | 0.8427 | 0.6431 | 0.6805 |
+| run.neuclir1.documents.Qwen3-Embedding-0.6B.txt | 0.6963 | 0.7802 | 0.5642 | 0.5958 |
+| run.neuclir1.hybrid-a0.8.Qwen3-Embedding-0.6B.cckmeans.top20-k50-binary.alpha-0.5.lambda-0.6.txt | 0.7844 | 0.8453 | 0.6923 | 0.7124 |
+| run.neuclir1.hybrid-claim-rrf-doc.Qwen3-Embedding-0.6B.alpha-0.8.txt | 0.7395 | 0.8255 | 0.6482 | 0.6802 |
