@@ -27,7 +27,7 @@ OUT_DIR=runs/robust_first
 mkdir -p $OUT_DIR
 LABEL_MODE=binary
 TOP_M=20
-N_CLUSTERS=75
+N_CLUSTERS=50
 
 for DATASET in ragtime1 neuclir1; do
     case $DATASET in
@@ -37,15 +37,14 @@ for DATASET in ragtime1 neuclir1; do
     case $FIRST in
         bm25)  RUN_FILE=runs/run.${DATASET}.documents.bm25.txt ;;
         cover) RUN_FILE=runs/run.${DATASET}.documents.modernbert-base.cover-5k.txt ;;
-        qwen3) RUN_FILE=runs/run.${DATASET}.documents.Qwen3-Embedding-0.6B.txt ;;
     esac
     [ -s "$RUN_FILE" ] || { echo "missing $RUN_FILE"; continue; }
-for EMB_TAG in cover qwen3; do
+for EMB_TAG in qwen3; do
     case $EMB_TAG in
         cover) EMB_NAME=modernbert-base.cover-5k ;;
         qwen3) EMB_NAME=Qwen3-Embedding-0.6B ;;
     esac
-for ALPHA in 0.2 0.3 0.4 0.5 0.6 0.7; do
+for ALPHA in 0.5 0.6 0.7; do
 for LAMBDA in 0.5 0.6 0.7; do
     OUT=$OUT_DIR/run.${DATASET}.first-${FIRST}.claims-${EMB_TAG}.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
     [ -s "$OUT" ] && { echo "skip $OUT"; continue; }

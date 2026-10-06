@@ -5,8 +5,8 @@
 #SBATCH --partition=cpu
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=40
-#SBATCH --mem=512G
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=256G
 #SBATCH --time=1-00:00:00
 
 # ENV
@@ -15,13 +15,6 @@ initconda
 conda activate basic
 
 cd $HOME/claim-augmented-generation
-
-# NOTE: mirrors scripts/dense-retrieve/modernbert-base.cover-5k/search-neuclir1-claims-dist.sh's
-# shard-group construction (one group per shard FILE, streamed one at a time so peak
-# memory stays bounded -- not one group per language: a language's shards can total
-# 100-200G, which blew past even 512G) and scripts/retrieve/neuclir1-hybrid-claim-doc.sh's
-# alpha sweep (0.5 = evenly split; 0.0/pure doc-level omitted as a redundant
-# sanity check identical to the doc-only run).
 MODEL_NAME=modernbert-base.cover-5k
 EMB_ROOT=$HOME/scratch/neuclir1/${MODEL_NAME}
 
@@ -33,16 +26,18 @@ for LANG in "${LANGS[@]}"; do
     done
 done
 
-for ALPHA in 0.1 0.2 0.3 0.4 0.5; do
+for FUSION in sum;do
+for ALPHA in 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9; do
     python pipeline/run_hybrid_dense.py \
         --topics data/neuclir2024.topics.test.jsonl \
         --query-reps "$EMB_ROOT/queries_emb/queries_emb.pkl" \
         --claim-shard-groups "${CLAIM_SHARD_GROUPS[@]}" \
         --doc-passage-reps "$EMB_ROOT/docs_emb/docs_emb.*.pkl" \
-        --output runs/run.neuclir1.hybrid-claim-doc.${MODEL_NAME}.alpha-${ALPHA}.txt \
+        --output runs/hybrid/run.neuclir1.hybrid-claim-${FUSION}-doc.${MODEL_NAME}.alpha-${ALPHA}.txt \
         --k-claim 1000 \
         --k-doc 1000 \
-        --claim-fusion sum \
+        --claim-fusion ${FUSION} \
         --alpha ${ALPHA} \
-        --tag hybrid-claim-doc-dense-a${ALPHA}
+        --tag hybrid-claim-${FUSION}-doc-a${ALPHA}
+done
 done

@@ -21,12 +21,12 @@ cd $HOME/claim-augmented-generation
 MODEL_NAME=modernbert-base.cover-5k
 EMB_ROOT=$HOME/scratch/neuclir1/${MODEL_NAME}
 
-# 54 runs (existing outputs skipped)
+# 168 runs (existing outputs skipped)
 LABEL_MODE=binary
 for TOP_M in 20; do
-for ALPHA in 0.2 0.3 0.4 0.5 0.6 0.7;do
+for ALPHA in 0.1 0.2 0.3 0.4 0.5 0.6 0.7;do
 for N_CLUSTERS in 50 75 100; do
-for LAMBDA in 0.5 0.6 0.7; do
+for LAMBDA in 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9; do
     OUT=runs/cckmeans/run.neuclir1.documents.${MODEL_NAME}.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
     [ -s "$OUT" ] && { echo "skip $OUT"; continue; }
     python pipeline/run_cc_kmeans.py \

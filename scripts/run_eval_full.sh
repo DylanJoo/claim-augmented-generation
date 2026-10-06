@@ -47,7 +47,7 @@ SELECTED=(
     # DI
     "runs/hybrid/run.{sys}.hybrid-claim-doc.modernbert-base.cover-5k.alpha-0.3.txt"
     # DICE
-    "runs/dice/run.{sys}.hybrid-a0.3.Qwen3-Embedding-0.6B.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.5.txt"
+    "runs/dice/run.{sys}.hybrid-a0.8.Qwen3-Embedding-0.6B.cckmeans.top20-k50-binary.alpha-0.2.lambda-0.5.txt"
 )
 
 out="results/${system}-full.md"

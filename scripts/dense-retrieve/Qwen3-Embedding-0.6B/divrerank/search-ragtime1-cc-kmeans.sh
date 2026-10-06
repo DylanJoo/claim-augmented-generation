@@ -21,10 +21,10 @@ EMB_ROOT=$HOME/scratch/ragtime1/${MODEL_NAME}
 
 LABEL_MODE=binary
 for TOP_M in 20; do
-for ALPHA in 0.2 0.3 0.4 0.5 0.6 0.7;do
+for ALPHA in 0.1 0.2 0.3 0.4 0.5 0.6 0.7;do
 for N_CLUSTERS in 50 75 100; do
-for LAMBDA in 0.5 0.6 0.7; do
-    OUT=runs/ragtime1/run.ragtime1.documents.Qwen3-Embedding-0.6B.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
+for LAMBDA in 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9; do
+    OUT=runs/cckmeans/run.ragtime1.documents.Qwen3-Embedding-0.6B.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
     [ -s "$OUT" ] && { echo "skip $OUT"; continue; }
     python pipeline/run_cc_kmeans.py \
         --topics data/ragtime2025.topics.test.jsonl \

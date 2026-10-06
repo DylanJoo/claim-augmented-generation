@@ -18,17 +18,18 @@ cd $HOME/claim-augmented-generation
 
 MODEL_NAME=modernbert-base.cover-5k
 EMB_ROOT=$HOME/scratch/ragtime1/${MODEL_NAME}
+BASE_RUN=runs/hybrid/run.ragtime1.hybrid-claim-rrf-doc.${MODEL_NAME}.alpha-0.8.txt
 
 LABEL_MODE=binary
 for TOP_M in 20; do
 for ALPHA in 0.2 0.3 0.4 0.5 0.6 0.7;do
 for N_CLUSTERS in 50 75 100; do
 for LAMBDA in 0.5 0.6 0.7; do
-    OUT=runs/dice/run.ragtime1.hybrid-a0.3.${MODEL_NAME}.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
+    OUT=runs/dice/run.ragtime1.hybrid-a0.8.${MODEL_NAME}.cckmeans.top${TOP_M}-k${N_CLUSTERS}-${LABEL_MODE}.alpha-${ALPHA}.lambda-${LAMBDA}.txt
     [ -s "$OUT" ] && { echo "skip $OUT"; continue; }
     python pipeline/run_cc_kmeans.py \
         --topics data/ragtime2025.topics.test.jsonl \
-        --run-file runs/hybrid/run.ragtime1.hybrid-claim-doc.${MODEL_NAME}.alpha-0.3.txt \
+        --run-file ${BASE_RUN} \
         --corpus  "$HOME/scratch/ragtime1/*.processed-claims.jsonl.gz" \
         --claim-reps "$EMB_ROOT/claims_emb/claims_emb.*.pkl" \
         --output "$OUT" \

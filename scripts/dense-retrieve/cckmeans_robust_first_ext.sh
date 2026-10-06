@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=256G
 #SBATCH --time=48:00:00
-#SBATCH --array=0-2
+#SBATCH --array=0
 
 # ENV
 source ~/.bashrc
